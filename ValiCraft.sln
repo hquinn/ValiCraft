@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5FD7965E-4840-4EE2-A6B9-7A75431A2FF1}"
@@ -19,6 +22,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Rules.Generator.Tests", "tests\ValiCraft.Rules.Generator.Tests\ValiCraft.Rules.Generator.Tests.csproj", "{69AAE6A7-C3F3-449D-94B3-8512C706A29F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.TestHelpers", "tests\ValiCraft.TestHelpers\ValiCraft.TestHelpers.csproj", "{E26E205E-5DD8-401E-9D1F-6717AD8A3411}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Generator.Shared", "src\ValiCraft.Generator.Shared\ValiCraft.Generator.Shared.csproj", "{EDC8D277-3DD3-4BFD-AC39-D325950B63C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Rules.Generator.Shared", "src\ValiCraft.Rules.Generator.Shared\ValiCraft.Rules.Generator.Shared.csproj", "{982F7574-0D7B-49D6-B4F2-4D5DE638BB34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +65,17 @@ Global
 		{E26E205E-5DD8-401E-9D1F-6717AD8A3411}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E26E205E-5DD8-401E-9D1F-6717AD8A3411}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E26E205E-5DD8-401E-9D1F-6717AD8A3411}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDC8D277-3DD3-4BFD-AC39-D325950B63C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDC8D277-3DD3-4BFD-AC39-D325950B63C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDC8D277-3DD3-4BFD-AC39-D325950B63C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDC8D277-3DD3-4BFD-AC39-D325950B63C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{982F7574-0D7B-49D6-B4F2-4D5DE638BB34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{982F7574-0D7B-49D6-B4F2-4D5DE638BB34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{982F7574-0D7B-49D6-B4F2-4D5DE638BB34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{982F7574-0D7B-49D6-B4F2-4D5DE638BB34}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D95D5EE3-5DFD-40DD-91CD-4C6B31F3EA50} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
@@ -68,5 +86,10 @@ Global
 		{A0EA967C-9FC7-4A28-9A93-78379ACD06D1} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
 		{69AAE6A7-C3F3-449D-94B3-8512C706A29F} = {5FD7965E-4840-4EE2-A6B9-7A75431A2FF1}
 		{E26E205E-5DD8-401E-9D1F-6717AD8A3411} = {5FD7965E-4840-4EE2-A6B9-7A75431A2FF1}
+		{EDC8D277-3DD3-4BFD-AC39-D325950B63C2} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
+		{982F7574-0D7B-49D6-B4F2-4D5DE638BB34} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9067EB3C-FC28-40ED-B943-6720270A63E3}
 	EndGlobalSection
 EndGlobal

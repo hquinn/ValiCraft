@@ -18,8 +18,15 @@ public static class AssertionExtensions
         this (ImmutableArray<Diagnostic> Diagnostics, string[] Output) result,
         params string[] expected)
     {
-        result.Output.Should().BeEquivalentTo(expected);
+        
+        
+        result.Output.Select(NormalizeCode).Should().BeEquivalentTo(expected.Select(NormalizeCode));
         
         return result;
+    }
+
+    private static string NormalizeCode(string code)
+    {
+        return code.Replace("\r\n", "\n");
     }
 }

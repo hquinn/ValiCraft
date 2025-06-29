@@ -7,7 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Rules\" />
+      <Compile Remove="Rules\**" />
+      <EmbeddedResource Remove="Rules\**" />
+      <None Remove="Rules\**" />
     </ItemGroup>
 
 </Project>

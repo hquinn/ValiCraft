@@ -5,23 +5,27 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="AwesomeAssertions" Version="9.0.0" />
-        <PackageReference Include="coverlet.collector" Version="6.0.0"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-        <PackageReference Include="xunit" Version="2.5.3"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
+        <PackageReference Include="coverlet.collector" Version="6.0.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+        <PackageReference Include="xunit" Version="2.5.3" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.7.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="Xunit"/>
+        <Using Include="Xunit" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\ValiCraft.Abstractions\ValiCraft.Abstractions.csproj" />
+      <ProjectReference Include="..\..\src\ValiCraft.Generator.Shared\ValiCraft.Generator.Shared.csproj" />
+      <ProjectReference Include="..\..\src\ValiCraft.Rules.Generator.Shared\ValiCraft.Rules.Generator.Shared.csproj" />
       <ProjectReference Include="..\..\src\ValiCraft.Rules.Generator\ValiCraft.Rules.Generator.csproj" />
       <ProjectReference Include="..\..\src\ValiCraft.Rules\ValiCraft.Rules.csproj" />
       <ProjectReference Include="..\ValiCraft.TestHelpers\ValiCraft.TestHelpers.csproj" />
