@@ -1,4 +1,4 @@
-namespace ValiCraft.Abstractions.Attributes;
+namespace ValiCraft.Attributes;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class MapToValidationRuleAttribute : Attribute

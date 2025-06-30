@@ -1,4 +1,4 @@
-namespace ValiCraft.Abstractions.BuilderTypes;
+namespace ValiCraft.BuilderTypes;
 
 public interface IBuilderType<TRequest, TProperty>
     where TRequest : class

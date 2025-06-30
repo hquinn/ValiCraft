@@ -24,7 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\ValiCraft.Abstractions\ValiCraft.Abstractions.csproj" />
       <ProjectReference Include="..\..\src\ValiCraft.Generator.Shared\ValiCraft.Generator.Shared.csproj" />
       <ProjectReference Include="..\..\src\ValiCraft.Generator\ValiCraft.Generator.csproj" />
       <ProjectReference Include="..\..\src\ValiCraft\ValiCraft.csproj" />

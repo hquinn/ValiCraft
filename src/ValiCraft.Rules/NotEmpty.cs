@@ -1,5 +1,5 @@
-using ValiCraft.Abstractions;
-using ValiCraft.Abstractions.Attributes;
+using ValiCraft;
+using ValiCraft.Attributes;
 
 namespace ValiCraft.Rules;
 

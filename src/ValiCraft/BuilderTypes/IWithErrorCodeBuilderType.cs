@@ -1,4 +1,4 @@
-namespace ValiCraft.Abstractions.BuilderTypes;
+namespace ValiCraft.BuilderTypes;
 
 public interface IWithErrorCodeBuilderType<TRequest, TProperty> : IBuilderType<TRequest, TProperty>
     where TRequest : class

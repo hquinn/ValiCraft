@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using ValiCraft.Abstractions.BuilderTypes;
+using ValiCraft.BuilderTypes;
 
-namespace ValiCraft.Abstractions;
+namespace ValiCraft;
 
 public interface IValidationRuleBuilder<TRequest> where TRequest : class
 {

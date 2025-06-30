@@ -1,6 +1,6 @@
 using AwesomeAssertions.Execution;
 using LitePrimitives;
-using ValiCraft.Abstractions;
+using ValiCraft;
 using ValiCraft.Generator.Shared;
 using ValiCraft.TestHelpers;
 
@@ -22,8 +22,8 @@ public class ValidatorGeneratorTests
                               """;
     
        const string validationRulesInput = """
-                               using ValiCraft.Abstractions;
-                               using ValiCraft.Abstractions.Attributes;
+                               using ValiCraft;
+                               using ValiCraft.Attributes;
                                
                                namespace Test.Rules;
                                
@@ -39,28 +39,28 @@ public class ValidatorGeneratorTests
                                
                                public static class GenericRule1Extensions
                                {
-                                   [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                   [global::ValiCraft.Attributes.MapToValidationRule(
                                        validationRuleType: typeof(global::Test.Rules.GenericRule1<,,>),
                                        validationRuleGenericFormat: "<{0}, {1}, {2}>")]
-                                   public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule1<TRequest, TPropertyType, TParam1, TParam2>(
-                                       this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
+                                   public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule1<TRequest, TPropertyType, TParam1, TParam2>(
+                                       this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                        => throw new global::System.NotImplementedException("Never gets called");
                                }
                                
                                public static class GenericRule2Extensions
                                {
-                                   [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                   [global::ValiCraft.Attributes.MapToValidationRule(
                                        validationRuleType: typeof(global::Test.Rules.GenericRule2<,,>),
                                        validationRuleGenericFormat: "<{0}, {1}, {2}>")]
-                                   public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule2<TRequest, TPropertyType, TParam1, TParam2>(
-                                       this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
+                                   public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule2<TRequest, TPropertyType, TParam1, TParam2>(
+                                       this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                        => throw new global::System.NotImplementedException("Never gets called");
                                }
                                """;
     
        const string validatorInput = """
-                               using ValiCraft.Abstractions;
-                               using ValiCraft.Abstractions.Attributes;
+                               using ValiCraft;
+                               using ValiCraft.Attributes;
                                using Test.Rules;
                                
                                namespace Test;
@@ -132,8 +132,8 @@ public class ValidatorGeneratorTests
                              """;
     
         const string validationRulesInput = """
-                              using ValiCraft.Abstractions;
-                              using ValiCraft.Abstractions.Attributes;
+                              using ValiCraft;
+                              using ValiCraft.Attributes;
                               
                               namespace Test.Rules;
                               
@@ -144,18 +144,18 @@ public class ValidatorGeneratorTests
                               
                               public static class GenericRuleExtensions
                               {
-                                  [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                  [global::ValiCraft.Attributes.MapToValidationRule(
                                       validationRuleType: typeof(global::Test.Rules.GenericRule<,,>),
                                       validationRuleGenericFormat: "<{0}, {1}, {2}>")]
-                                  public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
-                                      this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
+                                  public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
+                                      this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                       => throw new global::System.NotImplementedException("Never gets called");
                               }
                               """;
     
         const string validatorInput = """
-                              using ValiCraft.Abstractions;
-                              using ValiCraft.Abstractions.Attributes;
+                              using ValiCraft;
+                              using ValiCraft.Attributes;
                               using Test.Rules;
                               
                               namespace Test;
@@ -221,8 +221,8 @@ public class ValidatorGeneratorTests
                              """;
     
         const string validationRulesInput = """
-                              using ValiCraft.Abstractions;
-                              using ValiCraft.Abstractions.Attributes;
+                              using ValiCraft;
+                              using ValiCraft.Attributes;
                               
                               namespace Test.Rules;
                               
@@ -233,18 +233,18 @@ public class ValidatorGeneratorTests
     
                               public static class GenericRuleExtensions
                               {
-                                  [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                  [global::ValiCraft.Attributes.MapToValidationRule(
                                       validationRuleType: typeof(global::Test.Rules.GenericRule<>),
                                       validationRuleGenericFormat: "<{0}>")]
-                                  public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
-                                      this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+                                  public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
+                                      this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
                                       => throw new global::System.NotImplementedException("Never gets called");
                               }
                               """;
     
         const string validatorInput = """
-                              using ValiCraft.Abstractions;
-                              using ValiCraft.Abstractions.Attributes;
+                              using ValiCraft;
+                              using ValiCraft.Attributes;
                               using Test.Rules;
                               
                               namespace Test;
@@ -310,8 +310,8 @@ public class ValidatorGeneratorTests
                              """;
     
         const string validationRulesInput = """
-                              using ValiCraft.Abstractions;
-                              using ValiCraft.Abstractions.Attributes;
+                              using ValiCraft;
+                              using ValiCraft.Attributes;
                               
                               namespace Test.Rules;
                               
@@ -322,18 +322,18 @@ public class ValidatorGeneratorTests
     
                               public static class GenericRuleExtensions
                               {
-                                  [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                  [global::ValiCraft.Attributes.MapToValidationRule(
                                       validationRuleType: typeof(global::Test.Rules.GenericRule),
                                       validationRuleGenericFormat: "")]
-                                  public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
-                                      this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
+                                  public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
+                                      this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                       => throw new global::System.NotImplementedException("Never gets called");
                               }
                               """;
     
         const string validatorInput = """
-                              using ValiCraft.Abstractions;
-                              using ValiCraft.Abstractions.Attributes;
+                              using ValiCraft;
+                              using ValiCraft.Attributes;
                               using Test.Rules;
                               
                               namespace Test;
@@ -399,8 +399,8 @@ public class ValidatorGeneratorTests
                             """;
 
         const string validationRulesInput = """
-                             using ValiCraft.Abstractions;
-                             using ValiCraft.Abstractions.Attributes;
+                             using ValiCraft;
+                             using ValiCraft.Attributes;
                              
                              namespace Test.Rules;
                              
@@ -412,8 +412,8 @@ public class ValidatorGeneratorTests
                              """;
 
         const string validatorInput = """
-                             using ValiCraft.Abstractions;
-                             using ValiCraft.Abstractions.Attributes;
+                             using ValiCraft;
+                             using ValiCraft.Attributes;
                              using Test.Rules;
                              
                              namespace Test;
@@ -437,11 +437,11 @@ public class ValidatorGeneratorTests
                                   {
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                          [global::ValiCraft.Attributes.MapToValidationRule(
                                               validationRuleType: typeof(global::Test.Rules.GenericRule<,,>),
                                               validationRuleGenericFormat: "<{0}, {1}, {2}>")]
-                                          public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
-                                              this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
+                                          public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
+                                              this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
                                       }
                                   }
@@ -497,8 +497,8 @@ public class ValidatorGeneratorTests
                             """;
 
         const string validationRulesInput = """
-                             using ValiCraft.Abstractions;
-                             using ValiCraft.Abstractions.Attributes;
+                             using ValiCraft;
+                             using ValiCraft.Attributes;
                              
                              namespace Test.Rules;
                              
@@ -510,8 +510,8 @@ public class ValidatorGeneratorTests
                              """;
 
         const string validatorInput = """
-                             using ValiCraft.Abstractions;
-                             using ValiCraft.Abstractions.Attributes;
+                             using ValiCraft;
+                             using ValiCraft.Attributes;
                              using Test.Rules;
                              
                              namespace Test;
@@ -535,11 +535,11 @@ public class ValidatorGeneratorTests
                                   {
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                          [global::ValiCraft.Attributes.MapToValidationRule(
                                               validationRuleType: typeof(global::Test.Rules.GenericRule<>),
                                               validationRuleGenericFormat: "<{0}>")]
-                                          public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
-                                              this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+                                          public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
+                                              this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
                                       }
                                   }
@@ -595,8 +595,8 @@ public class ValidatorGeneratorTests
                             """;
 
         const string validationRulesInput = """
-                             using ValiCraft.Abstractions;
-                             using ValiCraft.Abstractions.Attributes;
+                             using ValiCraft;
+                             using ValiCraft.Attributes;
                              
                              namespace Test.Rules;
                              
@@ -608,8 +608,8 @@ public class ValidatorGeneratorTests
                              """;
 
         const string validatorInput = """
-                             using ValiCraft.Abstractions;
-                             using ValiCraft.Abstractions.Attributes;
+                             using ValiCraft;
+                             using ValiCraft.Attributes;
                              using Test.Rules;
                              
                              namespace Test;
@@ -633,11 +633,11 @@ public class ValidatorGeneratorTests
                                   {
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                          [global::ValiCraft.Attributes.MapToValidationRule(
                                               validationRuleType: typeof(global::Test.Rules.GenericRule),
                                               validationRuleGenericFormat: "")]
-                                          public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
-                                              this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
+                                          public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
+                                              this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
                                       }
                                   }

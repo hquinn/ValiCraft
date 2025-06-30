@@ -1,4 +1,4 @@
-using ValiCraft.Abstractions;
+using ValiCraft;
 
 namespace ValiCraft.Rules;
 

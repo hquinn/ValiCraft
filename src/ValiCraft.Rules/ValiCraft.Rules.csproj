@@ -7,10 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ValiCraft.Abstractions\ValiCraft.Abstractions.csproj" />
       <ProjectReference Include="..\ValiCraft.Rules.Generator\ValiCraft.Rules.Generator.csproj"
                         OutputItemType="Analyzer"
                         ReferenceOutputAssembly="false"/>
+      <ProjectReference Include="..\ValiCraft\ValiCraft.csproj" />
     </ItemGroup>
 
 </Project>

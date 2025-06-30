@@ -23,11 +23,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\ValiCraft.Abstractions\ValiCraft.Abstractions.csproj" />
       <ProjectReference Include="..\..\src\ValiCraft.Generator.Shared\ValiCraft.Generator.Shared.csproj" />
       <ProjectReference Include="..\..\src\ValiCraft.Rules.Generator.Shared\ValiCraft.Rules.Generator.Shared.csproj" />
       <ProjectReference Include="..\..\src\ValiCraft.Rules.Generator\ValiCraft.Rules.Generator.csproj" />
       <ProjectReference Include="..\..\src\ValiCraft.Rules\ValiCraft.Rules.csproj" />
+      <ProjectReference Include="..\..\src\ValiCraft\ValiCraft.csproj" />
       <ProjectReference Include="..\ValiCraft.TestHelpers\ValiCraft.TestHelpers.csproj" />
     </ItemGroup>
 

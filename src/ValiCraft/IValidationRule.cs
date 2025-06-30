@@ -1,4 +1,4 @@
-namespace ValiCraft.Abstractions;
+namespace ValiCraft;
 
 public interface IValidationRule<in TPropertyValue>
 {

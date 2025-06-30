@@ -10,8 +10,4 @@
       <PackageReference Include="LitePrimitives" Version="3.4.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\ValiCraft.Abstractions\ValiCraft.Abstractions.csproj" />
-    </ItemGroup>
-
 </Project>

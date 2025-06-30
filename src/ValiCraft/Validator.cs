@@ -1,4 +1,4 @@
-namespace ValiCraft.Abstractions;
+namespace ValiCraft;
 
 public abstract class Validator<TRequest> where TRequest : class
 {
