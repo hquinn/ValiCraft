@@ -2,7 +2,7 @@
 using ValiCraft.Generator.Shared;
 using ValiCraft.Rules.Generator.Shared;
 
-namespace ValiCraft.Providers.LitePrimitives.Generator;
+namespace ValiCraft.Generator;
 
 [Generator(LanguageNames.CSharp)]
 public class ValidatorGenerator : IIncrementalGenerator

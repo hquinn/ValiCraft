@@ -4,7 +4,7 @@ using ValiCraft.Abstractions;
 using ValiCraft.Generator.Shared;
 using ValiCraft.TestHelpers;
 
-namespace ValiCraft.Providers.LitePrimitives.Generator.Tests;
+namespace ValiCraft.Generator.Tests;
 
 public class ValidatorGeneratorTests
 {
@@ -83,7 +83,7 @@ public class ValidatorGeneratorTests
                                     
                                     namespace Test
                                     {
-                                        public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                        public partial class UserValidator : global::ValiCraft.IValidator<global::Test.User>
                                         {
                                             public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
                                             {
@@ -177,7 +177,7 @@ public class ValidatorGeneratorTests
                                    
                                    namespace Test
                                    {
-                                       public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                       public partial class UserValidator : global::ValiCraft.IValidator<global::Test.User>
                                        {
                                            public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
                                            {
@@ -266,7 +266,7 @@ public class ValidatorGeneratorTests
                                    
                                    namespace Test
                                    {
-                                       public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                       public partial class UserValidator : global::ValiCraft.IValidator<global::Test.User>
                                        {
                                            public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
                                            {
@@ -355,7 +355,7 @@ public class ValidatorGeneratorTests
                                    
                                    namespace Test
                                    {
-                                       public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                       public partial class UserValidator : global::ValiCraft.IValidator<global::Test.User>
                                        {
                                            public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
                                            {
@@ -453,7 +453,7 @@ public class ValidatorGeneratorTests
                                   
                                   namespace Test
                                   {
-                                      public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                      public partial class UserValidator : global::ValiCraft.IValidator<global::Test.User>
                                       {
                                           public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
                                           {
@@ -551,7 +551,7 @@ public class ValidatorGeneratorTests
                                   
                                   namespace Test
                                   {
-                                      public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                      public partial class UserValidator : global::ValiCraft.IValidator<global::Test.User>
                                       {
                                           public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
                                           {
@@ -649,7 +649,7 @@ public class ValidatorGeneratorTests
                                   
                                   namespace Test
                                   {
-                                      public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                      public partial class UserValidator : global::ValiCraft.IValidator<global::Test.User>
                                       {
                                           public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
                                           {

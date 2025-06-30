@@ -1,6 +1,6 @@
 using LitePrimitives;
 
-namespace ValiCraft.Providers.LitePrimitives;
+namespace ValiCraft;
 
 public interface IValidator<TRequest> where TRequest : class
 {

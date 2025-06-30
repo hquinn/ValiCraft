@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36221.1
@@ -9,11 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5FD7965E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Abstractions", "src\ValiCraft.Abstractions\ValiCraft.Abstractions.csproj", "{D95D5EE3-5DFD-40DD-91CD-4C6B31F3EA50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Providers.LitePrimitives", "src\ValiCraft.Providers.LitePrimitives\ValiCraft.Providers.LitePrimitives.csproj", "{B07448C2-4ED1-42DB-BA45-4B9F105E63EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft", "src\ValiCraft\ValiCraft.csproj", "{B07448C2-4ED1-42DB-BA45-4B9F105E63EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Providers.LitePrimitives.Generator", "src\ValiCraft.Providers.LitePrimitives.Generator\ValiCraft.Providers.LitePrimitives.Generator.csproj", "{367DDF48-618C-4636-B21A-A9A57CCC6EAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Generator", "src\ValiCraft.Generator\ValiCraft.Generator.csproj", "{367DDF48-618C-4636-B21A-A9A57CCC6EAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Providers.LitePrimitives.Generator.Tests", "tests\ValiCraft.Providers.LitePrimitives.Generator.Tests\ValiCraft.Providers.LitePrimitives.Generator.Tests.csproj", "{68FDB4A2-A7F9-4BAE-B465-B2258D7AF827}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Generator.Tests", "tests\ValiCraft.Generator.Tests\ValiCraft.Generator.Tests.csproj", "{68FDB4A2-A7F9-4BAE-B465-B2258D7AF827}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Rules.Generator", "src\ValiCraft.Rules.Generator\ValiCraft.Rules.Generator.csproj", "{5A9788FB-FCD4-42E7-92F9-6DF449D5D4B0}"
 EndProject

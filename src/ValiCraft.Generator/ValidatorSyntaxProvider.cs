@@ -7,11 +7,9 @@ using ValiCraft.Generator.Shared;
 using ValiCraft.Generator.Shared.Concepts;
 using ValiCraft.Generator.Shared.Extensions;
 using ValiCraft.Generator.Shared.Types;
-using ValiCraft.Providers.LitePrimitives.Generator.Concepts;
+using ValiCraft.Generator.Concepts;
 
-// For MethodSignatureInfo
-
-namespace ValiCraft.Providers.LitePrimitives.Generator;
+namespace ValiCraft.Generator;
 
 public static class ValidatorInfoProvider
 {
@@ -31,8 +29,8 @@ public static class ValidatorInfoProvider
             return new ProviderResult<ValidatorInfo>(diagnostics);
         }
         
-        bool succeeded = TryCheckPartialKeyword(classDeclarationSyntax, diagnostics);
-        succeeded &= TryGetRequestTypeName(classDeclarationSyntax, classSymbol, diagnostics, out var requestTypeName);
+        bool succeeded = TryCheckPartialKeyword(classDeclarationSyntax!, diagnostics);
+        succeeded &= TryGetRequestTypeName(classDeclarationSyntax!, classSymbol!, diagnostics, out var requestTypeName);
 
         if (!succeeded)
         {
@@ -41,8 +39,8 @@ public static class ValidatorInfoProvider
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var invocations = DiscoverRuleInvocations(context, classDeclarationSyntax);
-        var classInfo = new ClassInfo(classDeclarationSyntax, classSymbol, null);
+        var invocations = DiscoverRuleInvocations(context, classDeclarationSyntax!);
+        var classInfo = new ClassInfo(classDeclarationSyntax!, classSymbol!, null);
         
         var validatorInfo = new ValidatorInfo(
             classInfo,

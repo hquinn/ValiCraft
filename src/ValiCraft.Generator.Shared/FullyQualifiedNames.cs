@@ -23,7 +23,7 @@ public static class FullyQualifiedNames
 
     public class Interfaces
     {
-        public const string IValidator = "ValiCraft.Providers.LitePrimitives.IValidator";
+        public const string IValidator = "ValiCraft.IValidator";
         public const string IValidationRule = "ValiCraft.Abstractions.IValidationRule";
         public const string IValidationRuleBuilderType = "ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType";
         public const string IBuilderType = "ValiCraft.Abstractions.BuilderTypes.IBuilderType";
