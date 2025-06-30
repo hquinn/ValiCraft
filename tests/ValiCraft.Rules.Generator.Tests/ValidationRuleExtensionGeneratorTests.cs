@@ -57,11 +57,13 @@ public class ValidationRuleExtensionGeneratorTests
         const string input = """
                              using ValiCraft.Abstractions;
                              using ValiCraft.Abstractions.Attributes;
+                             using System.Numerics;
                              
                              namespace Test;
                              
                              [GenerateRuleExtension("IsGenericRule")]
                              public class GenericRule<TPropertyType, TParam1, TParam2> : IValidationRule<TPropertyType, TParam1, TParam2>
+                                 where TParam1 : INumber<TParam1>
                              {
                                  public static bool IsValid(TPropertyType propertyType, TParam1 param1, TParam2 param2) => true;
                              }
@@ -79,7 +81,7 @@ public class ValidationRuleExtensionGeneratorTests
                                               validationRuleType: typeof(global::Test.GenericRule<,,>),
                                               validationRuleGenericFormat: "<{0}, {1}, {2}>")]
                                           public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
-                                              this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
+                                              this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class where TParam1 : global::System.Numerics.INumber<TParam1>
                                               => throw new global::System.NotImplementedException("Never gets called");
                                       }
                                   }

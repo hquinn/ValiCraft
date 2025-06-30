@@ -1,6 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Text;
 using ValiCraft.Generator.Shared;
 using ValiCraft.Generator.Shared.Types;
@@ -40,7 +42,7 @@ public static class ValidationRuleExtensionSourceProvider
                                            validationRuleType: typeof({{validationRule.Class.FullyQualifiedUnboundedName}}),
                                            validationRuleGenericFormat: "{{validationRule.GetValidationRuleGenericFormat()}}")]
                                        {{validationRule.Class.Accessibility}} static global::{{FullyQualifiedNames.Interfaces.IValidationRuleBuilderType}}<TRequest, TPropertyType> {{validationRule.NameForExtensionMethod}}<{{validationRule.GetGenericArgumentsForExtensionMethod()}}>(
-                                           {{GetMethodParameters(validationRule)}}) where TRequest : class
+                                           {{GetMethodParameters(validationRule)}}) {{GetFullWhereClause(validationRule)}}
                                            => throw new global::System.NotImplementedException("Never gets called");
                                    }
                                }
@@ -48,6 +50,20 @@ public static class ValidationRuleExtensionSourceProvider
 
             context.AddSource($"{validationRule.Class.Name}.g.cs", SourceText.From(sourceCode, Encoding.UTF8));
         }
+    }
+    
+    private static string GetFullWhereClause(ValidationRuleInfo validationRuleInfo)
+    {
+        var clauses = new List<string> { "where TRequest : class" };
+
+        // Get all the constraint clauses we discovered from the rule's generic parameters.
+        var additionalClauses = validationRuleInfo.Class.GenericParameters
+            .Select(p => p.Constraints)
+            .Where(c => !string.IsNullOrEmpty(c));
+        
+        clauses.AddRange(additionalClauses);
+
+        return string.Join(" ", clauses);
     }
 
     private static string GetMethodParameters(ValidationRuleInfo validationRuleInfo)
