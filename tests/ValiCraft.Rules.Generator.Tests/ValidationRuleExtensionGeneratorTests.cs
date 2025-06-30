@@ -31,7 +31,9 @@ public class ValidationRuleExtensionGeneratorTests
                                   {
                                       public static class NotNullOrEmptyRuleExtensions
                                       {
-                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(typeof(global::Test.NotNullOrEmptyRule))]
+                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                              validationRuleType: typeof(global::Test.NotNullOrEmptyRule),
+                                              validationRuleGenericFormat: "")]
                                           public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsNotNullOrEmpty<TRequest, TPropertyType>(
                                               this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -73,7 +75,9 @@ public class ValidationRuleExtensionGeneratorTests
                                   {
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(typeof(global::Test.GenericRule<,,>))]
+                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                              validationRuleType: typeof(global::Test.GenericRule<,,>),
+                                              validationRuleGenericFormat: "<{0}, {1}, {2}>")]
                                           public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
                                               this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");

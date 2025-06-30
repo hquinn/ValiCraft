@@ -46,30 +46,38 @@ public class IncrementalGeneratorTestOptions
     /// This includes references to core .NET assemblies and default banned types for analysis.
     /// </summary>
     /// <returns>A new <see cref="IncrementalGeneratorTestOptions"/> instance with default values.</returns>
-    public static IncrementalGeneratorTestOptions CreateDefault(params Type[] metadataReferenceTypes)
+    public static IncrementalGeneratorTestOptions CreateDefault(params Type[] additionalMetadataReferenceTypes)
     {
         // The path to the .NET assemblies
         var dotNetAssemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
 
-        var metadataReferences = new List<MetadataReference>()
+        var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+        var references = new List<MetadataReference>();
+
+        foreach (var assembly in loadedAssemblies)
         {
-            // A minimal set of default references
-            MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "mscorlib.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.Core.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.Private.CoreLib.dll")),
-            MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.Runtime.dll")),
-        };
-        
-        foreach (var metadataReferenceType in metadataReferenceTypes)
-        {
-            metadataReferences.Add(MetadataReference.CreateFromFile(metadataReferenceType.Assembly.Location));
+            // We can't create a reference to dynamic or in-memory assemblies, so we skip them.
+            if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location))
+            {
+                references.Add(MetadataReference.CreateFromFile(assembly.Location));
+            }
         }
-        
+
+        // Your existing logic for adding specific types is still useful as a fallback
+        // in case an assembly wasn't loaded for some reason.
+        foreach (var type in additionalMetadataReferenceTypes)
+        {
+            if (!references.Any(r => Path.GetFileName(r.Display) == Path.GetFileName(type.Assembly.Location)))
+            {
+                references.Add(MetadataReference.CreateFromFile(type.Assembly.Location));
+            }
+        }
+
         return new IncrementalGeneratorTestOptions
         {
             CompilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary),
-            MetadataReferences = metadataReferences,
+            MetadataReferences = references,
             BannedTypesForAnalysis = new List<Type>
             {
                 // These types are expensive and should not be stored in incremental models

@@ -1,4 +1,5 @@
 using ValiCraft.Generator.Shared.Types;
+using ValiCraft.Generator.Shared.Utils;
 
 namespace ValiCraft.Generator.Shared.Concepts;
 
@@ -25,7 +26,7 @@ public record MethodSignature(string MethodName, EquatableArray<ParameterInfo> P
             var parameter = Parameters[i];
             var argument = arguments[i - skip];
 
-            if (parameter.TypeName == argument.Type)
+            if (TypeComparisonUtils.AreEquivalent(parameter.TypeName, argument.Type))
             {
                 continue;
             }

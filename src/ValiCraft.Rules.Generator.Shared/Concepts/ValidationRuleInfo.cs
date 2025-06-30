@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using ValiCraft.Generator.Shared.Concepts;
-using ValiCraft.Generator.Shared.Extensions;
-using ValiCraft.Generator.Shared.Types;
 using ValiCraft.Generator.Shared.Utils;
 
 namespace ValiCraft.Rules.Generator.Shared.Concepts;

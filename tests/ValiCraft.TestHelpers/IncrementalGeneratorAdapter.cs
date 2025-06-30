@@ -52,11 +52,12 @@ public class IncrementalGeneratorAdapter
     /// <returns>A tuple containing the generator diagnostics and the string content of the generated source files.</returns>
     public (ImmutableArray<Diagnostic> Diagnostics, string[] Output) GetGeneratedTrees<T>(
         string[] sources,
-        string[] trackingSteps)
+        string[] trackingSteps,
+        bool assertInitialCompilation = false)
         where T : IIncrementalGenerator, new()
     {
         return CreatePipeline<T>(sources, trackingSteps)
-            .RunGenerator()
+            .RunGenerator(assertInitialCompilation)
             .AssertCacheability()
             .GetResult();
     }

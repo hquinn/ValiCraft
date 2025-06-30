@@ -8,7 +8,6 @@ using ValiCraft.Generator.Shared.Concepts;
 using ValiCraft.Generator.Shared.Extensions;
 using ValiCraft.Generator.Shared.Types;
 using ValiCraft.Providers.LitePrimitives.Generator.Concepts;
-using ValiCraft.Rules.Generator.Shared.Concepts;
 
 // For MethodSignatureInfo
 
@@ -53,93 +52,134 @@ public static class ValidatorInfoProvider
         return new ProviderResult<ValidatorInfo>(validatorInfo, diagnostics);
     }
 
-private static List<RuleInvocation> DiscoverRuleInvocations(
-    GeneratorAttributeSyntaxContext context,
-    ClassDeclarationSyntax classDeclarationSyntax)
-{
-    var ruleInvocations = new List<RuleInvocation>();
-
-    var defineRulesMethod = classDeclarationSyntax.Members
-        .OfType<MethodDeclarationSyntax>()
-        .FirstOrDefault(method => method.Identifier.ValueText == "DefineRules");
-
-    if (defineRulesMethod?.Body is null)
+    private static List<RuleInvocation> DiscoverRuleInvocations(
+        GeneratorAttributeSyntaxContext context,
+        ClassDeclarationSyntax classDeclarationSyntax)
     {
-        return ruleInvocations;
-    }
+        var ruleInvocations = new List<RuleInvocation>();
 
-    foreach (var invocation in defineRulesMethod.Body.DescendantNodes().OfType<InvocationExpressionSyntax>())
-    {
-        if (invocation.Expression is not MemberAccessExpressionSyntax ruleMemberAccess ||
-            ruleMemberAccess.Expression is not InvocationExpressionSyntax ensureInvocation ||
-            ensureInvocation.ArgumentList.Arguments.FirstOrDefault()?.Expression is not SimpleLambdaExpressionSyntax lambda ||
-            lambda.Body is not MemberAccessExpressionSyntax propertyAccess)
-        {
-            continue; // Not the builder.Ensure(...).RuleMethod(...) pattern
-        }
-        
-        var methodSymbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
+        var defineRulesMethod = classDeclarationSyntax.Members
+            .OfType<MethodDeclarationSyntax>()
+            .FirstOrDefault(method => method.Identifier.ValueText == "DefineRules");
 
-        NameAndTypeInfo property;
-        
-        if (context.SemanticModel.GetSymbolInfo(propertyAccess).Symbol is IPropertySymbol propertySymbol)
+        if (defineRulesMethod?.Body is null)
         {
-            property = new NameAndTypeInfo(
-                propertyAccess.Name.Identifier.ValueText,
-                propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
-        }
-        else
-        {
-            property = new NameAndTypeInfo(propertyAccess.Name.Identifier.ValueText, "ERROR");
+            return ruleInvocations;
         }
 
-        // The types of the arguments can often be resolved even if the method call itself cannot.
-        var ruleInvocationArguments = invocation.ArgumentList.Arguments
-            .Select(arg =>
+        // 1. Instead of looping over all invocations, we loop over each statement in the method.
+        // This allows us to treat each fluent chain as a single unit.
+        foreach (var statement in defineRulesMethod.Body.Statements.OfType<ExpressionStatementSyntax>())
+        {
+            // A valid chain must end with a method call.
+            if (statement.Expression is not InvocationExpressionSyntax outermostInvocation)
             {
-                var name = arg.Expression.ToString();
-                var type = context.SemanticModel.GetTypeInfo(arg.Expression).Type;
+                continue;
+            }
 
-                return type is not null 
-                    ? new NameAndTypeInfo(name, type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)) 
-                    : new NameAndTypeInfo(name, "ERROR");
-            }).ToEquatableImmutableArray();
+            // 2. "Walk the chain" backwards from the outermost call (e.g., .IsGenericRule2)
+            // to the innermost call (e.g., .Ensure) to collect all parts of the chain.
+            var invocationChain = new List<InvocationExpressionSyntax>();
+            var currentExpression = (ExpressionSyntax)outermostInvocation;
 
-        var validationRuleGenericFormat = string.Empty;
-        var fullyQualifiedValidationRule = string.Empty;
-
-        if (methodSymbol is not null && methodSymbol.IsExtensionMethod)
-        {
-            var attributeDisplayFormat = SymbolDisplayFormats.FormatAttributeWithoutParameters;
-            var mapToValidationRuleAttribute = methodSymbol
-                .GetAttributes()
-                .FirstOrDefault(attributeData 
-                    => attributeData.AttributeClass?.ToDisplayString(attributeDisplayFormat) ==
-                       FullyQualifiedNames.Attributes.MapToValidationRuleAttribute);
-
-            if (mapToValidationRuleAttribute is not null)
+            while (currentExpression is InvocationExpressionSyntax currentInvocation)
             {
-                var constructorArguments = mapToValidationRuleAttribute.ConstructorArguments;
-                
-                if (constructorArguments.Length >= 2)
+                invocationChain.Add(currentInvocation);
+                if (currentInvocation.Expression is MemberAccessExpressionSyntax memberAccess)
                 {
-                    fullyQualifiedValidationRule = (constructorArguments[0].Value as INamedTypeSymbol)
-                        ?.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) ?? string.Empty;
-                    validationRuleGenericFormat = constructorArguments[1].Value as string ?? string.Empty;
+                    currentExpression = memberAccess.Expression;
+                }
+                else
+                {
+                    break; // We've reached the start of the chain (the 'builder' identifier).
                 }
             }
-        }
-        
-        ruleInvocations.Add(new RuleInvocation(
-            property,
-            ruleMemberAccess.Name.Identifier.ValueText, 
-            ruleInvocationArguments,
-            fullyQualifiedValidationRule,
-            validationRuleGenericFormat));
-    }
 
-    return ruleInvocations;
-}
+            // The collected chain is backwards, so we reverse it to get the correct execution order.
+            invocationChain.Reverse();
+
+            // 3. A valid chain must start with an 'Ensure(...)' call.
+            if (invocationChain.Count < 2) continue; // Must have at least Ensure() and one rule.
+
+            var ensureInvocation = invocationChain[0];
+            var ensureMemberAccess = ensureInvocation.Expression as MemberAccessExpressionSyntax;
+            if (ensureMemberAccess?.Name.Identifier.ValueText != "Ensure")
+            {
+                continue;
+            }
+
+            // 4. Extract the property information from the 'Ensure' call's lambda.
+            // This property applies to ALL subsequent rule calls in this chain.
+            if (ensureInvocation.ArgumentList.Arguments.FirstOrDefault()?.Expression is not SimpleLambdaExpressionSyntax lambda ||
+                lambda.Body is not MemberAccessExpressionSyntax propertyAccess)
+            {
+                continue; // Ensure() call is malformed.
+            }
+
+            NameAndTypeInfo property;
+            if (context.SemanticModel.GetSymbolInfo(propertyAccess).Symbol is IPropertySymbol propertySymbol)
+            {
+                property = new NameAndTypeInfo(
+                    propertyAccess.Name.Identifier.ValueText,
+                    propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+            }
+            else
+            {
+                // If we can't resolve the property, we can't safely process this chain.
+                // You could add a diagnostic here.
+                continue;
+            }
+
+            // 5. Now, process each *actual* rule call in the chain, skipping the initial Ensure() call.
+            foreach (var invocation in invocationChain.Skip(1))
+            {
+                // This is your existing logic for analyzing a single invocation. It works perfectly here.
+                var methodSymbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
+
+                var ruleInvocationArguments = invocation.ArgumentList.Arguments
+                    .Select(arg =>
+                    {
+                        var name = arg.Expression.ToString();
+                        var type = context.SemanticModel.GetTypeInfo(arg.Expression).Type;
+
+                        return type is not null
+                            ? new NameAndTypeInfo(name, type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))
+                            : new NameAndTypeInfo(name, "ERROR");
+                    }).ToEquatableImmutableArray();
+
+                var validationRuleGenericFormat = string.Empty;
+                var fullyQualifiedValidationRule = string.Empty;
+
+                if (methodSymbol is not null && methodSymbol.IsExtensionMethod)
+                {
+                    var attributeDisplayFormat = SymbolDisplayFormats.FormatAttributeWithoutParameters;
+                    var mapToValidationRuleAttribute = methodSymbol
+                        .GetAttributes()
+                        .FirstOrDefault(attributeData
+                            => attributeData.AttributeClass?.ToDisplayString(attributeDisplayFormat) ==
+                               FullyQualifiedNames.Attributes.MapToValidationRuleAttribute);
+
+                    if (mapToValidationRuleAttribute is not null && mapToValidationRuleAttribute.ConstructorArguments.Length >= 2)
+                    {
+                        fullyQualifiedValidationRule = (mapToValidationRuleAttribute.ConstructorArguments[0].Value as INamedTypeSymbol)
+                            ?.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) ?? string.Empty;
+                        validationRuleGenericFormat = mapToValidationRuleAttribute.ConstructorArguments[1].Value as string ?? string.Empty;
+                    }
+                }
+
+                var currentRuleMemberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
+
+                ruleInvocations.Add(new RuleInvocation(
+                    property, // Use the common property for all rules in this chain.
+                    currentRuleMemberAccess.Name.Identifier.ValueText,
+                    ruleInvocationArguments,
+                    fullyQualifiedValidationRule,
+                    validationRuleGenericFormat));
+            }
+        }
+
+        return ruleInvocations;
+    }
 
     private static bool TryGetRequestTypeName(
         ClassDeclarationSyntax classDeclarationSyntax,

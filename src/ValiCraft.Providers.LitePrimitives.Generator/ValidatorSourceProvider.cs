@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.Text;
 using ValiCraft.Generator.Shared;
 using ValiCraft.Generator.Shared.Types;
 using ValiCraft.Generator.Shared.Concepts;
-using ValiCraft.Generator.Shared.Extensions; // For MethodSignature, ParameterInfo
 using ValiCraft.Providers.LitePrimitives.Generator.Concepts;
 using ValiCraft.Rules.Generator.Shared.Concepts;
 
@@ -51,10 +50,12 @@ public static class ValidatorSourceProvider
                                  {
                                      public global::{{FullyQualifiedNames.Types.Validation}}<{{validatorInfo.RequestTypeName}}> Validate({{validatorInfo.RequestTypeName}} request)
                                      {
-                                         global::System.Collections.Generic.List<global::{{FullyQualifiedNames.Types.Error}}> errors = new(5);
+                                         global::System.Collections.Generic.List<global::{{FullyQualifiedNames.Types.Error}}>? errors = null;
                                          
                              {{validationRulesCode}}
-                                         return errors.Count > 0 ? errors : request;
+                                         return errors is not null
+                                             ? global::{{FullyQualifiedNames.Types.Validation}}<{{validatorInfo.RequestTypeName}}>.Failure(errors)
+                                             : global::{{FullyQualifiedNames.Types.Validation}}<{{validatorInfo.RequestTypeName}}>.Success(request);
                                      }
                                  }
                              }
@@ -166,8 +167,9 @@ public static class ValidatorSourceProvider
         var validationRuleInvocation = $"global::{fullyQualifiedValidationRule}{constructedRuleTypeInvocation}";
         var errorTypeName = $"global::{FullyQualifiedNames.Types.Error}";
         var validationLogic = new StringBuilder();
-        validationLogic.AppendLine($"            if ({validationRuleInvocation}.IsValid({isValidCallArgsString}))");
+        validationLogic.AppendLine($"            if (!{validationRuleInvocation}.IsValid({isValidCallArgsString}))");
         validationLogic.AppendLine("            {");
+        validationLogic.AppendLine("                errors ??= new();");
         validationLogic.AppendLine($"                errors.Add({errorTypeName}.Validation(nameof({validationRuleInvocation}), \"An error has occurred\"));");
         validationLogic.Append("            }");
     

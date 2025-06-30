@@ -21,6 +21,7 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     private CSharpCompilation? _compilation;
     private GeneratorDriver? _driver;
     private GeneratorDriverRunResult? _firstRunResult;
+    private CSharpCompilation? _finalCompilation;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GeneratorPipeline{T}"/> class.
@@ -46,7 +47,7 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     /// Step 2: Creates a C# compilation from the parsed syntax trees and configured options.
     /// Requires <see cref="ParseSources"/> to have been called.
     /// </summary>
-    private GeneratorPipeline<T> CreateCompilation()
+    private GeneratorPipeline<T> CreateInitialCompilation(bool assertInitialCompilation = false)
     {
         if (_syntaxTrees is null)
         {
@@ -58,25 +59,28 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
             _syntaxTrees,
             _options.MetadataReferences,
             _options.CompilationOptions);
-        
-        var diagnostics = _compilation
-            .GetDiagnostics()
-            .Where(x => x.Severity == DiagnosticSeverity.Error)
-            .ToList();
-        
-        diagnostics.Should().BeEmpty();
-        
+
+        if (assertInitialCompilation)
+        {
+            var diagnostics = _compilation
+                .GetDiagnostics()
+                .Where(x => x.Severity == DiagnosticSeverity.Error)
+                .ToList();
+
+            diagnostics.Should().BeEmpty();
+        }
+
         return this;
     }
 
     /// <summary>
     /// Step 3: Creates the generator driver and performs the initial generator run.
-    /// Requires <see cref="CreateCompilation"/> to have been called.
+    /// Requires <see cref="CreateInitialCompilation"/> to have been called.
     /// </summary>
-    public GeneratorPipeline<T> RunGenerator()
+    public GeneratorPipeline<T> RunGenerator(bool assertInitialCompilation = false)
     {
         ParseSources();
-        CreateCompilation();
+        CreateInitialCompilation(assertInitialCompilation);
 
         ISourceGenerator generator = new T().AsSourceGenerator();
         var opts = new GeneratorDriverOptions(
@@ -87,6 +91,16 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
         // Perform the initial run
         _driver = _driver.RunGenerators(_compilation);
         _firstRunResult = _driver.GetRunResult();
+
+        // Create a new compilation with the generated code for validation.
+        // We can expect errors in the first run, but the final compilation should be clean.
+        var allSyntaxTrees = _compilation.SyntaxTrees.Concat(_firstRunResult.GeneratedTrees);
+        _finalCompilation = CSharpCompilation.Create(
+            "FinalCompilation",
+            allSyntaxTrees,
+            _compilation.References,
+            _compilation.Options);
+
         return this;
     }
 
@@ -133,11 +147,18 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     /// <returns>A tuple containing the final diagnostics and generated output.</returns>
     public (ImmutableArray<Diagnostic> Diagnostics, string[] Output) GetResult()
     {
-        if (_firstRunResult is null)
+        if (_firstRunResult is null || _finalCompilation is null)
         {
             throw new InvalidOperationException("Cannot get the result before running the generator. Call RunGenerator() first.");
         }
-        
-        return (_firstRunResult.Diagnostics, _firstRunResult.GeneratedTrees.Select(x => x.ToString()).ToArray());
+
+        // Get diagnostics from the FINAL compilation, which should be error-free.
+        var finalDiagnostics = _finalCompilation.GetDiagnostics()
+            .Where(x => x.Severity >= DiagnosticSeverity.Error)
+            .ToImmutableArray();
+
+        var output = _firstRunResult.GeneratedTrees.Select(x => x.ToString()).ToArray();
+
+        return (finalDiagnostics, output);
     }
 }

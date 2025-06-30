@@ -1,8 +1,7 @@
-using System.Linq.Expressions;
 using AwesomeAssertions.Execution;
+using LitePrimitives;
 using ValiCraft.Abstractions;
 using ValiCraft.Generator.Shared;
-using ValiCraft.Rules;
 using ValiCraft.TestHelpers;
 
 namespace ValiCraft.Providers.LitePrimitives.Generator.Tests;
@@ -10,7 +9,384 @@ namespace ValiCraft.Providers.LitePrimitives.Generator.Tests;
 public class ValidatorGeneratorTests
 {
     [Fact]
-    public void ShouldGenerateValidator()
+    public void ShouldGenerateValidator_OnlyValidator_ChainedRules()
+    {
+       const string user = """
+                              namespace Test;
+     
+                              public class User
+                              {
+                                  public string? Name { get; set; }
+                                  public int Age { get; set; }
+                              }
+                              """;
+    
+       const string validationRulesInput = """
+                               using ValiCraft.Abstractions;
+                               using ValiCraft.Abstractions.Attributes;
+                               
+                               namespace Test.Rules;
+                               
+                               public class GenericRule1<TPropertyType, TParam1, TParam2> : IValidationRule<TPropertyType, TParam1, TParam2>
+                               {
+                                   public static bool IsValid(TPropertyType propertyType, TParam1 param1, TParam2 param2) => true;
+                               }
+                               
+                               public class GenericRule2<TPropertyType, TParam1, TParam2> : IValidationRule<TPropertyType, TParam1, TParam2>
+                               {
+                                   public static bool IsValid(TPropertyType propertyType, TParam1 param1, TParam2 param2) => true;
+                               }
+                               
+                               public static class GenericRule1Extensions
+                               {
+                                   [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                       validationRuleType: typeof(global::Test.Rules.GenericRule1<,,>),
+                                       validationRuleGenericFormat: "<{0}, {1}, {2}>")]
+                                   public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule1<TRequest, TPropertyType, TParam1, TParam2>(
+                                       this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
+                                       => throw new global::System.NotImplementedException("Never gets called");
+                               }
+                               
+                               public static class GenericRule2Extensions
+                               {
+                                   [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                       validationRuleType: typeof(global::Test.Rules.GenericRule2<,,>),
+                                       validationRuleGenericFormat: "<{0}, {1}, {2}>")]
+                                   public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule2<TRequest, TPropertyType, TParam1, TParam2>(
+                                       this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
+                                       => throw new global::System.NotImplementedException("Never gets called");
+                               }
+                               """;
+    
+       const string validatorInput = """
+                               using ValiCraft.Abstractions;
+                               using ValiCraft.Abstractions.Attributes;
+                               using Test.Rules;
+                               
+                               namespace Test;
+                               
+                               [GenerateValidator]
+                               public partial class UserValidator : Validator<User>
+                               {
+                                   protected override void DefineRules(IValidationRuleBuilder<User> builder)
+                                   {
+                                       builder.Ensure(x => x.Name)
+                                           .IsGenericRule1(1, false)
+                                           .IsGenericRule2(2, true);
+                                   }
+                               }
+                               """;
+    
+       const string validatorExpected = """
+                                    // <auto-generated />
+                                    #nullable enable
+                                    
+                                    namespace Test
+                                    {
+                                        public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                        {
+                                            public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
+                                            {
+                                                global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
+                                                
+                                                if (!global::Test.Rules.GenericRule1<string, int, bool>.IsValid(request.Name, 1, false))
+                                                {
+                                                    errors ??= new();
+                                                    errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GenericRule1<string, int, bool>), "An error has occurred"));
+                                                }
+                                                if (!global::Test.Rules.GenericRule2<string, int, bool>.IsValid(request.Name, 2, true))
+                                                {
+                                                    errors ??= new();
+                                                    errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GenericRule2<string, int, bool>), "An error has occurred"));
+                                                }
+                                    
+                                                return errors is not null
+                                                    ? global::LitePrimitives.Validation<global::Test.User>.Failure(errors)
+                                                    : global::LitePrimitives.Validation<global::Test.User>.Success(request);
+                                            }
+                                        }
+                                    }
+                                    """;
+    
+       using var assertionScope = new AssertionScope();
+    
+       var options = IncrementalGeneratorTestOptions.CreateDefault(typeof(Validator<>), typeof(IValidator<>), typeof(Validation<>));
+    
+       new IncrementalGeneratorAdapter(options)
+           .GetGeneratedTrees<ValidatorGenerator>([user, validationRulesInput, validatorInput], [TrackingSteps.ValidatorInfoResultTrackingName])
+           .AssertHasNoDiagnostics()
+           .AssertOutputs(validatorExpected);
+    }
+
+    [Fact]
+    public void ShouldGenerateValidator_MultipleGenericParameters_OnlyValidator_SingleRule()
+    {
+        const string user = """
+                             namespace Test;
+    
+                             public class User
+                             {
+                                 public string? Name { get; set; }
+                                 public int Age { get; set; }
+                             }
+                             """;
+    
+        const string validationRulesInput = """
+                              using ValiCraft.Abstractions;
+                              using ValiCraft.Abstractions.Attributes;
+                              
+                              namespace Test.Rules;
+                              
+                              public class GenericRule<TPropertyType, TParam1, TParam2> : IValidationRule<TPropertyType, TParam1, TParam2>
+                              {
+                                  public static bool IsValid(TPropertyType propertyType, TParam1 param1, TParam2 param2) => true;
+                              }
+                              
+                              public static class GenericRuleExtensions
+                              {
+                                  [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                      validationRuleType: typeof(global::Test.Rules.GenericRule<,,>),
+                                      validationRuleGenericFormat: "<{0}, {1}, {2}>")]
+                                  public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
+                                      this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
+                                      => throw new global::System.NotImplementedException("Never gets called");
+                              }
+                              """;
+    
+        const string validatorInput = """
+                              using ValiCraft.Abstractions;
+                              using ValiCraft.Abstractions.Attributes;
+                              using Test.Rules;
+                              
+                              namespace Test;
+                              
+                              [GenerateValidator]
+                              public partial class UserValidator : Validator<User>
+                              {
+                                  protected override void DefineRules(IValidationRuleBuilder<User> builder)
+                                  {
+                                      builder.Ensure(x => x.Name)
+                                          .IsGenericRule(1, false);
+                                  }
+                              }
+                              """;
+    
+        const string validatorExpected = """
+                                   // <auto-generated />
+                                   #nullable enable
+                                   
+                                   namespace Test
+                                   {
+                                       public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                       {
+                                           public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
+                                           {
+                                               global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
+                                               
+                                               if (!global::Test.Rules.GenericRule<string, int, bool>.IsValid(request.Name, 1, false))
+                                               {
+                                                   errors ??= new();
+                                                   errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GenericRule<string, int, bool>), "An error has occurred"));
+                                               }
+                                   
+                                               return errors is not null
+                                                   ? global::LitePrimitives.Validation<global::Test.User>.Failure(errors)
+                                                   : global::LitePrimitives.Validation<global::Test.User>.Success(request);
+                                           }
+                                       }
+                                   }
+                                   """;
+    
+        using var assertionScope = new AssertionScope();
+    
+        var options = IncrementalGeneratorTestOptions.CreateDefault(typeof(Validator<>), typeof(IValidator<>), typeof(Validation<>));
+    
+        new IncrementalGeneratorAdapter(options)
+            .GetGeneratedTrees<ValidatorGenerator>([user, validationRulesInput, validatorInput], [TrackingSteps.ValidatorInfoResultTrackingName])
+            .AssertHasNoDiagnostics()
+            .AssertOutputs(validatorExpected);
+    }
+    
+    [Fact]
+    public void ShouldGenerateValidator_SingleGenericParameter_OnlyValidator_SingleRule()
+    {
+        const string user = """
+                             namespace Test;
+    
+                             public class User
+                             {
+                                 public string? Name { get; set; }
+                                 public int Age { get; set; }
+                             }
+                             """;
+    
+        const string validationRulesInput = """
+                              using ValiCraft.Abstractions;
+                              using ValiCraft.Abstractions.Attributes;
+                              
+                              namespace Test.Rules;
+                              
+                              public class GenericRule<T> : IValidationRule<T?>
+                              {
+                                  public static bool IsValid(T? value) => true;
+                              }
+    
+                              public static class GenericRuleExtensions
+                              {
+                                  [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                      validationRuleType: typeof(global::Test.Rules.GenericRule<>),
+                                      validationRuleGenericFormat: "<{0}>")]
+                                  public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
+                                      this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+                                      => throw new global::System.NotImplementedException("Never gets called");
+                              }
+                              """;
+    
+        const string validatorInput = """
+                              using ValiCraft.Abstractions;
+                              using ValiCraft.Abstractions.Attributes;
+                              using Test.Rules;
+                              
+                              namespace Test;
+                              
+                              [GenerateValidator]
+                              public partial class UserValidator : Validator<User>
+                              {
+                                  protected override void DefineRules(IValidationRuleBuilder<User> builder)
+                                  {
+                                      builder.Ensure(x => x.Name)
+                                          .IsGenericRule();
+                                  }
+                              }
+                              """;
+    
+        const string validatorExpected = """
+                                   // <auto-generated />
+                                   #nullable enable
+                                   
+                                   namespace Test
+                                   {
+                                       public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                       {
+                                           public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
+                                           {
+                                               global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
+                                               
+                                               if (!global::Test.Rules.GenericRule<string>.IsValid(request.Name))
+                                               {
+                                                   errors ??= new();
+                                                   errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GenericRule<string>), "An error has occurred"));
+                                               }
+                                   
+                                               return errors is not null
+                                                   ? global::LitePrimitives.Validation<global::Test.User>.Failure(errors)
+                                                   : global::LitePrimitives.Validation<global::Test.User>.Success(request);
+                                           }
+                                       }
+                                   }
+                                   """;
+    
+        using var assertionScope = new AssertionScope();
+    
+        var options = IncrementalGeneratorTestOptions.CreateDefault(typeof(Validator<>), typeof(IValidator<>), typeof(Validation<>));
+    
+        new IncrementalGeneratorAdapter(options)
+            .GetGeneratedTrees<ValidatorGenerator>([user, validationRulesInput, validatorInput], [TrackingSteps.ValidatorInfoResultTrackingName])
+            .AssertHasNoDiagnostics()
+            .AssertOutputs(validatorExpected);
+    }
+    
+    [Fact]
+    public void ShouldGenerateValidator_NoGenericParameters_OnlyValidator_SingleRule()
+    {
+        const string user = """
+                             namespace Test;
+    
+                             public class User
+                             {
+                                 public string? Name { get; set; }
+                                 public int Age { get; set; }
+                             }
+                             """;
+    
+        const string validationRulesInput = """
+                              using ValiCraft.Abstractions;
+                              using ValiCraft.Abstractions.Attributes;
+                              
+                              namespace Test.Rules;
+                              
+                              public class GenericRule : IValidationRule<string?, string?>
+                              {
+                                  public static bool IsValid(string? value, string? parameter) => true;
+                              }
+    
+                              public static class GenericRuleExtensions
+                              {
+                                  [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                      validationRuleType: typeof(global::Test.Rules.GenericRule),
+                                      validationRuleGenericFormat: "")]
+                                  public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
+                                      this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
+                                      => throw new global::System.NotImplementedException("Never gets called");
+                              }
+                              """;
+    
+        const string validatorInput = """
+                              using ValiCraft.Abstractions;
+                              using ValiCraft.Abstractions.Attributes;
+                              using Test.Rules;
+                              
+                              namespace Test;
+                              
+                              [GenerateValidator]
+                              public partial class UserValidator : Validator<User>
+                              {
+                                  protected override void DefineRules(IValidationRuleBuilder<User> builder)
+                                  {
+                                      builder.Ensure(x => x.Name)
+                                          .IsGenericRule("Test");
+                                  }
+                              }
+                              """;
+    
+        const string validatorExpected = """
+                                   // <auto-generated />
+                                   #nullable enable
+                                   
+                                   namespace Test
+                                   {
+                                       public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                       {
+                                           public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
+                                           {
+                                               global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
+                                               
+                                               if (!global::Test.Rules.GenericRule.IsValid(request.Name, "Test"))
+                                               {
+                                                   errors ??= new();
+                                                   errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GenericRule), "An error has occurred"));
+                                               }
+                                   
+                                               return errors is not null
+                                                   ? global::LitePrimitives.Validation<global::Test.User>.Failure(errors)
+                                                   : global::LitePrimitives.Validation<global::Test.User>.Success(request);
+                                           }
+                                       }
+                                   }
+                                   """;
+    
+        using var assertionScope = new AssertionScope();
+    
+        var options = IncrementalGeneratorTestOptions.CreateDefault(typeof(Validator<>), typeof(IValidator<>), typeof(Validation<>));
+    
+        new IncrementalGeneratorAdapter(options)
+            .GetGeneratedTrees<ValidatorGenerator>([user, validationRulesInput, validatorInput], [TrackingSteps.ValidatorInfoResultTrackingName])
+            .AssertHasNoDiagnostics()
+            .AssertOutputs(validatorExpected);
+    }
+
+    [Fact]
+    public void ShouldGenerateValidator_MultipleGenericParameters_Both_SingleRule()
     {
         const string user = """
                             namespace Test;
@@ -34,11 +410,10 @@ public class ValidatorGeneratorTests
                                  public static bool IsValid(TPropertyType propertyType, TParam1 param1, TParam2 param2) => true;
                              }
                              """;
-        
-        const string validatiorInput = """
+
+        const string validatorInput = """
                              using ValiCraft.Abstractions;
                              using ValiCraft.Abstractions.Attributes;
-                             using ValiCraft.Rules;
                              using Test.Rules;
                              
                              namespace Test;
@@ -62,7 +437,9 @@ public class ValidatorGeneratorTests
                                   {
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule<,,>))]
+                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                              validationRuleType: typeof(global::Test.Rules.GenericRule<,,>),
+                                              validationRuleGenericFormat: "<{0}, {1}, {2}>")]
                                           public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
                                               this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -80,16 +457,15 @@ public class ValidatorGeneratorTests
                                       {
                                           public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
                                           {
-                                              global::System.Collections.Generic.List<global::LitePrimitives.Error> errors = new(5);
+                                              global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
                                               
-                                              if (global::Test.Rules.GenericRule<string, int, bool>.IsValid(request.Name, 1, false))
+                                              if (!global::Test.Rules.GenericRule<string, int, bool>.IsValid(request.Name, 1, false))
                                               {
-                                                  global::LitePrimitives.Error error = global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GenericRule<string, int, bool>), "An error has occurred");
-                                                  errors.Add(error);
+                                                  errors ??= new();
+                                                  errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GenericRule<string, int, bool>), "An error has occurred"));
                                               }
-
-
-                                              return errors.Count > 0
+                                  
+                                              return errors is not null
                                                   ? global::LitePrimitives.Validation<global::Test.User>.Failure(errors)
                                                   : global::LitePrimitives.Validation<global::Test.User>.Success(request);
                                           }
@@ -98,22 +474,17 @@ public class ValidatorGeneratorTests
                                   """;
 
         using var assertionScope = new AssertionScope();
-        
-        var options = IncrementalGeneratorTestOptions.CreateDefault(
-            typeof(Validator<>),
-            typeof(IValidator<>),
-            typeof(NotNull<>),
-            typeof(Expression<>));
-        
+
+        var options = IncrementalGeneratorTestOptions.CreateDefault(typeof(Validator<>), typeof(IValidator<>), typeof(Validation<>));
+
         new IncrementalGeneratorAdapter(options)
-            .GetGeneratedTrees<ValidatorGenerator>([user, validationRulesInput, validatiorInput], [TrackingSteps.ValidatorInfoResultTrackingName])
+            .GetGeneratedTrees<ValidatorGenerator>([user, validationRulesInput, validatorInput], [TrackingSteps.ValidatorInfoResultTrackingName])
             .AssertHasNoDiagnostics()
             .AssertOutputs(validationRulesExpected, validatorExpected);
     }
-    
-    
+
     [Fact]
-    public void ShouldGenerateValidatorForSingleGeneric()
+    public void ShouldGenerateValidator_SingleGenericParameter_Both_SingleRule()
     {
         const string user = """
                             namespace Test;
@@ -137,11 +508,10 @@ public class ValidatorGeneratorTests
                                  public static bool IsValid(T? value) => true;
                              }
                              """;
-        
-        const string validatiorInput = """
+
+        const string validatorInput = """
                              using ValiCraft.Abstractions;
                              using ValiCraft.Abstractions.Attributes;
-                             using ValiCraft.Rules;
                              using Test.Rules;
                              
                              namespace Test;
@@ -165,7 +535,9 @@ public class ValidatorGeneratorTests
                                   {
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule<>))]
+                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                              validationRuleType: typeof(global::Test.Rules.GenericRule<>),
+                                              validationRuleGenericFormat: "<{0}>")]
                                           public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                               this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -183,16 +555,15 @@ public class ValidatorGeneratorTests
                                       {
                                           public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
                                           {
-                                              global::System.Collections.Generic.List<global::LitePrimitives.Error> errors = new(5);
+                                              global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
                                               
-                                              if (global::Test.Rules.GenericRule<string>.IsValid(request.Name))
+                                              if (!global::Test.Rules.GenericRule<string>.IsValid(request.Name))
                                               {
-                                                  global::LitePrimitives.Error error = global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GenericRule<string>), "An error has occurred");
-                                                  errors.Add(error);
+                                                  errors ??= new();
+                                                  errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GenericRule<string>), "An error has occurred"));
                                               }
-
-
-                                              return errors.Count > 0
+                                  
+                                              return errors is not null
                                                   ? global::LitePrimitives.Validation<global::Test.User>.Failure(errors)
                                                   : global::LitePrimitives.Validation<global::Test.User>.Success(request);
                                           }
@@ -201,16 +572,110 @@ public class ValidatorGeneratorTests
                                   """;
 
         using var assertionScope = new AssertionScope();
-        
-        var options = IncrementalGeneratorTestOptions.CreateDefault(
-            typeof(Validator<>),
-            typeof(IValidator<>),
-            typeof(NotNull<>),
-            typeof(Expression<>));
-        
+
+        var options = IncrementalGeneratorTestOptions.CreateDefault(typeof(Validator<>), typeof(IValidator<>), typeof(Validation<>));
+
         new IncrementalGeneratorAdapter(options)
-            .GetGeneratedTrees<ValidatorGenerator>([user, validationRulesInput, validatiorInput], [TrackingSteps.ValidatorInfoResultTrackingName])
+            .GetGeneratedTrees<ValidatorGenerator>([user, validationRulesInput, validatorInput], [TrackingSteps.ValidatorInfoResultTrackingName])
             .AssertHasNoDiagnostics()
             .AssertOutputs(validationRulesExpected, validatorExpected);
+    }
+
+    [Fact]
+    public void ShouldGenerateValidator_NoGenericParameters_Both_SingleRule()
+    {
+        const string user = """
+                            namespace Test;
+
+                            public class User
+                            {
+                                public string? Name { get; set; }
+                                public int Age { get; set; }
+                            }
+                            """;
+
+        const string validationRulesInput = """
+                             using ValiCraft.Abstractions;
+                             using ValiCraft.Abstractions.Attributes;
+                             
+                             namespace Test.Rules;
+                             
+                             [GenerateRuleExtension("IsGenericRule")]
+                             public class GenericRule : IValidationRule<string?, string?>
+                             {
+                                 public static bool IsValid(string? value, string? parameter) => true;
+                             }
+                             """;
+
+        const string validatorInput = """
+                             using ValiCraft.Abstractions;
+                             using ValiCraft.Abstractions.Attributes;
+                             using Test.Rules;
+                             
+                             namespace Test;
+                             
+                             [GenerateValidator]
+                             public partial class UserValidator : Validator<User>
+                             {
+                                 protected override void DefineRules(IValidationRuleBuilder<User> builder)
+                                 {
+                                     builder.Ensure(x => x.Name)
+                                         .IsGenericRule("Test");
+                                 }
+                             }
+                             """;
+
+        const string validationRulesExpected = """
+                                  // <auto-generated />
+                                  #nullable enable
+                                  
+                                  namespace Test.Rules
+                                  {
+                                      public static class GenericRuleExtensions
+                                      {
+                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
+                                              validationRuleType: typeof(global::Test.Rules.GenericRule),
+                                              validationRuleGenericFormat: "")]
+                                          public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
+                                              this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
+                                              => throw new global::System.NotImplementedException("Never gets called");
+                                      }
+                                  }
+                                  """;
+
+        const string validatorExpected = """
+                                  // <auto-generated />
+                                  #nullable enable
+                                  
+                                  namespace Test
+                                  {
+                                      public partial class UserValidator : global::ValiCraft.Providers.LitePrimitives.IValidator<global::Test.User>
+                                      {
+                                          public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
+                                          {
+                                              global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
+                                              
+                                              if (!global::Test.Rules.GenericRule.IsValid(request.Name, "Test"))
+                                              {
+                                                  errors ??= new();
+                                                  errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GenericRule), "An error has occurred"));
+                                              }
+                                  
+                                              return errors is not null
+                                                  ? global::LitePrimitives.Validation<global::Test.User>.Failure(errors)
+                                                  : global::LitePrimitives.Validation<global::Test.User>.Success(request);
+                                          }
+                                      }
+                                  }
+                                  """;
+
+        using var assertionScope = new AssertionScope();
+
+        var options = IncrementalGeneratorTestOptions.CreateDefault(typeof(Validator<>), typeof(IValidator<>), typeof(Validation<>));
+
+        new IncrementalGeneratorAdapter(options)
+           .GetGeneratedTrees<ValidatorGenerator>([user, validationRulesInput, validatorInput], [TrackingSteps.ValidatorInfoResultTrackingName])
+           .AssertHasNoDiagnostics()
+           .AssertOutputs(validationRulesExpected, validatorExpected);
     }
 }

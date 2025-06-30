@@ -30,7 +30,7 @@ public record GenericParameterToMethodParameter
         {
             var methodParameter = methodSignature.Parameters[index];
             
-            if (methodParameter.TypeIsGeneric && TypeComparisonUtils.AreEquivalent(methodParameter.TypeName,genericParameter.Name))
+            if (methodParameter.TypeIsGeneric && TypeComparisonUtils.AreEquivalent(methodParameter.TypeName, genericParameter.Name))
             {
                 indexes.Add(index);
             }

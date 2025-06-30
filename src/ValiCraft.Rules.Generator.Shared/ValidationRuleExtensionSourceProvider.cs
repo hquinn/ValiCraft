@@ -1,10 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Text;
 using ValiCraft.Generator.Shared;
-using ValiCraft.Generator.Shared.Concepts;
 using ValiCraft.Generator.Shared.Types;
 using ValiCraft.Rules.Generator.Shared.Concepts;
 
