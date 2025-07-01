@@ -12,9 +12,4 @@
        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\ValiCraft.Generator.Shared\ValiCraft.Generator.Shared.csproj" OutputItemType="Analyzer" PrivateAssets="all" />
-      <ProjectReference Include="..\ValiCraft.Rules.Generator.Shared\ValiCraft.Rules.Generator.Shared.csproj" OutputItemType="Analyzer" PrivateAssets="all" />
-    </ItemGroup>
-
 </Project>

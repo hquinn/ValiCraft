@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="LitePrimitives" Version="3.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ValiCraft.Abstractions\ValiCraft.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>

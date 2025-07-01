@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace ValiCraft.TestHelpers;
 
 /// <summary>
-/// Provides configuration options for the <see cref="IncrementalGeneratorAdapter"/>.
+/// Provides configuration options for the <see cref="IncrementalGeneratorAdapter{TGenerator}"/>.
 /// </summary>
 public class IncrementalGeneratorTestOptions
 {
@@ -18,13 +18,13 @@ public class IncrementalGeneratorTestOptions
     /// Gets or sets the C# compilation options.
     /// Defaults to a standard DLL output kind.
     /// </summary>
-    public required CSharpCompilationOptions CompilationOptions { get; set; }
+    public CSharpCompilationOptions CompilationOptions { get; set; }
 
     /// <summary>
     /// Gets or sets the list of metadata references to be included in the test compilation.
     /// This should include your generator's dependencies and any other required assemblies.
     /// </summary>
-    public required List<MetadataReference> MetadataReferences { get; set; }
+    public List<MetadataReference> MetadataReferences { get; set; }
 
     /// <summary>
     /// Gets or sets a list of types that are "banned" from appearing in the output of
@@ -32,7 +32,7 @@ public class IncrementalGeneratorTestOptions
     /// traversed to ensure it doesn't contain instances of these types.
     /// Defaults to Roslyn's Compilation, ISymbol, and SyntaxNode.
     /// </summary>
-    public required List<Type> BannedTypesForAnalysis { get; set; }
+    public List<Type> BannedTypesForAnalysis { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to perform a second generator run
@@ -48,6 +48,9 @@ public class IncrementalGeneratorTestOptions
     /// <returns>A new <see cref="IncrementalGeneratorTestOptions"/> instance with default values.</returns>
     public static IncrementalGeneratorTestOptions CreateDefault(params Type[] additionalMetadataReferenceTypes)
     {
+        // The path to the .NET assemblies
+        var dotNetAssemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
+
         var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
         var references = new List<MetadataReference>();

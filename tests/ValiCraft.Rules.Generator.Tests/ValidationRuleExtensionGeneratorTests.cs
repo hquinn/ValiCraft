@@ -1,5 +1,5 @@
 ﻿using AwesomeAssertions.Execution;
-using ValiCraft;
+using ValiCraft.Abstractions;
 using ValiCraft.Generator.Shared;
 using ValiCraft.TestHelpers;
 
@@ -11,8 +11,8 @@ public class ValidationRuleExtensionGeneratorTests
     public void ShouldGenerateValidationRuleExtensions()
     {
         const string input = """
-                             using ValiCraft;
-                             using ValiCraft.Attributes;
+                             using ValiCraft.Abstractions;
+                             using ValiCraft.Abstractions.Attributes;
                              
                              namespace Test;
                              
@@ -31,11 +31,11 @@ public class ValidationRuleExtensionGeneratorTests
                                   {
                                       public static class NotNullOrEmptyRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
+                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
                                               validationRuleType: typeof(global::Test.NotNullOrEmptyRule),
                                               validationRuleGenericFormat: "")]
-                                          public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsNotNullOrEmpty<TRequest, TPropertyType>(
-                                              this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+                                          public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsNotNullOrEmpty<TRequest, TPropertyType>(
+                                              this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
                                       }
                                   }
@@ -55,15 +55,13 @@ public class ValidationRuleExtensionGeneratorTests
     public void ShouldGenerateValidationRuleExtensionsForGenerics()
     {
         const string input = """
-                             using ValiCraft;
-                             using ValiCraft.Attributes;
-                             using System.Numerics;
+                             using ValiCraft.Abstractions;
+                             using ValiCraft.Abstractions.Attributes;
                              
                              namespace Test;
                              
                              [GenerateRuleExtension("IsGenericRule")]
                              public class GenericRule<TPropertyType, TParam1, TParam2> : IValidationRule<TPropertyType, TParam1, TParam2>
-                                 where TParam1 : INumber<TParam1>
                              {
                                  public static bool IsValid(TPropertyType propertyType, TParam1 param1, TParam2 param2) => true;
                              }
@@ -77,11 +75,11 @@ public class ValidationRuleExtensionGeneratorTests
                                   {
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
+                                          [global::ValiCraft.Abstractions.Attributes.MapToValidationRule(
                                               validationRuleType: typeof(global::Test.GenericRule<,,>),
                                               validationRuleGenericFormat: "<{0}, {1}, {2}>")]
-                                          public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
-                                              this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class where TParam1 : global::System.Numerics.INumber<TParam1>
+                                          public static global::ValiCraft.Abstractions.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
+                                              this global::ValiCraft.Abstractions.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
                                       }
                                   }

@@ -88,21 +88,18 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
             trackIncrementalGeneratorSteps: true);
         _driver = CSharpGeneratorDriver.Create([generator], driverOptions: opts);
 
-        if (_compilation is not null)
-        {
-            // Perform the initial run
-            _driver = _driver.RunGenerators(_compilation);
-            _firstRunResult = _driver.GetRunResult();
+        // Perform the initial run
+        _driver = _driver.RunGenerators(_compilation);
+        _firstRunResult = _driver.GetRunResult();
 
-            // Create a new compilation with the generated code for validation.
-            // We can expect errors in the first run, but the final compilation should be clean.
-            var allSyntaxTrees = _compilation.SyntaxTrees.Concat(_firstRunResult.GeneratedTrees);
-            _finalCompilation = CSharpCompilation.Create(
-                "FinalCompilation",
-                allSyntaxTrees,
-                _compilation.References,
-                _compilation.Options);
-        }
+        // Create a new compilation with the generated code for validation.
+        // We can expect errors in the first run, but the final compilation should be clean.
+        var allSyntaxTrees = _compilation.SyntaxTrees.Concat(_firstRunResult.GeneratedTrees);
+        _finalCompilation = CSharpCompilation.Create(
+            "FinalCompilation",
+            allSyntaxTrees,
+            _compilation.References,
+            _compilation.Options);
 
         return this;
     }

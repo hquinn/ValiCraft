@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36221.1
@@ -12,18 +11,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Generator", "src\ValiCraft.Generator\ValiCraft.Generator.csproj", "{367DDF48-618C-4636-B21A-A9A57CCC6EAF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Generator.Tests", "tests\ValiCraft.Generator.Tests\ValiCraft.Generator.Tests.csproj", "{68FDB4A2-A7F9-4BAE-B465-B2258D7AF827}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Rules.Generator", "src\ValiCraft.Rules.Generator\ValiCraft.Rules.Generator.csproj", "{5A9788FB-FCD4-42E7-92F9-6DF449D5D4B0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Rules", "src\ValiCraft.Rules\ValiCraft.Rules.csproj", "{A0EA967C-9FC7-4A28-9A93-78379ACD06D1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Rules.Generator.Tests", "tests\ValiCraft.Rules.Generator.Tests\ValiCraft.Rules.Generator.Tests.csproj", "{69AAE6A7-C3F3-449D-94B3-8512C706A29F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.TestHelpers", "tests\ValiCraft.TestHelpers\ValiCraft.TestHelpers.csproj", "{E26E205E-5DD8-401E-9D1F-6717AD8A3411}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Generator.Shared", "src\ValiCraft.Generator.Shared\ValiCraft.Generator.Shared.csproj", "{EDC8D277-3DD3-4BFD-AC39-D325950B63C2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Rules.Generator.Shared", "src\ValiCraft.Rules.Generator.Shared\ValiCraft.Rules.Generator.Shared.csproj", "{982F7574-0D7B-49D6-B4F2-4D5DE638BB34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,30 +30,6 @@ Global
 		{68FDB4A2-A7F9-4BAE-B465-B2258D7AF827}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68FDB4A2-A7F9-4BAE-B465-B2258D7AF827}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68FDB4A2-A7F9-4BAE-B465-B2258D7AF827}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A9788FB-FCD4-42E7-92F9-6DF449D5D4B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A9788FB-FCD4-42E7-92F9-6DF449D5D4B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A9788FB-FCD4-42E7-92F9-6DF449D5D4B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A9788FB-FCD4-42E7-92F9-6DF449D5D4B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A0EA967C-9FC7-4A28-9A93-78379ACD06D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A0EA967C-9FC7-4A28-9A93-78379ACD06D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A0EA967C-9FC7-4A28-9A93-78379ACD06D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A0EA967C-9FC7-4A28-9A93-78379ACD06D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69AAE6A7-C3F3-449D-94B3-8512C706A29F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69AAE6A7-C3F3-449D-94B3-8512C706A29F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69AAE6A7-C3F3-449D-94B3-8512C706A29F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69AAE6A7-C3F3-449D-94B3-8512C706A29F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E26E205E-5DD8-401E-9D1F-6717AD8A3411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E26E205E-5DD8-401E-9D1F-6717AD8A3411}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E26E205E-5DD8-401E-9D1F-6717AD8A3411}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E26E205E-5DD8-401E-9D1F-6717AD8A3411}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EDC8D277-3DD3-4BFD-AC39-D325950B63C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EDC8D277-3DD3-4BFD-AC39-D325950B63C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EDC8D277-3DD3-4BFD-AC39-D325950B63C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EDC8D277-3DD3-4BFD-AC39-D325950B63C2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{982F7574-0D7B-49D6-B4F2-4D5DE638BB34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{982F7574-0D7B-49D6-B4F2-4D5DE638BB34}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{982F7574-0D7B-49D6-B4F2-4D5DE638BB34}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{982F7574-0D7B-49D6-B4F2-4D5DE638BB34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,12 +38,6 @@ Global
 		{B07448C2-4ED1-42DB-BA45-4B9F105E63EB} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
 		{367DDF48-618C-4636-B21A-A9A57CCC6EAF} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
 		{68FDB4A2-A7F9-4BAE-B465-B2258D7AF827} = {5FD7965E-4840-4EE2-A6B9-7A75431A2FF1}
-		{5A9788FB-FCD4-42E7-92F9-6DF449D5D4B0} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
-		{A0EA967C-9FC7-4A28-9A93-78379ACD06D1} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
-		{69AAE6A7-C3F3-449D-94B3-8512C706A29F} = {5FD7965E-4840-4EE2-A6B9-7A75431A2FF1}
-		{E26E205E-5DD8-401E-9D1F-6717AD8A3411} = {5FD7965E-4840-4EE2-A6B9-7A75431A2FF1}
-		{EDC8D277-3DD3-4BFD-AC39-D325950B63C2} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
-		{982F7574-0D7B-49D6-B4F2-4D5DE638BB34} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9067EB3C-FC28-40ED-B943-6720270A63E3}

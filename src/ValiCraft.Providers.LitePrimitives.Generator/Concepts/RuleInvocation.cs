@@ -1,7 +1,7 @@
 using ValiCraft.Generator.Shared.Concepts;
 using ValiCraft.Generator.Shared.Types;
 
-namespace ValiCraft.Generator.Concepts;
+namespace ValiCraft.Providers.LitePrimitives.Generator.Concepts;
 
 public record RuleInvocation(
     NameAndTypeInfo Property,

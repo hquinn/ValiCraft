@@ -7,10 +7,10 @@ using Microsoft.CodeAnalysis.Text;
 using ValiCraft.Generator.Shared;
 using ValiCraft.Generator.Shared.Types;
 using ValiCraft.Generator.Shared.Concepts;
-using ValiCraft.Generator.Concepts;
+using ValiCraft.Providers.LitePrimitives.Generator.Concepts;
 using ValiCraft.Rules.Generator.Shared.Concepts;
 
-namespace ValiCraft.Generator;
+namespace ValiCraft.Providers.LitePrimitives.Generator;
 
 public static class ValidatorSourceProvider
 {

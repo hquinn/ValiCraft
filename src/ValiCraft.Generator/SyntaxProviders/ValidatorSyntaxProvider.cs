@@ -1,0 +1,266 @@
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Microsoft.CodeAnalysis.CSharp;
+using ValiCraft.Generator.Models;
+using ValiCraft.Generator.Extensions;
+using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.Types;
+using ValiCraft.Generator.Utils;
+
+namespace ValiCraft.Generator.SyntaxProviders;
+
+public static class ValidatorInfoProvider
+{
+    public static bool Predicate(SyntaxNode node, CancellationToken cancellationToken)
+    {
+        return node is ClassDeclarationSyntax;
+    }
+
+    public static ProviderResult<ValidatorInfo> Transform(
+        GeneratorAttributeSyntaxContext context,
+        CancellationToken cancellationToken)
+    {
+        var diagnostics = new List<Diagnostic>();
+
+        if (!context.TryGetClassNodeAndSymbol(diagnostics, out var classDeclarationSyntax, out var classSymbol))
+        {
+            return new ProviderResult<ValidatorInfo>(diagnostics);
+        }
+        
+        bool succeeded = TryCheckPartialKeyword(classDeclarationSyntax!, diagnostics);
+        succeeded &= TryGetRequestTypeName(classDeclarationSyntax!, classSymbol!, diagnostics, out var requestTypeName);
+
+        if (!succeeded)
+        {
+            return new ProviderResult<ValidatorInfo>(diagnostics);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var invocations = DiscoverRuleInvocations(context, classDeclarationSyntax!);
+        var classInfo = new ClassInfo(classDeclarationSyntax!, classSymbol!, null);
+        
+        var validatorInfo = new ValidatorInfo(
+            classInfo,
+            requestTypeName!,
+            invocations.ToEquatableImmutableArray());
+
+        return new ProviderResult<ValidatorInfo>(validatorInfo, diagnostics);
+    }
+
+    private static List<RuleInvocation> DiscoverRuleInvocations(
+        GeneratorAttributeSyntaxContext context,
+        ClassDeclarationSyntax classDeclarationSyntax)
+    {
+        var ruleInvocations = new List<RuleInvocation>();
+
+        var defineRulesMethod = classDeclarationSyntax.Members
+            .OfType<MethodDeclarationSyntax>()
+            .FirstOrDefault(method => method.Identifier.ValueText == "DefineRules");
+
+        if (defineRulesMethod?.Body is null)
+        {
+            return ruleInvocations;
+        }
+
+        // 1. Instead of looping over all invocations, we loop over each statement in the method.
+        // This allows us to treat each fluent chain as a single unit.
+        foreach (var statement in defineRulesMethod.Body.Statements.OfType<ExpressionStatementSyntax>())
+        {
+            // A valid chain must end with a method call.
+            if (statement.Expression is not InvocationExpressionSyntax outermostInvocation)
+            {
+                continue;
+            }
+
+            // 2. "Walk the chain" backwards from the outermost call (e.g., .IsGenericRule2)
+            // to the innermost call (e.g., .Ensure) to collect all parts of the chain.
+            var invocationChain = new List<InvocationExpressionSyntax>();
+            var currentExpression = (ExpressionSyntax)outermostInvocation;
+
+            while (currentExpression is InvocationExpressionSyntax currentInvocation)
+            {
+                invocationChain.Add(currentInvocation);
+                if (currentInvocation.Expression is MemberAccessExpressionSyntax memberAccess)
+                {
+                    currentExpression = memberAccess.Expression;
+                }
+                else
+                {
+                    break; // We've reached the start of the chain (the 'builder' identifier).
+                }
+            }
+
+            // The collected chain is backwards, so we reverse it to get the correct execution order.
+            invocationChain.Reverse();
+
+            // 3. A valid chain must start with an 'Ensure(...)' call.
+            if (invocationChain.Count < 2) continue; // Must have at least Ensure() and one rule.
+
+            var ensureInvocation = invocationChain[0];
+            var ensureMemberAccess = ensureInvocation.Expression as MemberAccessExpressionSyntax;
+            if (ensureMemberAccess?.Name.Identifier.ValueText != "Ensure")
+            {
+                continue;
+            }
+
+            // 4. Extract the property information from the 'Ensure' call's lambda.
+            // This property applies to ALL subsequent rule calls in this chain.
+            if (ensureInvocation.ArgumentList.Arguments.FirstOrDefault()?.Expression is not SimpleLambdaExpressionSyntax lambda ||
+                lambda.Body is not MemberAccessExpressionSyntax propertyAccess)
+            {
+                continue; // Ensure() call is malformed.
+            }
+
+            NameAndTypeInfo property;
+            if (ModelExtensions.GetSymbolInfo(context.SemanticModel, propertyAccess).Symbol is IPropertySymbol propertySymbol)
+            {
+                property = new NameAndTypeInfo(
+                    propertyAccess.Name.Identifier.ValueText,
+                    propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+            }
+            else
+            {
+                // If we can't resolve the property, we can't safely process this chain.
+                // You could add a diagnostic here.
+                continue;
+            }
+
+            RuleInvocationBuilder? currentRuleBuilder = null;
+            
+            // 5. Now, process each *actual* rule call in the chain, skipping the initial Ensure() call.
+            foreach (var invocation in invocationChain.Skip(1))
+            {
+                var memberName = ((MemberAccessExpressionSyntax)invocation.Expression).Name.Identifier.ValueText;
+                var argumentExpression = invocation.ArgumentList.Arguments.FirstOrDefault()?.Expression;
+
+                switch (memberName)
+                {
+                    case "WithMessage":
+                        if (argumentExpression is not null)
+                        {
+                            currentRuleBuilder?.WithMessage(CreateMessageInfo(argumentExpression));
+                        }
+
+                        continue; 
+                    case "WithErrorCode":
+                        if (argumentExpression is not null)
+                        {
+                            currentRuleBuilder?.WithErrorCode(CreateMessageInfo(argumentExpression));
+                        }
+
+                        continue;
+                    case "WithPropertyName":
+                        if (argumentExpression is not null)
+                        {
+                            currentRuleBuilder?.WithPropertyName(CreateMessageInfo(argumentExpression));
+                        }
+
+                        continue;
+                }
+                
+                // If it's not a modifier, it must be a new rule.
+            
+                // 1. If we were building a previous rule, finalize it and add it to the list.
+                if (currentRuleBuilder is not null)
+                {
+                    ruleInvocations.Add(currentRuleBuilder.Build());
+                }
+                
+                // 2. Start building the new rule.
+                var ruleInvocationArguments = GetArguments(invocation, context.SemanticModel);
+                var methodSymbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
+                MapToValidationRuleData? mapToValidationRuleData = null;
+                if (methodSymbol is not null)
+                {
+                    var attributeDisplayFormat = SymbolDisplayFormats.FormatAttributeWithoutParameters;
+                    var mapToValidationRuleAttribute = methodSymbol
+                        .GetAttributes()
+                        .FirstOrDefault(attributeData
+                            => attributeData.AttributeClass?.ToDisplayString(attributeDisplayFormat) ==
+                               FullyQualifiedNames.Attributes.MapToValidationRuleAttribute);
+                    
+                    if (mapToValidationRuleAttribute is not null)
+                    {
+                        mapToValidationRuleData = new MapToValidationRuleData(mapToValidationRuleAttribute);
+                    }
+                }
+                
+                currentRuleBuilder = new RuleInvocationBuilder(property, memberName, ruleInvocationArguments, mapToValidationRuleData);
+            }
+            
+            // 3. After the loop, add the very last rule that was being built.
+            if (currentRuleBuilder is not null)
+            {
+                ruleInvocations.Add(currentRuleBuilder.Build());
+            }
+        }
+
+        return ruleInvocations;
+    }
+    
+    
+    private static MessageInfo CreateMessageInfo(ExpressionSyntax expression)
+    {
+        if (expression is LiteralExpressionSyntax literal && 
+            literal.IsKind(SyntaxKind.StringLiteralExpression))
+        {
+            // It's a string literal, so we capture its raw value.
+            return new MessageInfo(literal.Token.ValueText, true);
+        }
+        else
+        {
+            // It's any other C# expression. We capture its source text.
+            return new MessageInfo(expression.ToString(), false);
+        }
+    }
+
+    // Helper to get arguments from a rule call
+    private static EquatableArray<NameAndTypeInfo> GetArguments(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
+    {
+        // Your existing logic for getting arguments
+        return invocation.ArgumentList.Arguments
+            .Select(arg =>
+            {
+                var name = arg.Expression.ToString();
+                var type = ModelExtensions.GetTypeInfo(semanticModel, arg.Expression).Type;
+                return type is not null
+                    ? new NameAndTypeInfo(name, type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))
+                    : new NameAndTypeInfo(name, "ERROR");
+            }).ToEquatableImmutableArray();
+    }
+
+    private static bool TryGetRequestTypeName(
+        ClassDeclarationSyntax classDeclarationSyntax,
+        INamedTypeSymbol classSymbol,
+        List<Diagnostic> diagnostics,
+        out string? requestTypeName)
+    {
+        requestTypeName = null;
+        if (!classSymbol.Inherits(FullyQualifiedNames.Classes.Validator, genericArgumentCount: 1))
+        {
+            diagnostics.Add(Diagnostic.Create(
+                new DiagnosticDescriptor("VC004", "Invalid Base Class", $"Classes attributed with [GenerateValidator] must inherit from Validator<TRequest>", "ValiCraft", DiagnosticSeverity.Error, true),
+                classDeclarationSyntax.GetLocation()));
+            return false;
+        }
+
+        requestTypeName = $"global::{classSymbol.BaseType!.TypeArguments[0].ToDisplayString()}";
+        return true;
+    }
+
+    private static bool TryCheckPartialKeyword(ClassDeclarationSyntax classDeclarationSyntax, List<Diagnostic> diagnostics)
+    {
+        if (!classDeclarationSyntax.IsPartial())
+        {
+            diagnostics.Add(Diagnostic.Create(
+                new DiagnosticDescriptor("VC003", "Missing partial keyword", "Classes attributed with [GenerateValidator] must have the partial keyword", "ValiCraft", DiagnosticSeverity.Error, true),
+                classDeclarationSyntax.GetLocation()));
+            return false;
+        }
+        return true;
+    }
+}

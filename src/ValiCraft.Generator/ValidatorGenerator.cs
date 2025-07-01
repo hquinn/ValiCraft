@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
-using ValiCraft.Generator.Shared;
-using ValiCraft.Rules.Generator.Shared;
+using ValiCraft.Generator.SourceProviders;
+using ValiCraft.Generator.SyntaxProviders;
 
 namespace ValiCraft.Generator;
 
@@ -34,6 +34,10 @@ public class ValidatorGenerator : IIncrementalGenerator
 
         context.RegisterImplementationSourceOutput(
             combinedProvider,
-            static (spc, source) => ValidatorSourceProvider.EmitSourceCode(source.Left, source.Right, spc));
+            static (spc, source) =>
+            {
+                var (allValidationRules, allValidators) = source;
+                ValidatorSourceProvider.EmitSourceCode(allValidationRules, allValidators, spc);
+            });
     }
 }
