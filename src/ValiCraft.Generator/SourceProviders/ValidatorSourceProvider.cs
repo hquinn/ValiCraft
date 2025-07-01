@@ -146,7 +146,7 @@ public static class ValidatorSourceProvider
         if (mapToValidationRuleData?.DefaultMessage is { } defaultMessage)
         {
             return isPropertyNameLiteral
-                ? defaultMessage.Replace("{PropertyName}", propertyName)
+                ? $"\"{defaultMessage}\"".Replace("{PropertyName}", propertyName)
                 : $"${defaultMessage}".Replace("{PropertyName}", $"{{{propertyName}}}");
         }
 

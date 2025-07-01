@@ -3,9 +3,10 @@ using ValiCraft.Attributes;
 namespace ValiCraft.Rules;
 
 [GenerateRuleExtension("IsNotEmpty")]
-public class NotEmpty : IValidationRule<string>
+[DefaultMessage("{PropertyName} is required.")]
+public class NotEmpty : IValidationRule<string?>
 {
-    public static bool IsValid(string propertyValue)
+    public static bool IsValid(string? propertyValue)
     {
         return !string.IsNullOrEmpty(propertyValue);
     }

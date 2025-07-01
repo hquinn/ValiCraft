@@ -10,4 +10,10 @@
       <PackageReference Include="LitePrimitives" Version="3.4.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ValiCraft.Generator\ValiCraft.Generator.csproj"
+                        OutputItemType="Analyzer"
+                        ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
 </Project>
