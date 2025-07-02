@@ -7,7 +7,9 @@ public class RuleInvocationBuilder(
     NameAndTypeInfo property,
     string methodName,
     EquatableArray<NameAndTypeInfo> arguments,
-    MapToValidationRuleData? mapData)
+    MapToValidationRuleData? mapData,
+    MessageInfo? defaultMessage,
+    EquatableArray<RulePlaceholderInfo> rulePlaceholders)
 {
     private MessageInfo? _message;
     private MessageInfo? _errorCode;
@@ -22,5 +24,7 @@ public class RuleInvocationBuilder(
         methodName,
         arguments,
         mapData,
-        new RuleOverrideData(_message, _propertyName, _errorCode));
+        new RuleOverrideData(_message, _propertyName, _errorCode),
+        defaultMessage,
+        rulePlaceholders);
 }

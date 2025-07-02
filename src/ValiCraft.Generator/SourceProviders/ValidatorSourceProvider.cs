@@ -87,12 +87,17 @@ public static class ValidatorSourceProvider
         foreach (var ruleInvocation in validatorInfo.Rules) // Use the 'Rules' property as defined in your ValidatorInfo
         {
             var mapToValidationRuleData = ruleInvocation.ValidationRuleData;
+            var defaultMessage = ruleInvocation.DefaultMessage;
+            var rulePlaceholders = ruleInvocation.Placeholders;
 
+            // Only need to test one condition here as the other data here will also not be setup
             if (mapToValidationRuleData is null)
             {
                 var matchedRule = MapRuleInvocationToValidationRule(validRules, ruleInvocation);
 
                 mapToValidationRuleData = matchedRule?.GetMapToValidationRuleData();
+                defaultMessage = matchedRule?.DefaultMessage;
+                rulePlaceholders = matchedRule?.RulePlaceholders ?? EquatableArray<RulePlaceholderInfo>.Empty;
             }
             
             string? constructedValidationRuleGeneric = null;
@@ -112,14 +117,15 @@ public static class ValidatorSourceProvider
                 ruleInvocation,
                 validationRuleInvocation,
                 GetValidationErrorCode(validationRuleInvocation, ruleInvocation),
-                GetValidationMessage(ruleInvocation, mapToValidationRuleData));
+                GetValidationMessage(ruleInvocation, defaultMessage, rulePlaceholders));
             validationRulesCode.AppendLine(ifBlock);
         }
     }
 
     private static string GetValidationMessage(
         RuleInvocation ruleInvocation,
-        MapToValidationRuleData? mapToValidationRuleData)
+        MessageInfo? defaultMessage,
+        EquatableArray<RulePlaceholderInfo> rulePlaceholders)
     {
         const string fallbackMessage = "\"An error has occurred\"";
         var ruleOverride = ruleInvocation.RuleOverrides;
@@ -127,30 +133,24 @@ public static class ValidatorSourceProvider
         var propertyName = ruleOverride.OverridePropertyName?.Value ?? ruleInvocation.Property.Name;
         var isPropertyNameLiteral = ruleOverride.OverridePropertyName is null || ruleOverride.OverridePropertyName.IsLiteral;
 
-        if (ruleOverride.OverrideMessage is not null)
-        {
-            var messageValue = ruleOverride.OverrideMessage.Value;
-            if (ruleOverride.OverrideMessage.IsLiteral)
-            {
-                return isPropertyNameLiteral
-                    ? $"\"{messageValue}\"".Replace("{PropertyName}", propertyName)
-                    : $"$\"{messageValue}\"".Replace("{PropertyName}", $"{{{propertyName}}}");
-            }
+        var message = ruleOverride.OverrideMessage ?? defaultMessage;
 
-            // The message is an expression.
-            return isPropertyNameLiteral
-                ? $"{messageValue}.Replace(\"{{PropertyName}}\", \"{propertyName}\")"
-                : $"{messageValue}.Replace(\"{{PropertyName}}\", {propertyName})";
+        if (message is null)
+        {
+            return fallbackMessage;
         }
 
-        if (mapToValidationRuleData?.DefaultMessage is { } defaultMessage)
+        if (message.IsLiteral)
         {
             return isPropertyNameLiteral
-                ? $"\"{defaultMessage}\"".Replace("{PropertyName}", propertyName)
-                : $"${defaultMessage}".Replace("{PropertyName}", $"{{{propertyName}}}");
+                ? $"{message}".Replace("{PropertyName}", propertyName)
+                : $"${message}".Replace("{PropertyName}", $"{{{propertyName}}}");
         }
-
-        return fallbackMessage;
+        
+        // The message is an expression.
+        return isPropertyNameLiteral
+            ? $"{message}.Replace(\"{{PropertyName}}\", \"{propertyName}\")"
+            : $"{message}.Replace(\"{{PropertyName}}\", {propertyName})";
     }
 
     private static string GetValidationErrorCode(string validationRuleInvocation, RuleInvocation ruleInvocation)

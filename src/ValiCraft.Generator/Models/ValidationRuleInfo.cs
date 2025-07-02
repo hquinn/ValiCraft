@@ -1,6 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.Types;
 using ValiCraft.Generator.Utils;
 
 namespace ValiCraft.Generator.Models;
@@ -10,33 +10,28 @@ public record ValidationRuleInfo
     public ValidationRuleInfo(
         ClassInfo classInfo,
         string nameForExtensionMethod,
-        string? defaultMessage,
-        MethodSignature isValidSignature)
+        MessageInfo? defaultMessage,
+        MethodSignature isValidSignature,
+        EquatableArray<RulePlaceholderInfo> rulePlaceholders)
     {
         Class = classInfo;
         NameForExtensionMethod = nameForExtensionMethod;
         DefaultMessage = defaultMessage;
         IsValidSignature = isValidSignature;
+        RulePlaceholders = rulePlaceholders;
     }
     
     public ClassInfo Class { get; init; }
     public string NameForExtensionMethod { get; init; }
-    public string? DefaultMessage { get; init; }
+    public MessageInfo? DefaultMessage { get; init; }
     public MethodSignature IsValidSignature { get; init; }
+    public EquatableArray<RulePlaceholderInfo> RulePlaceholders { get; init; }
 
     public MapToValidationRuleData GetMapToValidationRuleData()
     {
         return new(Class.FullyQualifiedWithoutGenerics,
             Class.FullyQualifiedUnboundedName,
-            GetValidationRuleGenericFormat(),
-            GetDefaultMessage());
-    }
-
-    private string? GetDefaultMessage()
-    {
-        return DefaultMessage is null
-            ? null
-            : $"\"{DefaultMessage}\"";
+            GetValidationRuleGenericFormat());
     }
     
     public string GetParametersForExtensionMethod(string builderParameter)

@@ -40,7 +40,9 @@ public static class NamedTypeSymbolExtensions
         return unboundGenericType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
     }
 
-    public static string? GetAttributeStringArgument(this INamedTypeSymbol symbol, string attributeFullName)
+    public static string? GetAttributeStringArgument(
+        this INamedTypeSymbol symbol,
+        string attributeFullName)
     {
         AttributeData? attributeData = symbol.GetAttributes()
             .FirstOrDefault(ad => ad.AttributeClass?.ToDisplayString() == attributeFullName);
@@ -50,14 +52,14 @@ public static class NamedTypeSymbolExtensions
             return null;
         }
 
-        if (attributeData.ConstructorArguments.IsEmpty)
+        if (attributeData.ConstructorArguments.IsDefaultOrEmpty)
         {
             return null;
         }
 
         TypedConstant firstArgument = attributeData.ConstructorArguments[0];
 
-        if (firstArgument.Kind == TypedConstantKind.Primitive && firstArgument.Value is string stringValue)
+        if (firstArgument is { Kind: TypedConstantKind.Primitive, Value: string stringValue })
         {
             return stringValue;
         }

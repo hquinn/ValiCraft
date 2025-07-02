@@ -36,10 +36,7 @@ public class ValidatorGeneratorTests
                                     {
                                         public static class NotNullOrEmptyRuleExtensions
                                         {
-                                            [global::ValiCraft.Attributes.MapToValidationRule(
-                                                validationRuleType: typeof(global::Test.NotNullOrEmptyRule),
-                                                validationRuleGenericFormat: "",
-                                                defaultMessage: null)]
+                                            [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.NotNullOrEmptyRule), "")]
                                             public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsNotNullOrEmpty<TRequest, TPropertyType>(
                                                 this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
                                                 => throw new global::System.NotImplementedException("Never gets called");
@@ -83,10 +80,7 @@ public class ValidatorGeneratorTests
                                     {
                                         public static class GenericRuleExtensions
                                         {
-                                            [global::ValiCraft.Attributes.MapToValidationRule(
-                                                validationRuleType: typeof(global::Test.GenericRule<,,>),
-                                                validationRuleGenericFormat: "<{0}, {1}, {2}>",
-                                                defaultMessage: null)]
+                                            [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.GenericRule<,,>), "<{0}, {1}, {2}>")]
                                             public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
                                                 this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class where TParam1 : global::System.Numerics.INumber<TParam1>
                                                 => throw new global::System.NotImplementedException("Never gets called");
@@ -127,12 +121,10 @@ public class ValidatorGeneratorTests
                                     
                                     namespace Test
                                     {
+                                        [global::ValiCraft.Attributes.DefaultMessage("{PropertyName} must not be empty")]
                                         public static class NotNullOrEmptyRuleExtensions
                                         {
-                                            [global::ValiCraft.Attributes.MapToValidationRule(
-                                                validationRuleType: typeof(global::Test.NotNullOrEmptyRule),
-                                                validationRuleGenericFormat: "",
-                                                defaultMessage: "{PropertyName} must not be empty")]
+                                            [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.NotNullOrEmptyRule), "")]
                                             public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsNotNullOrEmpty<TRequest, TPropertyType>(
                                                 this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
                                                 => throw new global::System.NotImplementedException("Never gets called");
@@ -181,10 +173,7 @@ public class ValidatorGeneratorTests
                                 
                                 public static class GenericRule1Extensions
                                 {
-                                    [global::ValiCraft.Attributes.MapToValidationRule(
-                                        validationRuleType: typeof(global::Test.Rules.GenericRule1<,,>),
-                                        validationRuleGenericFormat: "<{0}, {1}, {2}>",
-                                        defaultMessage: null)]
+                                    [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule1<,,>), "<{0}, {1}, {2}>")]
                                     public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule1<TRequest, TPropertyType, TParam1, TParam2>(
                                         this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                         => throw new global::System.NotImplementedException("Never gets called");
@@ -192,10 +181,7 @@ public class ValidatorGeneratorTests
                                 
                                 public static class GenericRule2Extensions
                                 {
-                                    [global::ValiCraft.Attributes.MapToValidationRule(
-                                        validationRuleType: typeof(global::Test.Rules.GenericRule2<,,>),
-                                        validationRuleGenericFormat: "<{0}, {1}, {2}>",
-                                        defaultMessage: null)]
+                                    [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule2<,,>), "<{0}, {1}, {2}>")]
                                     public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule2<TRequest, TPropertyType, TParam1, TParam2>(
                                         this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                         => throw new global::System.NotImplementedException("Never gets called");
@@ -288,10 +274,7 @@ public class ValidatorGeneratorTests
                               
                               public static class GenericRuleExtensions
                               {
-                                  [global::ValiCraft.Attributes.MapToValidationRule(
-                                      validationRuleType: typeof(global::Test.Rules.GenericRule<,,>),
-                                      validationRuleGenericFormat: "<{0}, {1}, {2}>",
-                                      defaultMessage: null)]
+                                  [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule<,,>), "<{0}, {1}, {2}>")]
                                   public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
                                       this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                       => throw new global::System.NotImplementedException("Never gets called");
@@ -378,10 +361,7 @@ public class ValidatorGeneratorTests
     
                               public static class GenericRuleExtensions
                               {
-                                  [global::ValiCraft.Attributes.MapToValidationRule(
-                                      validationRuleType: typeof(global::Test.Rules.GenericRule<>),
-                                      validationRuleGenericFormat: "<{0}>",
-                                      defaultMessage: null)]
+                                  [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule<>), "<{0}>")]
                                   public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                       this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
                                       => throw new global::System.NotImplementedException("Never gets called");
@@ -468,10 +448,7 @@ public class ValidatorGeneratorTests
     
                               public static class GenericRuleExtensions
                               {
-                                  [global::ValiCraft.Attributes.MapToValidationRule(
-                                      validationRuleType: typeof(global::Test.Rules.GenericRule),
-                                      validationRuleGenericFormat: "",
-                                      defaultMessage: null)]
+                                  [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule), "")]
                                   public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                       this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                       => throw new global::System.NotImplementedException("Never gets called");
@@ -584,10 +561,7 @@ public class ValidatorGeneratorTests
                                   {
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
-                                              validationRuleType: typeof(global::Test.Rules.GenericRule<,,>),
-                                              validationRuleGenericFormat: "<{0}, {1}, {2}>",
-                                              defaultMessage: null)]
+                                          [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule<,,>), "<{0}, {1}, {2}>")]
                                           public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType, TParam1, TParam2>(
                                               this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TParam1 param1, TParam2 param2) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -683,10 +657,7 @@ public class ValidatorGeneratorTests
                                   {
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
-                                              validationRuleType: typeof(global::Test.Rules.GenericRule<>),
-                                              validationRuleGenericFormat: "<{0}>",
-                                              defaultMessage: null)]
+                                          [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule<>), "<{0}>")]
                                           public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                               this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -782,10 +753,7 @@ public class ValidatorGeneratorTests
                                   {
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
-                                              validationRuleType: typeof(global::Test.Rules.GenericRule),
-                                              validationRuleGenericFormat: "",
-                                              defaultMessage: null)]
+                                          [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule), "")]
                                           public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                               this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -883,12 +851,10 @@ public class ValidatorGeneratorTests
                                   
                                   namespace Test.Rules
                                   {
+                                      [global::ValiCraft.Attributes.DefaultMessage("{PropertyName} must be generic")]
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
-                                              validationRuleType: typeof(global::Test.Rules.GenericRule),
-                                              validationRuleGenericFormat: "",
-                                              defaultMessage: "{PropertyName} must be generic")]
+                                          [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule), "")]
                                           public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                               this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -993,12 +959,10 @@ public class ValidatorGeneratorTests
                                   
                                   namespace Test.Rules
                                   {
+                                      [global::ValiCraft.Attributes.DefaultMessage("{PropertyName} must be generic")]
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
-                                              validationRuleType: typeof(global::Test.Rules.GenericRule),
-                                              validationRuleGenericFormat: "",
-                                              defaultMessage: "{PropertyName} must be generic")]
+                                          [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule), "")]
                                           public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                               this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -1103,12 +1067,10 @@ public class ValidatorGeneratorTests
                                   
                                   namespace Test.Rules
                                   {
+                                      [global::ValiCraft.Attributes.DefaultMessage("{PropertyName} must be generic")]
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
-                                              validationRuleType: typeof(global::Test.Rules.GenericRule),
-                                              validationRuleGenericFormat: "",
-                                              defaultMessage: "{PropertyName} must be generic")]
+                                          [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule), "")]
                                           public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                               this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -1215,12 +1177,10 @@ public class ValidatorGeneratorTests
                                   
                                   namespace Test.Rules
                                   {
+                                      [global::ValiCraft.Attributes.DefaultMessage("{PropertyName} must be generic")]
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
-                                              validationRuleType: typeof(global::Test.Rules.GenericRule),
-                                              validationRuleGenericFormat: "",
-                                              defaultMessage: "{PropertyName} must be generic")]
+                                          [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule), "")]
                                           public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                               this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -1324,12 +1284,10 @@ public class ValidatorGeneratorTests
                                   
                                   namespace Test.Rules
                                   {
+                                      [global::ValiCraft.Attributes.DefaultMessage("{PropertyName} must be generic")]
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
-                                              validationRuleType: typeof(global::Test.Rules.GenericRule),
-                                              validationRuleGenericFormat: "",
-                                              defaultMessage: "{PropertyName} must be generic")]
+                                          [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule), "")]
                                           public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                               this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -1392,6 +1350,97 @@ public class ValidatorGeneratorTests
                              
                              namespace Test.Rules;
                              
+                             [DefaultMessage("{PropertyName} must be generic")]
+                             public class GenericRule : IValidationRule<string?, string?>
+                             {
+                                 public static bool IsValid(string? value, string? parameter) => true;
+                             }
+                             
+                             [global::ValiCraft.Attributes.DefaultMessage("{PropertyName} must be generic")]
+                             public static class GenericRuleExtensions
+                             {
+                                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule), "")]
+                                 public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
+                                     this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
+                                     => throw new global::System.NotImplementedException("Never gets called");
+                             }
+                             """;
+
+        const string validatorInput = """
+                             using ValiCraft;
+                             using ValiCraft.Attributes;
+                             using Test.Rules;
+                             
+                             namespace Test;
+                             
+                             [GenerateValidator]
+                             public partial class UserValidator : Validator<User>
+                             {
+                                 protected override void DefineRules(IValidationRuleBuilder<User> builder)
+                                 {
+                                     builder.Ensure(x => x.Name)
+                                         .IsGenericRule("Test")
+                                             .WithPropertyName("World")
+                                             .WithErrorCode("HelloWorld");
+                                 }
+                             }
+                             """;
+
+        const string validatorExpected = """
+                                  // <auto-generated />
+                                  #nullable enable
+                                  
+                                  namespace Test
+                                  {
+                                      public partial class UserValidator : global::ValiCraft.IValidator<global::Test.User>
+                                      {
+                                          public global::LitePrimitives.Validation<global::Test.User> Validate(global::Test.User request)
+                                          {
+                                              global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
+                                              
+                                              if (!global::Test.Rules.GenericRule.IsValid(request.Name, "Test"))
+                                              {
+                                                  errors ??= new();
+                                                  errors.Add(global::LitePrimitives.Error.Validation("HelloWorld", "World must be generic"));
+                                              }
+                                  
+                                              return errors is not null
+                                                  ? global::LitePrimitives.Validation<global::Test.User>.Failure(errors)
+                                                  : global::LitePrimitives.Validation<global::Test.User>.Success(request);
+                                          }
+                                      }
+                                  }
+                                  """;
+
+        using var assertionScope = new AssertionScope();
+
+        var options = IncrementalGeneratorTestOptions.CreateDefault(typeof(Validator<>), typeof(IValidator<>), typeof(Validation<>));
+
+        new IncrementalGeneratorAdapter(options)
+           .GetGeneratedTrees<ValidatorGenerator>([user, validationRulesInput, validatorInput], _trackingSteps)
+           .AssertHasNoDiagnostics()
+           .AssertOutputs(validatorExpected);
+    }
+    
+    [Fact]
+    public void ShouldGenerateBoth_NoGenericParameters_Both_SingleRule_WithDefaultMessage_WithPropertyName_Literal()
+    {
+        const string user = """
+                            namespace Test;
+
+                            public class User
+                            {
+                                public string? Name { get; set; }
+                                public int Age { get; set; }
+                            }
+                            """;
+
+        const string validationRulesInput = """
+                             using ValiCraft;
+                             using ValiCraft.Attributes;
+                             
+                             namespace Test.Rules;
+                             
                              [GenerateRuleExtension("IsGenericRule")]
                              [DefaultMessage("{PropertyName} must be generic")]
                              public class GenericRule : IValidationRule<string?, string?>
@@ -1426,12 +1475,10 @@ public class ValidatorGeneratorTests
                                   
                                   namespace Test.Rules
                                   {
+                                      [global::ValiCraft.Attributes.DefaultMessage("{PropertyName} must be generic")]
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
-                                              validationRuleType: typeof(global::Test.Rules.GenericRule),
-                                              validationRuleGenericFormat: "",
-                                              defaultMessage: "{PropertyName} must be generic")]
+                                          [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule), "")]
                                           public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                               this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");
@@ -1534,12 +1581,10 @@ public class ValidatorGeneratorTests
                                   
                                   namespace Test.Rules
                                   {
+                                      [global::ValiCraft.Attributes.DefaultMessage("{PropertyName} must be generic")]
                                       public static class GenericRuleExtensions
                                       {
-                                          [global::ValiCraft.Attributes.MapToValidationRule(
-                                              validationRuleType: typeof(global::Test.Rules.GenericRule),
-                                              validationRuleGenericFormat: "",
-                                              defaultMessage: "{PropertyName} must be generic")]
+                                          [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GenericRule), "")]
                                           public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGenericRule<TRequest, TPropertyType>(
                                               this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, string? parameter) where TRequest : class
                                               => throw new global::System.NotImplementedException("Never gets called");

@@ -5,10 +5,13 @@ public static class FullyQualifiedNames
     public static class Attributes
     {
         public const string DefaultMessageAttribute = "ValiCraft.Attributes.DefaultMessageAttribute";
+        public const string DefaultMessage = "ValiCraft.Attributes.DefaultMessage";
         public const string GenerateRuleExtensionAttribute = "ValiCraft.Attributes.GenerateRuleExtensionAttribute";
         public const string GenerateValidatorAttribute = "ValiCraft.Attributes.GenerateValidatorAttribute";
         public const string MapToValidationRuleAttribute = "ValiCraft.Attributes.MapToValidationRuleAttribute";
         public const string MapToValidationRule = "ValiCraft.Attributes.MapToValidationRule";
+        public const string RulePlaceholderAttribute = "ValiCraft.Attributes.RulePlaceholderAttribute";
+        public const string RulePlaceholder = "ValiCraft.Attributes.RulePlaceholder";
     }
 
     public class Classes

@@ -41,13 +41,15 @@ public static class ValidationRuleExtensionSyntaxProvider
         cancellationToken.ThrowIfCancellationRequested();
         
         var classInfo = new ClassInfo(classDeclarationSyntax!, classSymbol!, validationRuleInterface);
-        var defaultMessage = classSymbol!.GetAttributeStringArgument(FullyQualifiedNames.Attributes.DefaultMessageAttribute);
+        var defaultMessage = MessageInfo.CreateFromAttribute(classSymbol, FullyQualifiedNames.Attributes.DefaultMessageAttribute);
+        var rulePlaceholders = RulePlaceholderInfo.CreateFromRulePlaceholderAttributes(classSymbol!);
         
         var validationRuleInfo = new ValidationRuleInfo(
             classInfo,
             nameForExtensionMethod!,
             defaultMessage,
-            isValidMethodSignature!);
+            isValidMethodSignature!,
+            rulePlaceholders);
 
         return new ProviderResult<ValidationRuleInfo>(validationRuleInfo, diagnostics);
     }

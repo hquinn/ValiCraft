@@ -5,15 +5,12 @@ public class MapToValidationRuleAttribute : Attribute
 {
     public MapToValidationRuleAttribute(
         Type validationRuleType,
-        string validationRuleGenericFormat,
-        string? defaultMessage)
+        string validationRuleGenericFormat)
     {
         ValidationRuleType = validationRuleType;
         ValidationRuleGenericFormat = validationRuleGenericFormat;
-        DefaultMessage = defaultMessage;
     }
     
     public Type ValidationRuleType { get; }
     public string ValidationRuleGenericFormat { get; }
-    public string? DefaultMessage { get; }
 }

@@ -8,4 +8,6 @@ public record RuleInvocation(
     string MethodName,
     EquatableArray<NameAndTypeInfo> Arguments,
     MapToValidationRuleData? ValidationRuleData,
-    RuleOverrideData RuleOverrides);
+    RuleOverrideData RuleOverrides,
+    MessageInfo? DefaultMessage,
+    EquatableArray<RulePlaceholderInfo> Placeholders);

@@ -174,6 +174,8 @@ public static class ValidatorInfoProvider
                 var ruleInvocationArguments = GetArguments(invocation, context.SemanticModel);
                 var methodSymbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
                 MapToValidationRuleData? mapToValidationRuleData = null;
+                MessageInfo? defaultMessage = null;
+                EquatableArray<RulePlaceholderInfo> rulePlaceholders;
                 if (methodSymbol is not null)
                 {
                     var attributeDisplayFormat = SymbolDisplayFormats.FormatAttributeWithoutParameters;
@@ -187,9 +189,25 @@ public static class ValidatorInfoProvider
                     {
                         mapToValidationRuleData = new MapToValidationRuleData(mapToValidationRuleAttribute);
                     }
+                    
+                    var containingType = methodSymbol.ContainingType;
+                    defaultMessage = MessageInfo.CreateFromAttribute(
+                        containingType,
+                        FullyQualifiedNames.Attributes.DefaultMessageAttribute);
+                    rulePlaceholders = RulePlaceholderInfo.CreateFromRulePlaceholderAttributes(containingType);
+                }
+                else
+                {
+                    rulePlaceholders = EquatableArray<RulePlaceholderInfo>.Empty;
                 }
                 
-                currentRuleBuilder = new RuleInvocationBuilder(property, memberName, ruleInvocationArguments, mapToValidationRuleData);
+                currentRuleBuilder = new RuleInvocationBuilder(
+                    property,
+                    memberName,
+                    ruleInvocationArguments,
+                    mapToValidationRuleData,
+                    defaultMessage,
+                    rulePlaceholders);
             }
             
             // 3. After the loop, add the very last rule that was being built.
