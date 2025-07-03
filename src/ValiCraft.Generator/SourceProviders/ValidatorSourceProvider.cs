@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using ValiCraft.Generator.Models;
 using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.Models;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.SourceProviders;
@@ -24,11 +24,8 @@ public static class ValidatorSourceProvider
 
         foreach (var validatorInfoResult in validatorInfoResults)
         {
-            if (HasReportedDiagnostics(context, validatorInfoResult))
-            {
-                continue;
-            }
-            
+            if (HasReportedDiagnostics(context, validatorInfoResult)) continue;
+
             var validatorInfo = validatorInfoResult.Value!;
             var sourceCode = GenerateSourceCode(validatorInfo, validRules);
 
@@ -36,17 +33,12 @@ public static class ValidatorSourceProvider
         }
     }
 
-    private static bool HasReportedDiagnostics(SourceProductionContext context, ProviderResult<ValidatorInfo> validatorInfoResult)
+    private static bool HasReportedDiagnostics(SourceProductionContext context,
+        ProviderResult<ValidatorInfo> validatorInfoResult)
     {
-        if (validatorInfoResult.Diagnostics is not { Count: > 0 })
-        {
-            return false;
-        }
-        
-        foreach (var diagnostic in validatorInfoResult.Diagnostics)
-        {
-            context.ReportDiagnostic(diagnostic);
-        }
+        if (validatorInfoResult.Diagnostics is not { Count: > 0 }) return false;
+
+        foreach (var diagnostic in validatorInfoResult.Diagnostics) context.ReportDiagnostic(diagnostic);
 
         return true;
     }
@@ -54,7 +46,7 @@ public static class ValidatorSourceProvider
     private static string GenerateSourceCode(ValidatorInfo validatorInfo, List<ValidationRuleInfo> validRules)
     {
         var validationRulesCode = new StringBuilder();
-            
+
         BuildAllValidationRulesLogic(validationRulesCode, validatorInfo, validRules);
 
         return $$"""
@@ -79,78 +71,125 @@ public static class ValidatorSourceProvider
                  """;
     }
 
+    private static void EnrichArguments(
+        List<ArgumentInfo> arguments,
+        ValidationRuleInfo? matchedRule)
+    {
+        if (matchedRule is null) return;
+
+        for (var i = 0; i < arguments.Count; i++)
+        {
+            var argument = arguments[i];
+            var parameter = matchedRule.IsValidSignature.Parameters[i];
+
+            arguments[i] = argument with { Name = parameter.Name };
+        }
+    }
+
     private static void BuildAllValidationRulesLogic(
         StringBuilder validationRulesCode,
         ValidatorInfo validatorInfo,
         List<ValidationRuleInfo> validRules)
     {
+        var assignedErrorsCount = validatorInfo.Rules.Count;
         foreach (var ruleInvocation in validatorInfo.Rules) // Use the 'Rules' property as defined in your ValidatorInfo
         {
             var mapToValidationRuleData = ruleInvocation.ValidationRuleData;
             var defaultMessage = ruleInvocation.DefaultMessage;
             var rulePlaceholders = ruleInvocation.Placeholders;
 
+            var arguments = ruleInvocation.Arguments.ToList();
+            arguments.Insert(0, ruleInvocation.Property);
+
             // Only need to test one condition here as the other data here will also not be setup
             if (mapToValidationRuleData is null)
             {
                 var matchedRule = MapRuleInvocationToValidationRule(validRules, ruleInvocation);
+                EnrichArguments(arguments, matchedRule);
 
                 mapToValidationRuleData = matchedRule?.GetMapToValidationRuleData();
                 defaultMessage = matchedRule?.DefaultMessage;
                 rulePlaceholders = matchedRule?.RulePlaceholders ?? EquatableArray<RulePlaceholderInfo>.Empty;
             }
-            
+
             string? constructedValidationRuleGeneric = null;
 
-            if (mapToValidationRuleData is not null && 
+            if (mapToValidationRuleData is not null &&
                 !string.IsNullOrEmpty(mapToValidationRuleData.ValidationRuleGenericFormat))
-            {
                 constructedValidationRuleGeneric = ConstructValidationRuleGeneric(
                     mapToValidationRuleData.ValidationRuleGenericFormat,
-                    ruleInvocation);
-            }
+                    arguments);
 
             var validationRuleInvocation =
-                $"global::{mapToValidationRuleData?.FullyQualifiedValidationRule}{constructedValidationRuleGeneric}"; 
-                
+                $"global::{mapToValidationRuleData?.FullyQualifiedValidationRule}{constructedValidationRuleGeneric}";
+
             var ifBlock = BuildValidationRuleLogic(
+                assignedErrorsCount,
                 ruleInvocation,
                 validationRuleInvocation,
                 GetValidationErrorCode(validationRuleInvocation, ruleInvocation),
-                GetValidationMessage(ruleInvocation, defaultMessage, rulePlaceholders));
+                GetValidationMessage(ruleInvocation, arguments, defaultMessage, rulePlaceholders));
             validationRulesCode.AppendLine(ifBlock);
+            assignedErrorsCount--;
         }
     }
 
     private static string GetValidationMessage(
         RuleInvocation ruleInvocation,
+        List<ArgumentInfo> arguments,
         MessageInfo? defaultMessage,
         EquatableArray<RulePlaceholderInfo> rulePlaceholders)
     {
         const string fallbackMessage = "\"An error has occurred\"";
         var ruleOverride = ruleInvocation.RuleOverrides;
 
-        var propertyName = ruleOverride.OverridePropertyName?.Value ?? ruleInvocation.Property.Name;
-        var isPropertyNameLiteral = ruleOverride.OverridePropertyName is null || ruleOverride.OverridePropertyName.IsLiteral;
+        var propertyName = ruleOverride.OverridePropertyName?.Value ?? ruleInvocation.Property.Value;
+        var isPropertyNameLiteral =
+            ruleOverride.OverridePropertyName is null || ruleOverride.OverridePropertyName.IsLiteral;
 
         var message = ruleOverride.OverrideMessage ?? defaultMessage;
 
-        if (message is null)
-        {
-            return fallbackMessage;
-        }
+        if (message is null) return fallbackMessage;
 
+        StringBuilder messageBuilder;
         if (message.IsLiteral)
         {
-            return isPropertyNameLiteral
-                ? $"{message}".Replace("{PropertyName}", propertyName)
-                : $"${message}".Replace("{PropertyName}", $"{{{propertyName}}}");
+            messageBuilder = new StringBuilder($"${message}"
+                .Replace("{PropertyName}", isPropertyNameLiteral ? propertyName : $"{{{propertyName}}}")
+                .Replace("{PropertyValue}", $"{{request.{ruleInvocation.Property.Value}}}"));
+
+            foreach (var rulePlaceholder in rulePlaceholders)
+            {
+                var argument = arguments.FirstOrDefault(x => x.Name == rulePlaceholder.ParameterName);
+
+                if (argument is not null)
+                {
+                    messageBuilder.Replace(rulePlaceholder.PlaceholderName, argument.IsLiteral ? argument.SubstitutionalValue : $"{{{argument.Value}}}");
+                }
+            }
+
+            return messageBuilder.ToString();
         }
-        
+
         // The message is an expression.
-        return isPropertyNameLiteral
-            ? $"{message}.Replace(\"{{PropertyName}}\", \"{propertyName}\")"
-            : $"{message}.Replace(\"{{PropertyName}}\", {propertyName})";
+        messageBuilder = new StringBuilder($"{message}.Replace(\"{{PropertyName}}\", {(isPropertyNameLiteral ? $"\"{propertyName}\"" : propertyName)}).Replace(\"{{PropertyValue}}\", request.{ruleInvocation.Property.Value})");
+
+        foreach (var rulePlaceholder in rulePlaceholders)
+        {
+            var argument = arguments.FirstOrDefault(x => x.Name == rulePlaceholder.ParameterName);
+
+            if (argument is not null)
+            {
+                if (argument.Type == "string")
+                    messageBuilder.Append(
+                        $".Replace(\"{rulePlaceholder.PlaceholderName}\", {argument.Value})");
+                else
+                    messageBuilder.Append(
+                        $".Replace(\"{rulePlaceholder.PlaceholderName}\", {argument.Value}.ToString())");
+            }
+        }
+
+        return messageBuilder.ToString();
     }
 
     private static string GetValidationErrorCode(string validationRuleInvocation, RuleInvocation ruleInvocation)
@@ -158,24 +197,23 @@ public static class ValidatorSourceProvider
         if (ruleInvocation.RuleOverrides.OverrideErrorCode is not null)
         {
             if (ruleInvocation.RuleOverrides.OverrideErrorCode.IsLiteral)
-            {
                 return $"\"{ruleInvocation.RuleOverrides.OverrideErrorCode.Value}\"";
-            }
 
             return ruleInvocation.RuleOverrides.OverrideErrorCode.Value;
         }
-        
+
         return $"nameof({validationRuleInvocation})";
     }
 
     private static string ConstructValidationRuleGeneric(
         string validationRuleGenericFormat,
-        RuleInvocation ruleInvocation)
+        List<ArgumentInfo> arguments)
     {
-        // We add the property to the argument list as this is how the validation rule's IsValid method is formatted
-        var argumentParameters = ruleInvocation.Arguments.Prepend(ruleInvocation.Property).ToArray();
-        
-        return string.Format(validationRuleGenericFormat, argumentParameters.Select(argument => argument.Type).ToArray());
+        var args = arguments
+            .Select(argument => argument.Type)
+            .ToArray<object>();
+
+        return string.Format(validationRuleGenericFormat, args);
     }
 
     private static ValidationRuleInfo? MapRuleInvocationToValidationRule(
@@ -183,50 +221,46 @@ public static class ValidatorSourceProvider
         RuleInvocation rule)
     {
         ValidationRuleInfo? bestMatchedRule = null;
-        
+
         foreach (var validRule in validRules.Where(x => x.NameForExtensionMethod == rule.MethodName))
         {
             // We skip the first parameter as this will always be the property type
             var matchesResult = validRule.IsValidSignature.MatchesTypes(rule.Arguments, 1);
-            
+
             // Check if we have a direct match with signature types
             // If so, we can return early
-            if (matchesResult == SignatureMatching.Full)
-            {
-                return validRule;
-            }
+            if (matchesResult == SignatureMatching.Full) return validRule;
 
             if (matchesResult == SignatureMatching.Partial)
-            {
                 // We may want to do some rankings in the future
                 // if we can determine if a parameter is non-generic and matches
                 bestMatchedRule = validRule;
-            }
         }
-        
+
         return bestMatchedRule;
     }
-    
+
     private static string BuildValidationRuleLogic(
+        int assignedErrorsCount,
         RuleInvocation ruleInvocation,
         string validationRuleInvocation,
         string errorCode,
         string message)
     {
         const string errorTypeName = $"global::{FullyQualifiedNames.Types.Error}";
-        var propertyAccessString = $"request.{ruleInvocation.Property.Name}";
-    
+        var propertyAccessString = $"request.{ruleInvocation.Property.Value}";
+
         var isValidCallArgs = new List<string> { propertyAccessString };
-        isValidCallArgs.AddRange(ruleInvocation.Arguments.GetArray()?.Select(x => x.Name) ?? Enumerable.Empty<string>());
+        isValidCallArgs.AddRange(ruleInvocation.Arguments.GetArray()?.Select(x => x.Value) ?? []);
         var isValidCallArgsString = string.Join(", ", isValidCallArgs);
 
         var validationLogic = new StringBuilder();
         validationLogic.AppendLine($"            if (!{validationRuleInvocation}.IsValid({isValidCallArgsString}))");
         validationLogic.AppendLine("            {");
-        validationLogic.AppendLine("                errors ??= new();");
+        validationLogic.AppendLine($"                errors ??= new({assignedErrorsCount});");
         validationLogic.AppendLine($"                errors.Add({errorTypeName}.Validation({errorCode}, {message}));");
         validationLogic.Append("            }");
-    
+
         return validationLogic.ToString();
     }
 }

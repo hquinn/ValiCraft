@@ -4,9 +4,9 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.Models;
 
 public record RuleInvocation(
-    NameAndTypeInfo Property,
+    ArgumentInfo Property,
     string MethodName,
-    EquatableArray<NameAndTypeInfo> Arguments,
+    EquatableArray<ArgumentInfo> Arguments,
     MapToValidationRuleData? ValidationRuleData,
     RuleOverrideData RuleOverrides,
     MessageInfo? DefaultMessage,

@@ -14,7 +14,7 @@ namespace System;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
-/// A polyfill type that mirrors some methods from <see cref="HashCode"/> on .NET 6.
+///     A polyfill type that mirrors some methods from <see cref="HashCode" /> on .NET 6.
 /// </summary>
 internal struct HashCode
 {
@@ -31,14 +31,14 @@ internal struct HashCode
     private uint length;
 
     /// <summary>
-    /// Initializes the default seed.
+    ///     Initializes the default seed.
     /// </summary>
     /// <returns>A random seed.</returns>
     private static uint GenerateGlobalSeed()
     {
-        byte[] bytes = new byte[4];
+        var bytes = new byte[4];
 
-        using (RandomNumberGenerator generator = RandomNumberGenerator.Create())
+        using (var generator = RandomNumberGenerator.Create())
         {
             generator.GetBytes(bytes);
         }
@@ -47,7 +47,7 @@ internal struct HashCode
     }
 
     /// <summary>
-    /// Adds a single value to the current hash.
+    ///     Adds a single value to the current hash.
     /// </summary>
     /// <typeparam name="T">The type of the value to add into the hash code.</typeparam>
     /// <param name="value">The value to add into the hash code.</param>
@@ -103,9 +103,9 @@ internal struct HashCode
 
     private void Add(int value)
     {
-        uint val = (uint)value;
-        uint previousLength = length++;
-        uint position = previousLength % 4;
+        var val = (uint)value;
+        var previousLength = length++;
+        var position = previousLength % 4;
 
         if (position == 0)
         {
@@ -121,10 +121,7 @@ internal struct HashCode
         }
         else
         {
-            if (previousLength == 3)
-            {
-                Initialize(out v1, out v2, out v3, out v4);
-            }
+            if (previousLength == 3) Initialize(out v1, out v2, out v3, out v4);
 
             v1 = Round(v1, queue1);
             v2 = Round(v2, queue2);
@@ -134,14 +131,14 @@ internal struct HashCode
     }
 
     /// <summary>
-    /// Gets the resulting hashcode from the current instance.
+    ///     Gets the resulting hashcode from the current instance.
     /// </summary>
     /// <returns>The resulting hashcode from the current instance.</returns>
     public int ToHashCode()
     {
-        uint length = this.length;
-        uint position = length % 4;
-        uint hash = length < 4 ? MixEmptyState() : MixState(v1, v2, v3, v4);
+        var length = this.length;
+        var position = length % 4;
+        var hash = length < 4 ? MixEmptyState() : MixState(v1, v2, v3, v4);
 
         hash += length * 4;
 
@@ -153,10 +150,7 @@ internal struct HashCode
             {
                 hash = QueueRound(hash, queue2);
 
-                if (position > 2)
-                {
-                    hash = QueueRound(hash, queue3);
-                }
+                if (position > 2) hash = QueueRound(hash, queue3);
             }
         }
 
@@ -165,27 +159,37 @@ internal struct HashCode
         return (int)hash;
     }
 
-    /// <inheritdoc/>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", error: true)]
+    /// <inheritdoc />
+    [Obsolete(
+        "HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.",
+        true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public override int GetHashCode() => throw new NotSupportedException();
+    public override int GetHashCode()
+    {
+        throw new NotSupportedException();
+    }
 
-    /// <inheritdoc/>
-    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", error: true)]
+    /// <inheritdoc />
+    [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public override bool Equals(object? obj) => throw new NotSupportedException();
+    public override bool Equals(object? obj)
+    {
+        throw new NotSupportedException();
+    }
 
     /// <summary>
-    /// Rotates the specified value left by the specified number of bits.
-    /// Similar in behavior to the x86 instruction ROL.
+    ///     Rotates the specified value left by the specified number of bits.
+    ///     Similar in behavior to the x86 instruction ROL.
     /// </summary>
     /// <param name="value">The value to rotate.</param>
-    /// <param name="offset">The number of bits to rotate by.
-    /// Any value outside the range [0..31] is treated as congruent mod 32.</param>
+    /// <param name="offset">
+    ///     The number of bits to rotate by.
+    ///     Any value outside the range [0..31] is treated as congruent mod 32.
+    /// </param>
     /// <returns>The rotated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint RotateLeft(uint value, int offset)
     {
-        return value << offset | value >> 32 - offset;
+        return (value << offset) | (value >> (32 - offset));
     }
 }

@@ -6,5 +6,8 @@ public record ParameterInfo(
     bool TypeIsGeneric,
     bool IsNullable)
 {
-    public override string ToString() => $"{TypeName} {Name}";
+    public override string ToString()
+    {
+        return $"{TypeName} {Name}";
+    }
 }

@@ -4,14 +4,11 @@ namespace ValiCraft.Generator.Utils;
 
 public static class SymbolDisplayFormats
 {
-    public static SymbolDisplayFormat FormatWithoutGeneric = new SymbolDisplayFormat(
-        globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
-        typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-        genericsOptions: SymbolDisplayGenericsOptions.None);
+    public static SymbolDisplayFormat FormatWithoutGeneric = new(
+        SymbolDisplayGlobalNamespaceStyle.Omitted,
+        SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
 
-    public static SymbolDisplayFormat FormatAttributeWithoutParameters = new SymbolDisplayFormat(
-        globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
-        typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-        genericsOptions: SymbolDisplayGenericsOptions.None,
-        parameterOptions: SymbolDisplayParameterOptions.None);
+    public static SymbolDisplayFormat FormatAttributeWithoutParameters = new(
+        SymbolDisplayGlobalNamespaceStyle.Omitted,
+        SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
 }

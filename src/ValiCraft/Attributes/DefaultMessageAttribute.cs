@@ -7,6 +7,6 @@ public class DefaultMessageAttribute : Attribute
     {
         Message = message;
     }
-    
+
     public string Message { get; }
 }

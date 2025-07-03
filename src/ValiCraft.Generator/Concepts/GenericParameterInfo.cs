@@ -17,7 +17,7 @@ public record GenericParameterInfo
         InheritedPositions = inheritedPositions;
         Constraints = constraints;
     }
-    
+
     public string Name { get; init; }
     public EquatableArray<int> InheritedPositions { get; init; }
     public string Constraints { get; init; }

@@ -7,6 +7,6 @@ public class GenerateRuleExtensionAttribute : Attribute
     {
         NameForRuleExtension = name;
     }
-    
+
     public string NameForRuleExtension { get; }
 }

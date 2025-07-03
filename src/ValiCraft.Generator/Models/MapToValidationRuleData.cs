@@ -22,7 +22,7 @@ public record MapToValidationRuleData
         FullyQualifiedUnboundedName = fullyQualifiedUnboundedName;
         ValidationRuleGenericFormat = validationRuleGenericFormat;
     }
-    
+
     public string FullyQualifiedValidationRule { get; init; }
     public string FullyQualifiedUnboundedName { get; init; }
     public string ValidationRuleGenericFormat { get; init; }

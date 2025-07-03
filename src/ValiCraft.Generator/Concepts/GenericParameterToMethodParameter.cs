@@ -15,7 +15,7 @@ public record GenericParameterToMethodParameter
         MethodSignature = methodSignature;
         MethodParameterIndexes = GetMethodParameterIndexes(genericParameter, methodSignature);
     }
-    
+
     public GenericParameterInfo GenericParameter { get; init; }
     public MethodSignature MethodSignature { get; init; }
     public EquatableArray<int> MethodParameterIndexes { get; init; }
@@ -29,13 +29,11 @@ public record GenericParameterToMethodParameter
         for (var index = 0; index < methodSignature.Parameters.Count; index++)
         {
             var methodParameter = methodSignature.Parameters[index];
-            
-            if (methodParameter.TypeIsGeneric && TypeComparisonUtils.AreEquivalent(methodParameter.TypeName, genericParameter.Name))
-            {
-                indexes.Add(index);
-            }
+
+            if (methodParameter.TypeIsGeneric &&
+                TypeComparisonUtils.AreEquivalent(methodParameter.TypeName, genericParameter.Name)) indexes.Add(index);
         }
-        
+
         return indexes.ToEquatableImmutableArray();
     }
 }

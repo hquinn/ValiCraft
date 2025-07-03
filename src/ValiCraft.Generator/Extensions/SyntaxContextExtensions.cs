@@ -18,14 +18,14 @@ public static class SyntaxContextExtensions
         {
             var diagnostic = Diagnostic.Create(
                 new DiagnosticDescriptor(
-                    id: "VC001",
-                    title: "Internal Error",
-                    messageFormat: "Could not get syntax node for class",
-                    category: "ValiCraft",
+                    "VC001",
+                    "Internal Error",
+                    "Could not get syntax node for class",
+                    "ValiCraft",
                     DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
+                    true),
                 context.TargetNode.GetLocation());
-            
+
             diagnostics.Add(diagnostic);
 
             classDeclarationSyntax = null;
@@ -39,14 +39,14 @@ public static class SyntaxContextExtensions
         {
             var diagnostic = Diagnostic.Create(
                 new DiagnosticDescriptor(
-                    id: "VC002",
-                    title: "Internal Error",
-                    messageFormat: "Could not get symbol for class",
-                    category: "ValiCraft",
+                    "VC002",
+                    "Internal Error",
+                    "Could not get symbol for class",
+                    "ValiCraft",
                     DiagnosticSeverity.Error,
-                    isEnabledByDefault: true),
+                    true),
                 syntax.GetLocation());
-            
+
             diagnostics.Add(diagnostic);
 
             classDeclarationSyntax = null;

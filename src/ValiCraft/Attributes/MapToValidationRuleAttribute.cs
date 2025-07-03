@@ -10,7 +10,7 @@ public class MapToValidationRuleAttribute : Attribute
         ValidationRuleType = validationRuleType;
         ValidationRuleGenericFormat = validationRuleGenericFormat;
     }
-    
+
     public Type ValidationRuleType { get; }
     public string ValidationRuleGenericFormat { get; }
 }

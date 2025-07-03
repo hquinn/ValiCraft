@@ -12,12 +12,9 @@ public enum SignatureMatching
 
 public record MethodSignature(string MethodName, EquatableArray<ParameterInfo> Parameters)
 {
-    public SignatureMatching MatchesTypes(EquatableArray<NameAndTypeInfo> arguments, int skip = 0)
+    public SignatureMatching MatchesTypes(EquatableArray<ArgumentInfo> arguments, int skip = 0)
     {
-        if (Parameters.Count - skip != arguments.Count)
-        {
-            return SignatureMatching.None;
-        }
+        if (Parameters.Count - skip != arguments.Count) return SignatureMatching.None;
 
         var signatureMatching = SignatureMatching.Full;
 
@@ -26,20 +23,14 @@ public record MethodSignature(string MethodName, EquatableArray<ParameterInfo> P
             var parameter = Parameters[i];
             var argument = arguments[i - skip];
 
-            if (TypeComparisonUtils.AreEquivalent(parameter.TypeName, argument.Type))
-            {
-                continue;
-            }
-            
+            if (TypeComparisonUtils.AreEquivalent(parameter.TypeName, argument.Type)) continue;
+
             // If our concrete type doesn't match, then we can return early
-            if (!parameter.TypeIsGeneric)
-            {
-                return SignatureMatching.None;
-            }
-            
+            if (!parameter.TypeIsGeneric) return SignatureMatching.None;
+
             signatureMatching = SignatureMatching.Partial;
         }
-        
+
         return signatureMatching;
     }
 }

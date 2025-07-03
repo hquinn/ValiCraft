@@ -6,25 +6,25 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace ValiCraft.Generator.Tests.Helpers;
 
 /// <summary>
-/// A fluent pipeline for compiling sources and running an incremental generator.
+///     A fluent pipeline for compiling sources and running an incremental generator.
 /// </summary>
-/// <typeparam name="T">The type of the <see cref="IIncrementalGenerator"/> to run.</typeparam>
+/// <typeparam name="T">The type of the <see cref="IIncrementalGenerator" /> to run.</typeparam>
 public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
 {
     private readonly IncrementalGeneratorAdapter _adapter;
+    private readonly IncrementalGeneratorTestOptions _options;
     private readonly string[] _sources;
     private readonly string[] _trackingSteps;
-    private readonly IncrementalGeneratorTestOptions _options;
+    private CSharpCompilation? _compilation;
+    private GeneratorDriver? _driver;
+    private CSharpCompilation? _finalCompilation;
+    private GeneratorDriverRunResult? _firstRunResult;
 
     // Intermediate state populated by pipeline steps
     private IEnumerable<SyntaxTree>? _syntaxTrees;
-    private CSharpCompilation? _compilation;
-    private GeneratorDriver? _driver;
-    private GeneratorDriverRunResult? _firstRunResult;
-    private CSharpCompilation? _finalCompilation;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GeneratorPipeline{T}"/> class.
+    ///     Initializes a new instance of the <see cref="GeneratorPipeline{T}" /> class.
     /// </summary>
     internal GeneratorPipeline(IncrementalGeneratorAdapter adapter, string[] sources, string[] trackingSteps)
     {
@@ -35,7 +35,7 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     }
 
     /// <summary>
-    /// Step 1: Parses the source code strings into a collection of syntax trees.
+    ///     Step 1: Parses the source code strings into a collection of syntax trees.
     /// </summary>
     private GeneratorPipeline<T> ParseSources()
     {
@@ -44,16 +44,15 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     }
 
     /// <summary>
-    /// Step 2: Creates a C# compilation from the parsed syntax trees and configured options.
-    /// Requires <see cref="ParseSources"/> to have been called.
+    ///     Step 2: Creates a C# compilation from the parsed syntax trees and configured options.
+    ///     Requires <see cref="ParseSources" /> to have been called.
     /// </summary>
     private GeneratorPipeline<T> CreateInitialCompilation(bool assertInitialCompilation = false)
     {
         if (_syntaxTrees is null)
-        {
-            throw new InvalidOperationException("Cannot create compilation before parsing sources. Call ParseSources() first.");
-        }
-        
+            throw new InvalidOperationException(
+                "Cannot create compilation before parsing sources. Call ParseSources() first.");
+
         _compilation = CSharpCompilation.Create(
             _options.CompilationName,
             _syntaxTrees,
@@ -74,18 +73,18 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     }
 
     /// <summary>
-    /// Step 3: Creates the generator driver and performs the initial generator run.
-    /// Requires <see cref="CreateInitialCompilation"/> to have been called.
+    ///     Step 3: Creates the generator driver and performs the initial generator run.
+    ///     Requires <see cref="CreateInitialCompilation" /> to have been called.
     /// </summary>
     public GeneratorPipeline<T> RunGenerator(bool assertInitialCompilation = false)
     {
         ParseSources();
         CreateInitialCompilation(assertInitialCompilation);
 
-        ISourceGenerator generator = new T().AsSourceGenerator();
+        var generator = new T().AsSourceGenerator();
         var opts = new GeneratorDriverOptions(
-            disabledOutputs: IncrementalGeneratorOutputKind.None,
-            trackIncrementalGeneratorSteps: true);
+            IncrementalGeneratorOutputKind.None,
+            true);
         _driver = CSharpGeneratorDriver.Create([generator], driverOptions: opts);
 
         if (_compilation is not null)
@@ -108,21 +107,17 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     }
 
     /// <summary>
-    /// Step 4 (Optional): Performs a second generator run to assert that all outputs were cached.
-    /// This step is skipped if <see cref="IncrementalGeneratorTestOptions.AssertCacheability"/> is false.
-    /// Requires <see cref="RunGenerator"/> to have been called.
+    ///     Step 4 (Optional): Performs a second generator run to assert that all outputs were cached.
+    ///     This step is skipped if <see cref="IncrementalGeneratorTestOptions.AssertCacheability" /> is false.
+    ///     Requires <see cref="RunGenerator" /> to have been called.
     /// </summary>
     public GeneratorPipeline<T> AssertCacheability()
     {
-        if (!_options.AssertCacheability)
-        {
-            return this;
-        }
-        
+        if (!_options.AssertCacheability) return this;
+
         if (_driver is null || _compilation is null || _firstRunResult is null)
-        {
-            throw new InvalidOperationException("Cannot assert cacheability before running the generator. Call RunGenerator() first.");
-        }
+            throw new InvalidOperationException(
+                "Cannot assert cacheability before running the generator. Call RunGenerator() first.");
 
         var clone = _compilation.Clone();
         var secondRunResult = _driver
@@ -144,16 +139,15 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     }
 
     /// <summary>
-    /// Final Step: Extracts the diagnostics and generated source strings from the result.
-    /// Requires <see cref="RunGenerator"/> to have been called.
+    ///     Final Step: Extracts the diagnostics and generated source strings from the result.
+    ///     Requires <see cref="RunGenerator" /> to have been called.
     /// </summary>
     /// <returns>A tuple containing the final diagnostics and generated output.</returns>
     public (ImmutableArray<Diagnostic> Diagnostics, string[] Output) GetResult()
     {
         if (_firstRunResult is null || _finalCompilation is null)
-        {
-            throw new InvalidOperationException("Cannot get the result before running the generator. Call RunGenerator() first.");
-        }
+            throw new InvalidOperationException(
+                "Cannot get the result before running the generator. Call RunGenerator() first.");
 
         // Get diagnostics from the FINAL compilation, which should be error-free.
         var finalDiagnostics = _finalCompilation.GetDiagnostics()

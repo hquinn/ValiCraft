@@ -19,7 +19,7 @@ public static class AssertionExtensions
         params string[] expected)
     {
         result.Output.Select(NormalizeCode).Should().BeEquivalentTo(expected.Select(NormalizeCode));
-        
+
         return result;
     }
 

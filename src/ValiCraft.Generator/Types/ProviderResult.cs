@@ -26,7 +26,7 @@ public record ProviderResult<TValue> where TValue : class
         Value = value;
         Diagnostics = diagnostics;
     }
-    
+
     public TValue? Value { get; init; }
     public EquatableArray<Diagnostic> Diagnostics { get; init; }
 }

@@ -18,15 +18,17 @@ public record ClassInfo
         Accessibility = classSymbol.DeclaredAccessibility.ToCSharpKeyword();
         Modifiers = classDeclarationSyntax.GetFullModifiers();
         GenericParameters = classSymbol.GetClassGenericParameters(implementedInterfaceSymbol);
+        InterfaceGenericParameters = implementedInterfaceSymbol.GetImplementedInterfaceGenericArguments();
         FullyQualifiedWithoutGenerics = classSymbol.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric);
         FullyQualifiedUnboundedName = classSymbol.GetFullyQualifiedUnboundedName();
     }
-    
+
     public string Name { get; init; }
     public string Namespace { get; init; }
     public string Accessibility { get; init; }
     public string Modifiers { get; init; }
     public EquatableArray<GenericParameterInfo> GenericParameters { get; init; }
+    public EquatableArray<GenericArgumentInfo> InterfaceGenericParameters { get; init; }
     public string FullyQualifiedWithoutGenerics { get; init; }
     public string FullyQualifiedUnboundedName { get; init; }
 }

@@ -1,26 +1,25 @@
-using AwesomeAssertions;
-using Microsoft.CodeAnalysis;
 using System.Collections;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Reflection;
+using AwesomeAssertions;
+using Microsoft.CodeAnalysis;
 
 namespace ValiCraft.Generator.Tests.Helpers;
 
 /// <summary>
-/// A test adapter for running C# Incremental Source Generators and asserting their behavior.
-/// This class is designed to be instantiated with a configuration and exposes a fluent pipeline
-/// for executing the generator test steps.
+///     A test adapter for running C# Incremental Source Generators and asserting their behavior.
+///     This class is designed to be instantiated with a configuration and exposes a fluent pipeline
+///     for executing the generator test steps.
 /// </summary>
 /// <example>
-/// Simple usage:
-/// <code>
+///     Simple usage:
+///     <code>
 /// var adapter = new IncrementalGeneratorAdapter();
 /// var (diagnostics, output) = adapter.GetGeneratedTrees&lt;MyGenerator&gt;(sources, stages);
 /// </code>
-/// 
-/// Pipeline usage:
-/// <code>
+///     Pipeline usage:
+///     <code>
 /// var adapter = new IncrementalGeneratorAdapter();
 /// var result = adapter.CreatePipeline&lt;MyGenerator&gt;(sources, stages)
 ///     .ParseSources()
@@ -35,18 +34,18 @@ public class IncrementalGeneratorAdapter
     internal readonly IncrementalGeneratorTestOptions _options;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="IncrementalGeneratorAdapter{TGenerator}"/> class.
+    ///     Initializes a new instance of the <see cref="IncrementalGeneratorAdapter{TGenerator}" /> class.
     /// </summary>
     /// <param name="options">The configuration options for this test run. If null, default options will be used.</param>
     public IncrementalGeneratorAdapter(IncrementalGeneratorTestOptions? options = null)
     {
         _options = options ?? IncrementalGeneratorTestOptions.CreateDefault();
     }
-    
+
     /// <summary>
-    /// A convenience method that creates and runs a full generator test pipeline.
+    ///     A convenience method that creates and runs a full generator test pipeline.
     /// </summary>
-    /// <typeparam name="T">The type of the <see cref="IIncrementalGenerator"/> to run.</typeparam>
+    /// <typeparam name="T">The type of the <see cref="IIncrementalGenerator" /> to run.</typeparam>
     /// <param name="sources">The C# source code strings to compile.</param>
     /// <param name="trackingSteps">The names of the generator's tracking stages to verify for cacheability.</param>
     /// <returns>A tuple containing the generator diagnostics and the string content of the generated source files.</returns>
@@ -61,14 +60,14 @@ public class IncrementalGeneratorAdapter
             .AssertCacheability()
             .GetResult();
     }
-    
+
     /// <summary>
-    /// Creates a new test pipeline for executing a generator.
+    ///     Creates a new test pipeline for executing a generator.
     /// </summary>
-    /// <typeparam name="T">The type of the <see cref="IIncrementalGenerator"/> to run.</typeparam>
+    /// <typeparam name="T">The type of the <see cref="IIncrementalGenerator" /> to run.</typeparam>
     /// <param name="sources">The C# source code strings to compile.</param>
     /// <param name="trackingSteps">The names of the generator's tracking steps to verify.</param>
-    /// <returns>A new <see cref="GeneratorPipeline{T}"/> instance.</returns>
+    /// <returns>A new <see cref="GeneratorPipeline{T}" /> instance.</returns>
     public GeneratorPipeline<T> CreatePipeline<T>(string[] sources, string[] trackingSteps)
         where T : IIncrementalGenerator, new()
     {
@@ -76,8 +75,8 @@ public class IncrementalGeneratorAdapter
     }
 
     /// <summary>
-    /// Asserts that two generator runs produced identical tracked step outputs.
-    /// This method is for internal use by the pipeline.
+    ///     Asserts that two generator runs produced identical tracked step outputs.
+    ///     This method is for internal use by the pipeline.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void AssertRunsEqual(
@@ -108,16 +107,18 @@ public class IncrementalGeneratorAdapter
         static Dictionary<string, ImmutableArray<IncrementalGeneratorRunStep>> GetTrackedSteps(
             GeneratorDriverRunResult runResult,
             string[] trackingNames)
-            => runResult
+        {
+            return runResult
                 .Results[0] // We're only running a single generator
                 .TrackedSteps
                 .Where(step => trackingNames.Contains(step.Key)) // filter to known steps
                 .ToDictionary(x => x.Key, x => x.Value);
+        }
     }
 
     /// <summary>
-    /// Asserts that the outputs of a specific step are equal between two runs and that the second run was cached.
-    /// This method is for internal use by the pipeline.
+    ///     Asserts that the outputs of a specific step are equal between two runs and that the second run was cached.
+    ///     This method is for internal use by the pipeline.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void AssertEqual(
@@ -133,8 +134,8 @@ public class IncrementalGeneratorAdapter
             var runStep2 = runSteps2[i];
 
             // The output values should be equal between runs
-            IEnumerable<object> outputs1 = runStep1.Outputs.Select(x => x.Value);
-            IEnumerable<object> outputs2 = runStep2.Outputs.Select(x => x.Value);
+            var outputs1 = runStep1.Outputs.Select(x => x.Value);
+            var outputs2 = runStep2.Outputs.Select(x => x.Value);
 
             outputs1.Should()
                 .Equal(outputs2, $"because {stepName} should produce cacheable outputs");
@@ -151,9 +152,9 @@ public class IncrementalGeneratorAdapter
     }
 
     /// <summary>
-    /// Traverses the object graph of a generator step's output to ensure it doesn't
-    /// contain any "banned" types (like Compilation, ISymbol, or SyntaxNode).
-    /// This method is for internal use by the pipeline.
+    ///     Traverses the object graph of a generator step's output to ensure it doesn't
+    ///     contain any "banned" types (like Compilation, ISymbol, or SyntaxNode).
+    ///     This method is for internal use by the pipeline.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void AssertObjectGraph(IncrementalGeneratorRunStep runStep, string stepName)
@@ -163,52 +164,35 @@ public class IncrementalGeneratorAdapter
         var visited = new HashSet<object>();
         var bannedTypes = _options.BannedTypesForAnalysis;
 
-        if (bannedTypes is null || bannedTypes.Count == 0)
-        {
-            return; // No types to check against
-        }
+        if (bannedTypes is null || bannedTypes.Count == 0) return; // No types to check against
 
         // Check all of the outputs
-        foreach (var (obj, _) in runStep.Outputs)
-        {
-            Visit(obj);
-        }
+        foreach (var (obj, _) in runStep.Outputs) Visit(obj);
 
         void Visit(object? node)
         {
             // If we've already seen this object, or it's null, stop.
-            if (node is null || !visited.Add(node))
-            {
-                return;
-            }
+            if (node is null || !visited.Add(node)) return;
 
             foreach (var bannedType in bannedTypes)
-            {
                 // Assert that the node is not one of the banned types.
                 node.Should().NotBeAssignableTo(bannedType, because);
-            }
 
             // We don't need to inspect primitives, enums, or strings further.
-            Type type = node.GetType();
-            if (type.IsPrimitive || type.IsEnum || type == typeof(string))
-            {
-                return;
-            }
+            var type = node.GetType();
+            if (type.IsPrimitive || type.IsEnum || type == typeof(string)) return;
 
             // If the object is a collection, recursively visit each element.
             if (node is IEnumerable collection)
             {
-                foreach (object element in collection)
-                {
-                    Visit(element);
-                }
+                foreach (var element in collection) Visit(element);
                 return;
             }
 
             // Recursively check each field in the object.
-            foreach (FieldInfo field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+            foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
-                object? fieldValue = field.GetValue(node);
+                var fieldValue = field.GetValue(node);
                 Visit(fieldValue);
             }
         }

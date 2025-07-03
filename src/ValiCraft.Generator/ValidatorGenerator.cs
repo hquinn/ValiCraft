@@ -12,15 +12,15 @@ public class ValidatorGenerator : IIncrementalGenerator
         var validationRulesValuesProvider = context.SyntaxProvider
             .ForAttributeWithMetadataName(
                 FullyQualifiedNames.Attributes.GenerateRuleExtensionAttribute,
-                predicate: ValidationRuleExtensionSyntaxProvider.Predicate,
-                transform: ValidationRuleExtensionSyntaxProvider.Transform)
+                ValidationRuleExtensionSyntaxProvider.Predicate,
+                ValidationRuleExtensionSyntaxProvider.Transform)
             .WithTrackingName(TrackingSteps.ValidationRuleInfoResultTrackingName);
 
         var validatorsValuesProvider = context.SyntaxProvider
             .ForAttributeWithMetadataName(
                 FullyQualifiedNames.Attributes.GenerateValidatorAttribute,
-                predicate: ValidatorInfoProvider.Predicate,
-                transform: ValidatorInfoProvider.Transform)
+                ValidatorInfoProvider.Predicate,
+                ValidatorInfoProvider.Transform)
             .WithTrackingName(TrackingSteps.ValidatorInfoResultTrackingName);
 
         var allValidationRulesProvider = validationRulesValuesProvider.Collect();

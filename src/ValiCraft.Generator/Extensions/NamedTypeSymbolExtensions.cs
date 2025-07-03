@@ -14,26 +14,18 @@ public static class NamedTypeSymbolExtensions
         string fullyQualifiedBaseTypeName,
         int genericArgumentCount)
     {
-        if (symbol.BaseType is null)
-        {
-            return false;
-        }
+        if (symbol.BaseType is null) return false;
 
         if (symbol.BaseType.OriginalDefinition.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) !=
             fullyQualifiedBaseTypeName)
-        {
             return false;
-        }
-        
+
         return symbol.BaseType.TypeArguments.Length == genericArgumentCount;
     }
 
     public static string GetFullyQualifiedUnboundedName(this INamedTypeSymbol symbol)
     {
-        if (!symbol.IsGenericType)
-        {
-            return symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        }
+        if (!symbol.IsGenericType) return symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 
         var unboundGenericType = symbol.ConstructUnboundGenericType();
 
@@ -44,25 +36,16 @@ public static class NamedTypeSymbolExtensions
         this INamedTypeSymbol symbol,
         string attributeFullName)
     {
-        AttributeData? attributeData = symbol.GetAttributes()
+        var attributeData = symbol.GetAttributes()
             .FirstOrDefault(ad => ad.AttributeClass?.ToDisplayString() == attributeFullName);
 
-        if (attributeData == null)
-        {
-            return null;
-        }
+        if (attributeData == null) return null;
 
-        if (attributeData.ConstructorArguments.IsDefaultOrEmpty)
-        {
-            return null;
-        }
+        if (attributeData.ConstructorArguments.IsDefaultOrEmpty) return null;
 
-        TypedConstant firstArgument = attributeData.ConstructorArguments[0];
+        var firstArgument = attributeData.ConstructorArguments[0];
 
-        if (firstArgument is { Kind: TypedConstantKind.Primitive, Value: string stringValue })
-        {
-            return stringValue;
-        }
+        if (firstArgument is { Kind: TypedConstantKind.Primitive, Value: string stringValue }) return stringValue;
 
         return null;
     }
@@ -79,7 +62,7 @@ public static class NamedTypeSymbolExtensions
         string targetFullyQualifiedInterfaceName)
     {
         return classSymbol.AllInterfaces
-            .FirstOrDefault(i => 
+            .FirstOrDefault(i =>
                 i.OriginalDefinition
                     .ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) == targetFullyQualifiedInterfaceName);
     }
@@ -91,35 +74,51 @@ public static class NamedTypeSymbolExtensions
         var genericParameterInfos = new List<GenericParameterInfo>();
 
         if (!classSymbol.IsGenericType || implementedInterfaceSymbol is null)
-        {
             return genericParameterInfos.ToEquatableImmutableArray();
-        }
 
         foreach (var classTypeParameter in classSymbol.TypeParameters)
         {
             var inheritedPositions = new List<int>();
-            
+
             for (var i = 0; i < implementedInterfaceSymbol.TypeArguments.Length; i++)
             {
                 var interfaceTypeArgument = implementedInterfaceSymbol.TypeArguments[i];
 
                 if (SymbolEqualityComparer.Default.Equals(classTypeParameter, interfaceTypeArgument))
-                {
                     inheritedPositions.Add(i);
-                }
             }
-            
+
             var constraints = GetConstraintsAsString(classTypeParameter);
-            
+
             genericParameterInfos.Add(new GenericParameterInfo(
-                classTypeParameter.Name, 
-                inheritedPositions.ToEquatableImmutableArray(), 
+                classTypeParameter.Name,
+                inheritedPositions.ToEquatableImmutableArray(),
                 constraints));
         }
-        
+
         return genericParameterInfos.ToEquatableImmutableArray();
     }
-    
+
+    public static EquatableArray<GenericArgumentInfo> GetImplementedInterfaceGenericArguments(
+        this INamedTypeSymbol? implementedInterfaceSymbol)
+    {
+        if (implementedInterfaceSymbol is null)
+        {
+            return EquatableArray<GenericArgumentInfo>.Empty;
+        }
+
+        var typeArguments = implementedInterfaceSymbol.TypeArguments
+            .Select(x =>
+            {
+                var fullyQualifiedType = x.ToDisplayString();
+                var isGeneric = x.TypeKind == TypeKind.TypeParameter;
+                return new GenericArgumentInfo(fullyQualifiedType, isGeneric);
+            })
+            .ToEquatableImmutableArray();
+        
+        return typeArguments;
+    }
+
     public static string GetConstraintsAsString(ITypeParameterSymbol typeParameter)
     {
         var constraints = new List<string>();
@@ -129,12 +128,10 @@ public static class NamedTypeSymbolExtensions
         if (typeParameter.HasValueTypeConstraint) constraints.Add("struct");
         if (typeParameter.HasNotNullConstraint) constraints.Add("notnull");
         if (typeParameter.HasUnmanagedTypeConstraint) constraints.Add("unmanaged");
-        
+
         // Add any type constraints (e.g., where T : IMyInterface)
         foreach (var constraintType in typeParameter.ConstraintTypes)
-        {
             constraints.Add(constraintType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
-        }
 
         if (typeParameter.HasConstructorConstraint) constraints.Add("new()");
 

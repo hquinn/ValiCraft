@@ -14,10 +14,7 @@ public static class ClassDeclarationSyntaxExtensions
 
     public static string GetFullModifiers(this ClassDeclarationSyntax classDeclarationSyntax)
     {
-        if (classDeclarationSyntax.Modifiers.Count != 0)
-        {
-            return classDeclarationSyntax.Modifiers.ToFullString().Trim();
-        }
+        if (classDeclarationSyntax.Modifiers.Count != 0) return classDeclarationSyntax.Modifiers.ToFullString().Trim();
 
         return string.Empty;
     }

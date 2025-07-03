@@ -14,7 +14,7 @@ public static class AccessibilityExtensions
             Accessibility.Protected => "protected",
             Accessibility.Internal => "internal",
             Accessibility.ProtectedOrInternal => "protected internal", // Note the space
-            Accessibility.ProtectedAndInternal => "private protected",   // Note the space
+            Accessibility.ProtectedAndInternal => "private protected", // Note the space
             Accessibility.NotApplicable => string.Empty, // No C# keyword for this
             _ => throw new ArgumentOutOfRangeException(nameof(accessibility), $"Unknown accessibility: {accessibility}")
         };

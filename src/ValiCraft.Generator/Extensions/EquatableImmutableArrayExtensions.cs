@@ -12,5 +12,3 @@ public static class EquatableImmutableArrayExtensions
         return new EquatableArray<T>(items.ToArray());
     }
 }
-
-
