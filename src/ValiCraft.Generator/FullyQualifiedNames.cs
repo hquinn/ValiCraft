@@ -1,6 +1,6 @@
 namespace ValiCraft.Generator;
 
-public static class FullyQualifiedNames
+public static class KnownNames
 {
     public static class Attributes
     {
@@ -14,22 +14,28 @@ public static class FullyQualifiedNames
         public const string RulePlaceholder = "ValiCraft.Attributes.RulePlaceholder";
     }
 
-    public class Classes
+    public static class Classes
     {
         public const string Validator = "ValiCraft.Validator";
     }
 
-    public class Types
+    public static class Types
     {
         public const string Validation = "LitePrimitives.Validation";
         public const string Error = "LitePrimitives.Error";
     }
 
-    public class Interfaces
+    public static class Interfaces
     {
         public const string IValidator = "ValiCraft.IValidator";
         public const string IValidationRule = "ValiCraft.IValidationRule";
         public const string IValidationRuleBuilderType = "ValiCraft.BuilderTypes.IValidationRuleBuilderType";
         public const string IBuilderType = "ValiCraft.BuilderTypes.IBuilderType";
+    }
+
+    public static class Methods
+    {
+        public const string DefineRules = "DefineRules";
+        public const string Ensure = "Ensure";
     }
 }

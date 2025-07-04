@@ -10,7 +10,7 @@ public record RulePlaceholderInfo(string PlaceholderName, string ParameterName)
     public static EquatableArray<RulePlaceholderInfo> CreateFromRulePlaceholderAttributes(
         INamedTypeSymbol symbol)
     {
-        const string attributeName = FullyQualifiedNames.Attributes.RulePlaceholderAttribute;
+        const string attributeName = KnownNames.Attributes.RulePlaceholderAttribute;
 
         return symbol
             .GetAttributes()

@@ -6,29 +6,29 @@ using ValiCraft.Generator.Utils;
 
 namespace ValiCraft.Generator.Concepts;
 
-public record ClassInfo
+public record ClassInfo(
+    string Name,
+    string Namespace,
+    string Accessibility,
+    string Modifiers,
+    EquatableArray<GenericParameterInfo> GenericParameters,
+    EquatableArray<GenericArgumentInfo> InterfaceGenericParameters,
+    string FullyQualifiedWithoutGenerics,
+    string FullyQualifiedUnboundedName)
 {
-    public ClassInfo(
+    public static ClassInfo CreateFromSyntaxAndSymbols(
         ClassDeclarationSyntax classDeclarationSyntax,
         INamedTypeSymbol classSymbol,
         INamedTypeSymbol? implementedInterfaceSymbol)
     {
-        Name = classSymbol.Name;
-        Namespace = classSymbol.GetNamespace();
-        Accessibility = classSymbol.DeclaredAccessibility.ToCSharpKeyword();
-        Modifiers = classDeclarationSyntax.GetFullModifiers();
-        GenericParameters = classSymbol.GetClassGenericParameters(implementedInterfaceSymbol);
-        InterfaceGenericParameters = implementedInterfaceSymbol.GetImplementedInterfaceGenericArguments();
-        FullyQualifiedWithoutGenerics = classSymbol.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric);
-        FullyQualifiedUnboundedName = classSymbol.GetFullyQualifiedUnboundedName();
+        return new ClassInfo(
+            classSymbol.Name,
+            classSymbol.GetNamespace(),
+            classSymbol.DeclaredAccessibility.ToCSharpKeyword(),
+            classDeclarationSyntax.GetFullModifiers(),
+            classSymbol.GetClassGenericParameters(implementedInterfaceSymbol),
+            implementedInterfaceSymbol.GetImplementedInterfaceGenericArguments(),
+            classSymbol.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric),
+            classSymbol.GetFullyQualifiedUnboundedName());
     }
-
-    public string Name { get; init; }
-    public string Namespace { get; init; }
-    public string Accessibility { get; init; }
-    public string Modifiers { get; init; }
-    public EquatableArray<GenericParameterInfo> GenericParameters { get; init; }
-    public EquatableArray<GenericArgumentInfo> InterfaceGenericParameters { get; init; }
-    public string FullyQualifiedWithoutGenerics { get; init; }
-    public string FullyQualifiedUnboundedName { get; init; }
 }

@@ -31,13 +31,13 @@ public static class ValidationRuleExtensionSourceProvider
 
             if (validationRule.DefaultMessage is not null)
                 attributesBuilder.Append($"""
-                                          [global::{FullyQualifiedNames.Attributes.DefaultMessage}({validationRule.DefaultMessage})]
+                                          [global::{KnownNames.Attributes.DefaultMessage}({validationRule.DefaultMessage})]
                                               
                                           """);
 
             foreach (var rulePlaceholder in validationRule.RulePlaceholders)
                 attributesBuilder.Append($"""
-                                          [global::{FullyQualifiedNames.Attributes.RulePlaceholder}("{rulePlaceholder.PlaceholderName}", "{rulePlaceholder.ParameterName}")]
+                                          [global::{KnownNames.Attributes.RulePlaceholder}("{rulePlaceholder.PlaceholderName}", "{rulePlaceholder.ParameterName}")]
                                               
                                           """);
 
@@ -49,8 +49,8 @@ public static class ValidationRuleExtensionSourceProvider
                                {
                                    {{attributesBuilder}}{{validationRule.Class.Accessibility}} static class {{validationRule.Class.Name}}Extensions
                                    {
-                                       [global::{{FullyQualifiedNames.Attributes.MapToValidationRule}}(typeof({{mapToValidationRuleData.FullyQualifiedUnboundedName}}), "{{mapToValidationRuleData.ValidationRuleGenericFormat}}")]
-                                       {{validationRule.Class.Accessibility}} static global::{{FullyQualifiedNames.Interfaces.IValidationRuleBuilderType}}<TRequest, TPropertyType> {{validationRule.NameForExtensionMethod}}<{{validationRule.GetGenericArgumentsForExtensionMethod()}}>(
+                                       [global::{{KnownNames.Attributes.MapToValidationRule}}(typeof({{mapToValidationRuleData.FullyQualifiedUnboundedName}}), "{{mapToValidationRuleData.ValidationRuleGenericFormat}}")]
+                                       {{validationRule.Class.Accessibility}} static global::{{KnownNames.Interfaces.IValidationRuleBuilderType}}<TRequest, TPropertyType> {{validationRule.NameForExtensionMethod}}<{{validationRule.GetGenericArgumentsForExtensionMethod()}}>(
                                            {{GetMethodParameters(validationRule)}}) {{GetFullWhereClause(validationRule)}}
                                            => throw new global::System.NotImplementedException("Never gets called");
                                    }
@@ -68,8 +68,18 @@ public static class ValidationRuleExtensionSourceProvider
 
         // Get all the constraint clauses we discovered from the rule's generic parameters.
         var additionalClauses = validationRuleInfo.Class.GenericParameters
-            .Select(p => p.Constraints)
-            .Where(c => !string.IsNullOrEmpty(c));
+            .Select(p => (p.InheritedPositions, p.Constraints))
+            .Where(c => c.Constraints is not null)
+            .Select(x =>
+            {
+                // If it's the first parameter, then we know that it's TPropertyType
+                if (x.InheritedPositions.Contains(0))
+                {
+                    return (x.Constraints! with { Type = "TPropertyType" }).ToString();
+                }
+
+                return x.Constraints!.ToString();
+            });
 
         clauses.AddRange(additionalClauses);
 
@@ -79,6 +89,6 @@ public static class ValidationRuleExtensionSourceProvider
     private static string GetMethodParameters(ValidationRuleInfo validationRuleInfo)
     {
         return validationRuleInfo.GetParametersForExtensionMethod(
-            $"this global::{FullyQualifiedNames.Interfaces.IBuilderType}<TRequest, TPropertyType> builder");
+            $"this global::{KnownNames.Interfaces.IBuilderType}<TRequest, TPropertyType> builder");
     }
 }

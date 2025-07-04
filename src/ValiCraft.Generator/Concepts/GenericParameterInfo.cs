@@ -7,11 +7,14 @@ namespace ValiCraft.Generator.Concepts;
 public record GenericParameterInfo
 {
     public GenericParameterInfo(string name, List<int> inheritedPositions)
-        : this(name, inheritedPositions.ToEquatableImmutableArray(), string.Empty)
+        : this(name, inheritedPositions.ToEquatableImmutableArray(), null)
     {
     }
 
-    public GenericParameterInfo(string name, EquatableArray<int> inheritedPositions, string constraints)
+    public GenericParameterInfo(
+        string name,
+        EquatableArray<int> inheritedPositions,
+        GenericConstraintsInfo? constraints)
     {
         Name = name;
         InheritedPositions = inheritedPositions;
@@ -20,5 +23,5 @@ public record GenericParameterInfo
 
     public string Name { get; init; }
     public EquatableArray<int> InheritedPositions { get; init; }
-    public string Constraints { get; init; }
+    public GenericConstraintsInfo? Constraints { get; init; }
 }

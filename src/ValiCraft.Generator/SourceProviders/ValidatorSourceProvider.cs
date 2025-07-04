@@ -55,16 +55,16 @@ public static class ValidatorSourceProvider
 
                  namespace {{validatorInfo.Class.Namespace}}
                  {
-                     {{validatorInfo.Class.Modifiers}} class {{validatorInfo.Class.Name}} : global::{{FullyQualifiedNames.Interfaces.IValidator}}<{{validatorInfo.RequestTypeName}}>
+                     {{validatorInfo.Class.Modifiers}} class {{validatorInfo.Class.Name}} : global::{{KnownNames.Interfaces.IValidator}}<{{validatorInfo.RequestTypeName}}>
                      {
-                         public global::{{FullyQualifiedNames.Types.Validation}}<{{validatorInfo.RequestTypeName}}> Validate({{validatorInfo.RequestTypeName}} request)
+                         public global::{{KnownNames.Types.Validation}}<{{validatorInfo.RequestTypeName}}> Validate({{validatorInfo.RequestTypeName}} request)
                          {
-                             global::System.Collections.Generic.List<global::{{FullyQualifiedNames.Types.Error}}>? errors = null;
+                             global::System.Collections.Generic.List<global::{{KnownNames.Types.Error}}>? errors = null;
                              
                  {{validationRulesCode}}
                              return errors is not null
-                                 ? global::{{FullyQualifiedNames.Types.Validation}}<{{validatorInfo.RequestTypeName}}>.Failure(errors)
-                                 : global::{{FullyQualifiedNames.Types.Validation}}<{{validatorInfo.RequestTypeName}}>.Success(request);
+                                 ? global::{{KnownNames.Types.Validation}}<{{validatorInfo.RequestTypeName}}>.Failure(errors)
+                                 : global::{{KnownNames.Types.Validation}}<{{validatorInfo.RequestTypeName}}>.Success(request);
                          }
                      }
                  }
@@ -135,15 +135,15 @@ public static class ValidatorSourceProvider
     }
 
     private static string GetValidationMessage(
-        RuleInvocation ruleInvocation,
+        Rule rule,
         List<ArgumentInfo> arguments,
         MessageInfo? defaultMessage,
         EquatableArray<RulePlaceholderInfo> rulePlaceholders)
     {
         const string fallbackMessage = "\"An error has occurred\"";
-        var ruleOverride = ruleInvocation.RuleOverrides;
+        var ruleOverride = rule.RuleOverrides;
 
-        var propertyName = ruleOverride.OverridePropertyName?.Value ?? ruleInvocation.Property.Value;
+        var propertyName = ruleOverride.OverridePropertyName?.Value ?? rule.Property.Value;
         var isPropertyNameLiteral =
             ruleOverride.OverridePropertyName is null || ruleOverride.OverridePropertyName.IsLiteral;
 
@@ -156,7 +156,7 @@ public static class ValidatorSourceProvider
         {
             messageBuilder = new StringBuilder($"${message}"
                 .Replace("{PropertyName}", isPropertyNameLiteral ? propertyName : $"{{{propertyName}}}")
-                .Replace("{PropertyValue}", $"{{request.{ruleInvocation.Property.Value}}}"));
+                .Replace("{PropertyValue}", $"{{request.{rule.Property.Value}}}"));
 
             foreach (var rulePlaceholder in rulePlaceholders)
             {
@@ -172,7 +172,7 @@ public static class ValidatorSourceProvider
         }
 
         // The message is an expression.
-        messageBuilder = new StringBuilder($"{message}.Replace(\"{{PropertyName}}\", {(isPropertyNameLiteral ? $"\"{propertyName}\"" : propertyName)}).Replace(\"{{PropertyValue}}\", request.{ruleInvocation.Property.Value})");
+        messageBuilder = new StringBuilder($"{message}.Replace(\"{{PropertyName}}\", {(isPropertyNameLiteral ? $"\"{propertyName}\"" : propertyName)}).Replace(\"{{PropertyValue}}\", request.{rule.Property.Value})");
 
         foreach (var rulePlaceholder in rulePlaceholders)
         {
@@ -192,14 +192,14 @@ public static class ValidatorSourceProvider
         return messageBuilder.ToString();
     }
 
-    private static string GetValidationErrorCode(string validationRuleInvocation, RuleInvocation ruleInvocation)
+    private static string GetValidationErrorCode(string validationRuleInvocation, Rule rule)
     {
-        if (ruleInvocation.RuleOverrides.OverrideErrorCode is not null)
+        if (rule.RuleOverrides.OverrideErrorCode is not null)
         {
-            if (ruleInvocation.RuleOverrides.OverrideErrorCode.IsLiteral)
-                return $"\"{ruleInvocation.RuleOverrides.OverrideErrorCode.Value}\"";
+            if (rule.RuleOverrides.OverrideErrorCode.IsLiteral)
+                return $"\"{rule.RuleOverrides.OverrideErrorCode.Value}\"";
 
-            return ruleInvocation.RuleOverrides.OverrideErrorCode.Value;
+            return rule.RuleOverrides.OverrideErrorCode.Value;
         }
 
         return $"nameof({validationRuleInvocation})";
@@ -218,7 +218,7 @@ public static class ValidatorSourceProvider
 
     private static ValidationRuleInfo? MapRuleInvocationToValidationRule(
         List<ValidationRuleInfo> validRules,
-        RuleInvocation rule)
+        Rule rule)
     {
         ValidationRuleInfo? bestMatchedRule = null;
 
@@ -242,16 +242,16 @@ public static class ValidatorSourceProvider
 
     private static string BuildValidationRuleLogic(
         int assignedErrorsCount,
-        RuleInvocation ruleInvocation,
+        Rule rule,
         string validationRuleInvocation,
         string errorCode,
         string message)
     {
-        const string errorTypeName = $"global::{FullyQualifiedNames.Types.Error}";
-        var propertyAccessString = $"request.{ruleInvocation.Property.Value}";
+        const string errorTypeName = $"global::{KnownNames.Types.Error}";
+        var propertyAccessString = $"request.{rule.Property.Value}";
 
         var isValidCallArgs = new List<string> { propertyAccessString };
-        isValidCallArgs.AddRange(ruleInvocation.Arguments.GetArray()?.Select(x => x.Value) ?? []);
+        isValidCallArgs.AddRange(rule.Arguments.GetArray()?.Select(x => x.Value) ?? []);
         var isValidCallArgsString = string.Join(", ", isValidCallArgs);
 
         var validationLogic = new StringBuilder();

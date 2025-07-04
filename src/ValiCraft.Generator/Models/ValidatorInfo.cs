@@ -6,4 +6,4 @@ namespace ValiCraft.Generator.Models;
 public record ValidatorInfo(
     ClassInfo Class,
     string RequestTypeName,
-    EquatableArray<RuleInvocation> Rules);
+    EquatableArray<Rule> Rules);

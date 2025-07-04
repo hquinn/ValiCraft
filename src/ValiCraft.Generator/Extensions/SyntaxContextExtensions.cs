@@ -16,18 +16,7 @@ public static class SyntaxContextExtensions
         // If this happens, might as well return early
         if (context.TargetNode is not ClassDeclarationSyntax syntax)
         {
-            var diagnostic = Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "VC001",
-                    "Internal Error",
-                    "Could not get syntax node for class",
-                    "ValiCraft",
-                    DiagnosticSeverity.Error,
-                    true),
-                context.TargetNode.GetLocation());
-
-            diagnostics.Add(diagnostic);
-
+            diagnostics.Add(DefinedDiagnostics.CouldNotFindDeclaredSyntax(context.TargetNode.GetLocation()));
             classDeclarationSyntax = null;
             classSymbol = null;
             return false;
@@ -37,18 +26,7 @@ public static class SyntaxContextExtensions
         // If this happens, might as well return early
         if (context.TargetSymbol is not INamedTypeSymbol symbol)
         {
-            var diagnostic = Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "VC002",
-                    "Internal Error",
-                    "Could not get symbol for class",
-                    "ValiCraft",
-                    DiagnosticSeverity.Error,
-                    true),
-                syntax.GetLocation());
-
-            diagnostics.Add(diagnostic);
-
+            diagnostics.Add(DefinedDiagnostics.CouldNotFindSymbol(syntax.GetLocation()));
             classDeclarationSyntax = null;
             classSymbol = null;
             return false;

@@ -25,22 +25,41 @@ public static class ValidationRuleExtensionSyntaxProvider
 
         // If we can't get the class syntax and symbol, then return early
         if (!context.TryGetClassNodeAndSymbol(diagnostics, out var classDeclarationSyntax, out var classSymbol))
+        {
             return new ProviderResult<ValidationRuleInfo>(diagnostics);
+        }
 
-        var succeeded = TryGetNameForExtensionMethod(classDeclarationSyntax!, classSymbol!, diagnostics,
+        var succeeded = TryGetNameForExtensionMethod(
+            classDeclarationSyntax!,
+            classSymbol!,
+            diagnostics,
             out var nameForExtensionMethod);
-        succeeded &= TryGetValidationRuleInterface(classDeclarationSyntax!, classSymbol!, diagnostics,
+        
+        succeeded &= TryGetValidationRuleInterface(
+            classDeclarationSyntax!,
+            classSymbol!,
+            diagnostics,
             out var validationRuleInterface);
-        succeeded &= TryGetIsValidMethod(classDeclarationSyntax!, classSymbol!, diagnostics,
+        
+        succeeded &= TryGetIsValidMethod(
+            classDeclarationSyntax!,
+            classSymbol!,
+            diagnostics,
             out var isValidMethodSignature);
 
-        if (!succeeded) return new ProviderResult<ValidationRuleInfo>(diagnostics);
+        if (!succeeded)
+        {
+            return new ProviderResult<ValidationRuleInfo>(diagnostics);
+        }
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var classInfo = new ClassInfo(classDeclarationSyntax!, classSymbol!, validationRuleInterface);
-        var defaultMessage =
-            MessageInfo.CreateFromAttribute(classSymbol, FullyQualifiedNames.Attributes.DefaultMessageAttribute);
+        var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(
+            classDeclarationSyntax!, classSymbol!, validationRuleInterface);
+        
+        var defaultMessage = MessageInfo.CreateFromAttribute(
+            classSymbol, KnownNames.Attributes.DefaultMessageAttribute);
+        
         var rulePlaceholders = RulePlaceholderInfo.CreateFromRulePlaceholderAttributes(classSymbol!);
 
         var validationRuleInfo = new ValidationRuleInfo(
@@ -59,23 +78,12 @@ public static class ValidationRuleExtensionSyntaxProvider
         List<Diagnostic> diagnostics,
         out string? nameForExtensionMethod)
     {
-        nameForExtensionMethod =
-            classSymbol.GetAttributeStringArgument(FullyQualifiedNames.Attributes.GenerateRuleExtensionAttribute);
+        nameForExtensionMethod = classSymbol.GetAttributeStringArgument(
+            KnownNames.Attributes.GenerateRuleExtensionAttribute);
 
         if (nameForExtensionMethod is null)
         {
-            var diagnostic = Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "VC005",
-                    "Validation Rule Extension Name not specified",
-                    "Could not get name for Validation Rule Extension",
-                    "ValiCraft",
-                    DiagnosticSeverity.Error,
-                    true),
-                classDeclarationSyntax.GetLocation());
-
-            diagnostics.Add(diagnostic);
-
+            diagnostics.Add(DefinedDiagnostics.MissingValidationRuleExtensionName(classDeclarationSyntax.GetLocation()));
             return false;
         }
 
@@ -88,21 +96,12 @@ public static class ValidationRuleExtensionSyntaxProvider
         List<Diagnostic> diagnostics,
         out INamedTypeSymbol? validationRuleInterface)
     {
-        validationRuleInterface = classSymbol.GetInterface(FullyQualifiedNames.Interfaces.IValidationRule);
+        validationRuleInterface = classSymbol.GetInterface(KnownNames.Interfaces.IValidationRule);
 
         if (validationRuleInterface is null)
         {
-            var diagnostic = Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "VC006",
-                    "Missing IValidationRule interface",
-                    "Could not find IValidationRule interface on class marked with [GenerateRuleExtension]",
-                    "ValiCraft",
-                    DiagnosticSeverity.Error,
-                    true),
-                classDeclarationSyntax.GetLocation());
-
-            diagnostics.Add(diagnostic);
+            diagnostics.Add(DefinedDiagnostics.MissingIValidationRuleInterface(
+                classDeclarationSyntax.GetLocation()));
             return false;
         }
 
@@ -121,17 +120,7 @@ public static class ValidationRuleExtensionSyntaxProvider
 
         if (isValidMethod is null)
         {
-            var diagnostic = Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    "VC007",
-                    "Missing IsValid method",
-                    "Could not find IsValid method",
-                    "ValiCraft",
-                    DiagnosticSeverity.Error,
-                    true),
-                classDeclarationSyntax.GetLocation());
-
-            diagnostics.Add(diagnostic);
+            diagnostics.Add(DefinedDiagnostics.MissingIsValidMethod(classDeclarationSyntax.GetLocation()));
             isValidMethodSignature = null;
             return false;
         }

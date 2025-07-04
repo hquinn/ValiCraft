@@ -40,7 +40,20 @@ public record ValidationRuleInfo
 
         if (parameterCount == 0) return builderParameter;
 
-        var parameters = IsValidSignature.Parameters.Skip(1).Select(parameter => parameter.ToString());
+        var parameters = IsValidSignature.Parameters.Skip(1).Select(parameter =>
+        {
+            if (parameter.TypeIsGeneric)
+            {
+                var genericParameter = Class.GenericParameters
+                    .First(genericParameter => genericParameter.Name == parameter.TypeName);
+
+                if (genericParameter.InheritedPositions.Contains(0))
+                {
+                    parameter = parameter with { TypeName = "TPropertyType" };
+                }
+            }
+            return parameter.ToString();
+        });
 
         return $"{builderParameter}, {string.Join(", ", parameters)}";
     }

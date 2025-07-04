@@ -88,7 +88,7 @@ public static class NamedTypeSymbolExtensions
                     inheritedPositions.Add(i);
             }
 
-            var constraints = GetConstraintsAsString(classTypeParameter);
+            var constraints = GenericConstraintsInfo.CreateFromTypeParameterSymbol(classTypeParameter);
 
             genericParameterInfos.Add(new GenericParameterInfo(
                 classTypeParameter.Name,
@@ -117,28 +117,5 @@ public static class NamedTypeSymbolExtensions
             .ToEquatableImmutableArray();
         
         return typeArguments;
-    }
-
-    public static string GetConstraintsAsString(ITypeParameterSymbol typeParameter)
-    {
-        var constraints = new List<string>();
-
-        // Check for class, struct, notnull, unmanaged, and new() constraints
-        if (typeParameter.HasReferenceTypeConstraint) constraints.Add("class");
-        if (typeParameter.HasValueTypeConstraint) constraints.Add("struct");
-        if (typeParameter.HasNotNullConstraint) constraints.Add("notnull");
-        if (typeParameter.HasUnmanagedTypeConstraint) constraints.Add("unmanaged");
-
-        // Add any type constraints (e.g., where T : IMyInterface)
-        foreach (var constraintType in typeParameter.ConstraintTypes)
-            constraints.Add(constraintType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
-
-        if (typeParameter.HasConstructorConstraint) constraints.Add("new()");
-
-        // If there are no constraints, return an empty string.
-        if (constraints.Count == 0) return string.Empty;
-
-        // Otherwise, build the full "where" clause.
-        return $"where {typeParameter.Name} : {string.Join(", ", constraints)}";
     }
 }

@@ -3,7 +3,7 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Models;
 
-public record RuleInvocation(
+public record Rule(
     ArgumentInfo Property,
     string MethodName,
     EquatableArray<ArgumentInfo> Arguments,

@@ -11,14 +11,14 @@ public class ValidatorGenerator : IIncrementalGenerator
     {
         var validationRulesValuesProvider = context.SyntaxProvider
             .ForAttributeWithMetadataName(
-                FullyQualifiedNames.Attributes.GenerateRuleExtensionAttribute,
+                KnownNames.Attributes.GenerateRuleExtensionAttribute,
                 ValidationRuleExtensionSyntaxProvider.Predicate,
                 ValidationRuleExtensionSyntaxProvider.Transform)
             .WithTrackingName(TrackingSteps.ValidationRuleInfoResultTrackingName);
 
         var validatorsValuesProvider = context.SyntaxProvider
             .ForAttributeWithMetadataName(
-                FullyQualifiedNames.Attributes.GenerateValidatorAttribute,
+                KnownNames.Attributes.GenerateValidatorAttribute,
                 ValidatorInfoProvider.Predicate,
                 ValidatorInfoProvider.Transform)
             .WithTrackingName(TrackingSteps.ValidatorInfoResultTrackingName);

@@ -1,29 +1,37 @@
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Utils;
 
 namespace ValiCraft.Generator.Models;
 
-public record MapToValidationRuleData
+public record MapToValidationRuleData(
+    string FullyQualifiedValidationRule,
+    string FullyQualifiedUnboundedName,
+    string ValidationRuleGenericFormat)
 {
-    public MapToValidationRuleData(AttributeData attributeData)
+    public static MapToValidationRuleData? CreateFromMethodAndAttribute(
+        IMethodSymbol methodSymbol,
+        string attributeName)
     {
-        FullyQualifiedValidationRule = (attributeData.ConstructorArguments[0].Value as INamedTypeSymbol)
-            ?.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) ?? string.Empty;
-        FullyQualifiedUnboundedName = ""; // Not needed here
-        ValidationRuleGenericFormat = attributeData.ConstructorArguments[1].Value as string ?? string.Empty;
-    }
+        var attributeDisplayFormat = SymbolDisplayFormats.FormatAttributeWithoutParameters;
+        var attribute = methodSymbol
+            .GetAttributes()
+            .FirstOrDefault(ad => ad.AttributeClass?.ToDisplayString(attributeDisplayFormat) == attributeName);
 
-    public MapToValidationRuleData(
-        string fullyQualifiedValidationRule,
-        string fullyQualifiedUnboundedName,
-        string validationRuleGenericFormat)
+        if (attribute is not null)
+        {
+            return CreateFromAttribute(attribute);
+        }
+        
+        return null;
+    }
+    
+    public static MapToValidationRuleData CreateFromAttribute(AttributeData attributeData)
     {
-        FullyQualifiedValidationRule = fullyQualifiedValidationRule;
-        FullyQualifiedUnboundedName = fullyQualifiedUnboundedName;
-        ValidationRuleGenericFormat = validationRuleGenericFormat;
+        return new(
+            (attributeData.ConstructorArguments[0].Value as INamedTypeSymbol)
+                ?.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) ?? string.Empty,
+            "", // Not needed here
+            attributeData.ConstructorArguments[1].Value as string ?? string.Empty);
     }
-
-    public string FullyQualifiedValidationRule { get; init; }
-    public string FullyQualifiedUnboundedName { get; init; }
-    public string ValidationRuleGenericFormat { get; init; }
 }

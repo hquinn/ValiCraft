@@ -10,8 +10,8 @@ public static class InvocationExpressionSyntaxExtensions
 {
     public static EquatableArray<ArgumentInfo> GetArguments(
         this InvocationExpressionSyntax invocation,
-        SemanticModel semanticModel,
-        IMethodSymbol? methodSymbol)
+        IMethodSymbol? methodSymbol,
+        SemanticModel semanticModel)
     {
         // Your existing logic for getting arguments
         return invocation.ArgumentList.Arguments

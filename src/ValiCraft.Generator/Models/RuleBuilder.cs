@@ -3,7 +3,7 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Models;
 
-public class RuleInvocationBuilder(
+public class RuleBuilder(
     ArgumentInfo property,
     string methodName,
     EquatableArray<ArgumentInfo> arguments,
@@ -30,9 +30,9 @@ public class RuleInvocationBuilder(
         _propertyName = propertyName;
     }
 
-    public RuleInvocation Build()
+    public Rule Build()
     {
-        return new RuleInvocation(
+        return new Rule(
             property,
             methodName,
             arguments,
