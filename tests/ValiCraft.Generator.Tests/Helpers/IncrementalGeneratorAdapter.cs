@@ -31,7 +31,7 @@ namespace ValiCraft.Generator.Tests.Helpers;
 /// </example>
 public class IncrementalGeneratorAdapter
 {
-    internal readonly IncrementalGeneratorTestOptions _options;
+    internal readonly IncrementalGeneratorTestOptions Options;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="IncrementalGeneratorAdapter{TGenerator}" /> class.
@@ -39,7 +39,7 @@ public class IncrementalGeneratorAdapter
     /// <param name="options">The configuration options for this test run. If null, default options will be used.</param>
     public IncrementalGeneratorAdapter(IncrementalGeneratorTestOptions? options = null)
     {
-        _options = options ?? IncrementalGeneratorTestOptions.CreateDefault();
+        Options = options ?? IncrementalGeneratorTestOptions.CreateDefault([]);
     }
 
     /// <summary>
@@ -48,17 +48,22 @@ public class IncrementalGeneratorAdapter
     /// <typeparam name="T">The type of the <see cref="IIncrementalGenerator" /> to run.</typeparam>
     /// <param name="sources">The C# source code strings to compile.</param>
     /// <param name="trackingSteps">The names of the generator's tracking stages to verify for cacheability.</param>
+    /// <param name="errorCodePrefix">The prefix used for retrieving custom diagnostics.</param>
+    /// <param name="assertInitialCompilation">Flag used to assert the incremental generators diagnostics from compilation</param>
+    /// <param name="assertTrackingSteps">Flag used to assert if the tracking steps should not be empty</param>
     /// <returns>A tuple containing the generator diagnostics and the string content of the generated source files.</returns>
     public (ImmutableArray<Diagnostic> Diagnostics, string[] Output) GetGeneratedTrees<T>(
         string[] sources,
         string[] trackingSteps,
-        bool assertInitialCompilation = false)
+        string? errorCodePrefix,
+        bool assertInitialCompilation = false,
+        bool assertTrackingSteps = true)
         where T : IIncrementalGenerator, new()
     {
         return CreatePipeline<T>(sources, trackingSteps)
             .RunGenerator(assertInitialCompilation)
-            .AssertCacheability()
-            .GetResult();
+            .AssertCacheability(assertTrackingSteps)
+            .GetResult(errorCodePrefix);
     }
 
     /// <summary>
@@ -93,7 +98,7 @@ public class IncrementalGeneratorAdapter
             .NotBeEmpty()
             .And.HaveSameCount(trackedSteps2)
             .And.ContainKeys(trackedSteps2.Keys);
-
+        
         // For each tracked step, assert that the outputs are equal
         foreach (var (trackingName, runSteps1) in trackedSteps1)
         {
@@ -162,9 +167,9 @@ public class IncrementalGeneratorAdapter
         // Including the stepName in error messages to make it easy to isolate issues
         var because = $"{stepName} shouldn't contain banned symbols";
         var visited = new HashSet<object>();
-        var bannedTypes = _options.BannedTypesForAnalysis;
+        var bannedTypes = Options.BannedTypesForAnalysis;
 
-        if (bannedTypes is null || bannedTypes.Count == 0)
+        if (bannedTypes.Count == 0)
         {
             return; // No types to check against
         }

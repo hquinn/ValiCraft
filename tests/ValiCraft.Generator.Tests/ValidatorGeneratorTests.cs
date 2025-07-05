@@ -1,14 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
-using AwesomeAssertions.Execution;
 using LitePrimitives;
 using ValiCraft.Generator.Tests.Helpers;
 
 namespace ValiCraft.Generator.Tests;
 
-public class ValidatorGeneratorTests
+public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGenerator>
 {
     // Define request types which will be used on our validators
-    [StringSyntax("CSharp")] private const string Requests = """
+    [StringSyntax("CSharp")] private const string InputRequests = """
                                                              using System;
                                                              using System.Collections.Generic;
 
@@ -41,7 +40,7 @@ public class ValidatorGeneratorTests
 
     // Define validation rules which are annotated with [GenerateRuleExtension("...")].
     // When annotated, it will generate extension methods which the validators can use to generate validation code.
-    [StringSyntax("CSharp")] private const string ValidationRulesToGenerate =
+    [StringSyntax("CSharp")] private const string InputValidationRulesToGenerate =
         """
         using System;
         using ValiCraft;
@@ -85,7 +84,7 @@ public class ValidatorGeneratorTests
 
     // Define validation rules already generated.
     // This is here so we can simulate scenarios where the validation rules exist in a different project.
-    [StringSyntax("CSharp")] private const string ValidationRulesAlreadyGenerated =
+    [StringSyntax("CSharp")] private const string InputValidationRulesAlreadyGenerated =
         """
         using System;
         using ValiCraft;
@@ -135,7 +134,7 @@ public class ValidatorGeneratorTests
 
     // Define the validator against our request types.
     // This will generate a Validate method in a partial class.
-    [StringSyntax("CSharp")] private const string ValidatorsToGenerate = """
+    [StringSyntax("CSharp")] private const string InputValidatorsToGenerate = """
                                                                          using Test.Rules;
                                                                          using Test.Requests;
                                                                          using ValiCraft;
@@ -288,22 +287,12 @@ public class ValidatorGeneratorTests
     [Fact]
     public void ShouldGenerateValidationRuleExtensionsAndValidator()
     {
-        using var assertionScope = new AssertionScope();
-
-        var options = IncrementalGeneratorTestOptions.CreateDefault(typeof(Validator<>), typeof(Validation<>));
-
-        new IncrementalGeneratorAdapter(options)
-            .GetGeneratedTrees<ValidatorGenerator>(
-                [Requests, ValidationRulesToGenerate, ValidationRulesAlreadyGenerated, ValidatorsToGenerate],
-                [
-                    TrackingSteps.ValidationRuleInfoResultTrackingName,
-                    TrackingSteps.ValidatorInfoResultTrackingName
-                ])
-            .AssertHasNoDiagnostics()
-            .AssertOutputs(
-                ExpectedNotEmptyRuleExtensions,
-                ExpectedGreaterThanRuleExtensions,
-                ExpectedLessThanRuleExtensions,
-                ExpectedValidators);
+        AssertGenerator(
+            errorCodePrefix: "VALC",
+            additionalMetadataReferences: [typeof(Validator<>), typeof(Validation<>)],
+            trackingSteps: [TrackingSteps.ValidationRuleInfoResultTrackingName, TrackingSteps.ValidatorInfoResultTrackingName], 
+            inputs: [InputRequests, InputValidationRulesToGenerate, InputValidationRulesAlreadyGenerated, InputValidatorsToGenerate], 
+            outputs: [ExpectedNotEmptyRuleExtensions, ExpectedGreaterThanRuleExtensions, ExpectedLessThanRuleExtensions, ExpectedValidators],
+            diagnostics: []);
     }
 }

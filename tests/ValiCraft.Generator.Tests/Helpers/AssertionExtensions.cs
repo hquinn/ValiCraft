@@ -6,17 +6,19 @@ namespace ValiCraft.Generator.Tests.Helpers;
 
 public static class AssertionExtensions
 {
-    public static (ImmutableArray<Diagnostic> Diagnostics, string[] Output) AssertHasNoDiagnostics(
-        this (ImmutableArray<Diagnostic> Diagnostics, string[] Output) result)
+    public static (ImmutableArray<Diagnostic> Diagnostics, string[] Output) AssertDiagnostics(
+        this (ImmutableArray<Diagnostic> Diagnostics, string[] Output) result,
+        string[] expected)
     {
-        result.Diagnostics.Should().BeEmpty();
+        var diagnosticMessages = result.Diagnostics.Select(x => x.Descriptor.MessageFormat.ToString()).ToArray();
+        diagnosticMessages.Should().BeEquivalentTo(expected);
 
         return result;
     }
 
     public static (ImmutableArray<Diagnostic> Diagnostics, string[] Output) AssertOutputs(
         this (ImmutableArray<Diagnostic> Diagnostics, string[] Output) result,
-        params string[] expected)
+        string[] expected)
     {
         result.Output.Select(NormalizeCode).Should().BeEquivalentTo(expected.Select(NormalizeCode));
 

@@ -5,7 +5,7 @@ using ValiCraft.Generator.SyntaxProviders;
 namespace ValiCraft.Generator;
 
 [Generator(LanguageNames.CSharp)]
-public class ValidatorGenerator : IIncrementalGenerator
+public class ValiCraftGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -32,7 +32,7 @@ public class ValidatorGenerator : IIncrementalGenerator
             allValidationRulesProvider,
             static (spc, source) => ValidationRuleExtensionSourceProvider.EmitSourceCode(source, spc));
 
-        context.RegisterImplementationSourceOutput(
+        context.RegisterSourceOutput(
             combinedProvider,
             static (spc, source) =>
             {

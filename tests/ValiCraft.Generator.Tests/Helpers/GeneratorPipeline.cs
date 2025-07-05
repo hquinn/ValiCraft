@@ -31,7 +31,7 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
         _adapter = adapter;
         _sources = sources;
         _trackingSteps = trackingSteps;
-        _options = adapter._options;
+        _options = adapter.Options;
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     ///     This step is skipped if <see cref="IncrementalGeneratorTestOptions.AssertCacheability" /> is false.
     ///     Requires <see cref="RunGenerator" /> to have been called.
     /// </summary>
-    public GeneratorPipeline<T> AssertCacheability()
+    public GeneratorPipeline<T> AssertCacheability(bool assertTrackingSteps = true)
     {
         if (!_options.AssertCacheability)
         {
@@ -132,7 +132,10 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
             .GetRunResult();
 
         // Compare all the tracked outputs; this will throw on failure
-        _adapter.AssertRunsEqual(_firstRunResult, secondRunResult, _trackingSteps);
+        if (assertTrackingSteps)
+        {
+            _adapter.AssertRunsEqual(_firstRunResult, secondRunResult, _trackingSteps);
+        }
 
         // Verify the second run only generated cached source outputs
         secondRunResult.Results[0]
@@ -150,7 +153,7 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     ///     Requires <see cref="RunGenerator" /> to have been called.
     /// </summary>
     /// <returns>A tuple containing the final diagnostics and generated output.</returns>
-    public (ImmutableArray<Diagnostic> Diagnostics, string[] Output) GetResult()
+    public (ImmutableArray<Diagnostic> Diagnostics, string[] Output) GetResult(string? errorCodePrefix)
     {
         if (_firstRunResult is null || _finalCompilation is null)
         {
@@ -160,7 +163,7 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
         
         // Get diagnostics from the first compilation (only our custom diagnostics) and the final compilation 
         var allDiagnostics = _firstRunResult.Diagnostics
-            .Where(x => x.Id.StartsWith("VALC"))
+            .Where(x => errorCodePrefix is not null && x.Id.StartsWith(errorCodePrefix))
             .Concat(_finalCompilation.GetDiagnostics()
                     .Where(x => x.Severity >= DiagnosticSeverity.Error))
             .ToImmutableArray();

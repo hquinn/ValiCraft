@@ -41,10 +41,7 @@ public static class ValidationRuleExtensionSyntaxProvider
             diagnostics,
             out var validationRuleInterface);
 
-        succeeded &= TryGetIsValidMethod(
-            classDeclarationSyntax!,
-            classSymbol!,
-            diagnostics,
+        succeeded &= TryGetIsValidMethod(classSymbol!,
             out var isValidMethodSignature);
 
         if (!succeeded)
@@ -110,9 +107,7 @@ public static class ValidationRuleExtensionSyntaxProvider
     }
 
     private static bool TryGetIsValidMethod(
-        ClassDeclarationSyntax classDeclarationSyntax,
         INamedTypeSymbol classSymbol,
-        List<DiagnosticInfo> diagnostics,
         out MethodSignature? isValidMethodSignature)
     {
         var isValidMethod = classSymbol.GetMembers("IsValid")
@@ -121,7 +116,7 @@ public static class ValidationRuleExtensionSyntaxProvider
 
         if (isValidMethod is null)
         {
-            diagnostics.Add(DefinedDiagnostics.MissingIsValidMethod(classDeclarationSyntax.GetLocation()));
+            // No need for diagnostics, as this is not valid C# code anyway
             isValidMethodSignature = null;
             return false;
         }

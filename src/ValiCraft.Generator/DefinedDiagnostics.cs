@@ -57,19 +57,6 @@ public static class DefinedDiagnostics
             location);
     }
 
-    public static DiagnosticInfo MissingIsValidMethod(Location location)
-    {
-        return new DiagnosticInfo(
-            new DiagnosticDescriptor(
-                "VALC103",
-                "Missing IsValid method",
-                "Missing IsValid method for Validation Rule",
-                "ValiCraft",
-                DiagnosticSeverity.Error,
-                true),
-            location);
-    }
-
     public static DiagnosticInfo MissingPartialKeyword(Location location)
     {
         return new DiagnosticInfo(

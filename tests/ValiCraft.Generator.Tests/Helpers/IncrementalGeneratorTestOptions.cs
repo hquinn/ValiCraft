@@ -46,7 +46,7 @@ public class IncrementalGeneratorTestOptions
     ///     This includes references to core .NET assemblies and default banned types for analysis.
     /// </summary>
     /// <returns>A new <see cref="IncrementalGeneratorTestOptions" /> instance with default values.</returns>
-    public static IncrementalGeneratorTestOptions CreateDefault(params Type[] additionalMetadataReferenceTypes)
+    public static IncrementalGeneratorTestOptions CreateDefault(Type[] additionalMetadataReferenceTypes)
     {
         var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 

@@ -7,8 +7,7 @@ namespace ValiCraft.Generator.Models;
 
 public record RulePlaceholderInfo(string PlaceholderName, string ParameterName)
 {
-    public static EquatableArray<RulePlaceholderInfo> CreateFromRulePlaceholderAttributes(
-        INamedTypeSymbol symbol)
+    public static EquatableArray<RulePlaceholderInfo> CreateFromRulePlaceholderAttributes(INamedTypeSymbol symbol)
     {
         const string attributeName = KnownNames.Attributes.RulePlaceholderAttribute;
 
