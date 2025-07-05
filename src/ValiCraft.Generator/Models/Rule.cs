@@ -28,13 +28,12 @@ public enum SemanticMode
 
 public record Rule(
     SemanticMode SemanticMode,
-    ArgumentInfo Property,
     string MethodName,
     EquatableArray<ArgumentInfo> Arguments,
     MapToValidationRuleData? ValidationRuleData,
     RuleOverrideData RuleOverrides,
     MessageInfo? DefaultMessage,
-    EquatableArray<RulePlaceholderInfo> Placeholders,
+    EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location)
 {
     private const string FallbackMessage = "\"An error has occurred\"";
@@ -82,10 +81,10 @@ public record Rule(
         };
     }
 
-    public string GenerateCodeForRule(int assignedErrorsCount)
+    public string GenerateCodeForRule(ArgumentInfo property, ref int assignedErrorsCount)
     {
         const string errorTypeName = $"global::{KnownNames.Types.Error}";
-        var propertyAccessString = $"request.{Property.Value}";
+        var propertyAccessString = $"request.{property.Value}";
         var validationRuleInvocation =
             $"global::{ValidationRuleData?.FullyQualifiedValidationRule}{ConstructValidationRuleGeneric()}";
 
@@ -97,7 +96,7 @@ public record Rule(
                              if (!{{validationRuleInvocation}}.IsValid({{isValidCallArgsString}}))
                              {
                                  errors ??= new({{assignedErrorsCount}});
-                                 errors.Add({{errorTypeName}}.Validation({{GetValidationErrorCode(validationRuleInvocation)}}, {{GetValidationMessage()}}));
+                                 errors.Add({{errorTypeName}}.Validation({{GetValidationErrorCode(validationRuleInvocation)}}, {{GetValidationMessage(property)}}));
                              }
                  """;
     }
@@ -113,7 +112,7 @@ public record Rule(
         }
     }
     
-    private string GetValidationMessage()
+    private string GetValidationMessage(ArgumentInfo property)
     {
         var messageInfo = RuleOverrides.OverrideMessage ?? DefaultMessage;
         if (messageInfo is null)
@@ -122,23 +121,23 @@ public record Rule(
         }
 
         // Build a complete map of all available placeholders for this rule invocation.
-        var placeholderMap = BuildPlaceholderMap();
+        var placeholderMap = BuildPlaceholderMap(property);
 
         // Pass the template and the map to the builder.
         return BuildMessage(messageInfo, placeholderMap);
     }
 
-    private Dictionary<string, ArgumentInfo> BuildPlaceholderMap()
+    private Dictionary<string, ArgumentInfo> BuildPlaceholderMap(ArgumentInfo property)
     {
         var map = new Dictionary<string, ArgumentInfo>();
 
         // Add the standard placeholders.
         // We treat them just like any other argument.
-        var propertyNameInfo = RuleOverrides.OverridePropertyName ?? new MessageInfo(Property.Value, true);
+        var propertyNameInfo = RuleOverrides.OverridePropertyName ?? new MessageInfo(property.Value, true);
         map.Add("{PropertyName}",
             new ArgumentInfo("PropertyName", propertyNameInfo.Value, "string", propertyNameInfo.IsLiteral));
         map.Add("{PropertyValue}",
-            new ArgumentInfo("PropertyValue", $"request.{Property.Value}", Property.Type, false));
+            new ArgumentInfo("PropertyValue", $"request.{property.Value}", property.Type, false));
 
         // Add custom placeholders by mapping them to the invocation arguments by name.
         foreach (var placeholder in Placeholders)

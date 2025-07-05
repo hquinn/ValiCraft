@@ -12,7 +12,7 @@ public record ValidationRule
         string nameForExtensionMethod,
         MessageInfo? defaultMessage,
         MethodSignature isValidSignature,
-        EquatableArray<RulePlaceholderInfo> rulePlaceholders)
+        EquatableArray<RulePlaceholder> rulePlaceholders)
     {
         Class = classInfo;
         NameForExtensionMethod = nameForExtensionMethod;
@@ -25,7 +25,7 @@ public record ValidationRule
     public string NameForExtensionMethod { get; init; }
     public MessageInfo? DefaultMessage { get; init; }
     public MethodSignature IsValidSignature { get; init; }
-    public EquatableArray<RulePlaceholderInfo> RulePlaceholders { get; init; }
+    public EquatableArray<RulePlaceholder> RulePlaceholders { get; init; }
 
     public MapToValidationRuleData GetMapToValidationRuleData()
     {

@@ -16,7 +16,7 @@ public static class ValidatorInfoProvider
         return node is ClassDeclarationSyntax;
     }
 
-    public static ProviderResult<ValidatorInfo> Transform(
+    public static ProviderResult<Validator> Transform(
         GeneratorAttributeSyntaxContext context,
         CancellationToken cancellationToken)
     {
@@ -24,7 +24,7 @@ public static class ValidatorInfoProvider
 
         if (!context.TryGetClassNodeAndSymbol(diagnostics, out var classDeclarationSyntax, out var classSymbol))
         {
-            return new ProviderResult<ValidatorInfo>(diagnostics);
+            return new ProviderResult<Validator>(diagnostics);
         }
 
         var succeeded = TryCheckPartialKeyword(classDeclarationSyntax!, diagnostics);
@@ -32,20 +32,20 @@ public static class ValidatorInfoProvider
 
         if (!succeeded)
         {
-            return new ProviderResult<ValidatorInfo>(diagnostics);
+            return new ProviderResult<Validator>(diagnostics);
         }
 
         cancellationToken.ThrowIfCancellationRequested();
 
         var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(classDeclarationSyntax!, classSymbol!, null);
-        var invocations = RulesSyntaxProvider.DiscoverRules(classDeclarationSyntax!, context);
+        var ruleChains = RuleChainsSyntaxProvider.DiscoverRuleChains(classDeclarationSyntax!, context);
 
-        var validatorInfo = new ValidatorInfo(
+        var validatorInfo = new Validator(
             classInfo,
             requestTypeName!,
-            invocations.ToEquatableImmutableArray());
+            ruleChains);
 
-        return new ProviderResult<ValidatorInfo>(validatorInfo, diagnostics);
+        return new ProviderResult<Validator>(validatorInfo, diagnostics);
     }
 
     private static bool TryGetRequestTypeName(

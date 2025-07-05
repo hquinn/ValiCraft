@@ -5,12 +5,11 @@ namespace ValiCraft.Generator.Models;
 
 public class RuleBuilder(
     SemanticMode semanticMode,
-    ArgumentInfo property,
     string methodName,
     EquatableArray<ArgumentInfo> arguments,
     MapToValidationRuleData? mapData,
     MessageInfo? defaultMessage,
-    EquatableArray<RulePlaceholderInfo> rulePlaceholders,
+    EquatableArray<RulePlaceholder> rulePlaceholders,
     LocationInfo location)
 {
     private MessageInfo? _errorCode;
@@ -36,7 +35,6 @@ public class RuleBuilder(
     {
         return new Rule(
             semanticMode,
-            property,
             methodName,
             arguments,
             mapData,

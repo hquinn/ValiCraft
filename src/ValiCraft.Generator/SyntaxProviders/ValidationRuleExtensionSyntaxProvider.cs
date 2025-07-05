@@ -57,7 +57,7 @@ public static class ValidationRuleExtensionSyntaxProvider
         var defaultMessage = MessageInfo.CreateFromAttribute(
             classSymbol, KnownNames.Attributes.DefaultMessageAttribute);
 
-        var rulePlaceholders = RulePlaceholderInfo.CreateFromRulePlaceholderAttributes(classSymbol!);
+        var rulePlaceholders = RulePlaceholder.CreateFromRulePlaceholderAttributes(classSymbol!);
 
         var validationRuleInfo = new ValidationRule(
             classInfo,

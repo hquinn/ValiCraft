@@ -250,11 +250,13 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors ??= new(6);
                                                                                        errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotEmptyRule), $"'OrderNumber' must not be empty."));
                                                                                    }
+
                                                                                    if (!global::Test.Rules.LengthRule.IsValid(request.OrderNumber, 10))
                                                                                    {
                                                                                        errors ??= new(5);
                                                                                        errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.LengthRule), $"'OrderNumber' must have a length of 10."));
                                                                                    }
+
                                                                                    if (!global::Test.Rules.NotNullRule<string>.IsValid(request.ShippingReference))
                                                                                    {
                                                                                        errors ??= new(4);
@@ -265,6 +267,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors ??= new(3);
                                                                                        errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotEmptyRule), ShippingReferenceEmptyMessage.Replace("{PropertyName}", "ShippingReference").Replace("{PropertyValue}", request.ShippingReference)));
                                                                                    }
+
                                                                                    if (!global::Test.Rules.GreaterThanRule<decimal>.IsValid(request.OrderTotal, 0))
                                                                                    {
                                                                                        errors ??= new(2);

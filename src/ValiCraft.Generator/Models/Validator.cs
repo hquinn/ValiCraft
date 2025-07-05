@@ -3,7 +3,7 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Models;
 
-public record ValidatorInfo(
+public record Validator(
     ClassInfo Class,
     string RequestTypeName,
-    EquatableArray<Rule> Rules);
+    EquatableArray<RuleChain> RuleChains);

@@ -9,9 +9,9 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.SyntaxProviders;
 
-public static class RulesSyntaxProvider
+public static class RuleChainsSyntaxProvider
 {
-    public static EquatableArray<Rule> DiscoverRules(
+    public static EquatableArray<RuleChain> DiscoverRuleChains(
         ClassDeclarationSyntax classDeclarationSyntax,
         GeneratorAttributeSyntaxContext context)
     {
@@ -20,17 +20,17 @@ public static class RulesSyntaxProvider
 
         if (defineRulesMethodBody is null)
         {
-            return EquatableArray<Rule>.Empty;
+            return EquatableArray<RuleChain>.Empty;
         }
 
-        var rules = new List<Rule>();
+        var ruleChains = new List<RuleChain>();
 
         foreach (var statement in defineRulesMethodBody.Statements.OfType<ExpressionStatementSyntax>())
         {
-            FillRulesFromStatement(statement, rules, context);
+            GetRuleChainFromStatement(statement, ruleChains, context);
         }
 
-        return rules.ToEquatableImmutableArray();
+        return ruleChains.ToEquatableImmutableArray();
     }
 
     private static BlockSyntax? GetDefineRulesMethodBody(ClassDeclarationSyntax classDeclarationSyntax)
@@ -41,9 +41,9 @@ public static class RulesSyntaxProvider
             .Body;
     }
 
-    private static void FillRulesFromStatement(
+    private static void GetRuleChainFromStatement(
         ExpressionStatementSyntax statement,
-        List<Rule> rules,
+        List<RuleChain> ruleChains,
         GeneratorAttributeSyntaxContext context)
     {
         var invocationChain = GetRuleInvocationsFromStatement(statement);
@@ -59,7 +59,8 @@ public static class RulesSyntaxProvider
         }
 
         RuleBuilder? ruleBuilder = null;
-
+        var rules = new List<Rule>();
+        
         // Skip the Ensure method as that's not a rule.
         foreach (var ruleInvocation in invocationChain.Skip(1))
         {
@@ -71,6 +72,9 @@ public static class RulesSyntaxProvider
         {
             rules.Add(ruleBuilder.Build());
         }
+        
+        // Now that we have all the rules in the chain, we can now create the rule chain
+        ruleChains.Add(new PropertyRuleChain(property!, rules.ToEquatableImmutableArray(), rules.Count));
     }
 
     private static List<InvocationExpressionSyntax> GetRuleInvocationsFromStatement(ExpressionStatementSyntax statement)
@@ -241,13 +245,12 @@ public static class RulesSyntaxProvider
 
         return new RuleBuilder(
             SemanticMode.RichSemanticMode,
-            property,
             methodName,
             invocation.GetArguments(methodSymbol, semanticModel, [property]).ToEquatableImmutableArray(),
             MapToValidationRuleData.CreateFromMethodAndAttribute(
                 methodSymbol, KnownNames.Attributes.MapToValidationRuleAttribute),
             MessageInfo.CreateFromAttribute(containingType, KnownNames.Attributes.DefaultMessageAttribute),
-            RulePlaceholderInfo.CreateFromRulePlaceholderAttributes(containingType),
+            RulePlaceholder.CreateFromRulePlaceholderAttributes(containingType),
             LocationInfo.CreateFrom(invocation)!);
     }
 
@@ -262,12 +265,11 @@ public static class RulesSyntaxProvider
         // when we have access to the generated validation rules (unique to the weak semantics mode).
         return new RuleBuilder(
             SemanticMode.WeakSemanticMode,
-            property,
             methodName,
             invocation.GetArguments(null, semanticModel, [property]).ToEquatableImmutableArray(),
             null,
             null,
-            EquatableArray<RulePlaceholderInfo>.Empty,
+            EquatableArray<RulePlaceholder>.Empty,
             LocationInfo.CreateFrom(invocation)!);
     }
 }

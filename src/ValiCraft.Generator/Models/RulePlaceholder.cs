@@ -5,9 +5,9 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Models;
 
-public record RulePlaceholderInfo(string PlaceholderName, string ParameterName)
+public record RulePlaceholder(string PlaceholderName, string ParameterName)
 {
-    public static EquatableArray<RulePlaceholderInfo> CreateFromRulePlaceholderAttributes(INamedTypeSymbol symbol)
+    public static EquatableArray<RulePlaceholder> CreateFromRulePlaceholderAttributes(INamedTypeSymbol symbol)
     {
         const string attributeName = KnownNames.Attributes.RulePlaceholderAttribute;
 
@@ -25,7 +25,7 @@ public record RulePlaceholderInfo(string PlaceholderName, string ParameterName)
             {
                 var placeHolderName = ad.ConstructorArguments[0].Value as string;
                 var parameterName = ad.ConstructorArguments[1].Value as string;
-                return new RulePlaceholderInfo(placeHolderName!, parameterName!);
+                return new RulePlaceholder(placeHolderName!, parameterName!);
             })
             .ToEquatableImmutableArray();
     }
