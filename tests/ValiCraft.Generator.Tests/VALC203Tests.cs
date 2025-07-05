@@ -91,7 +91,7 @@ public class VALC203Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
         AssertGenerator(
             errorCodePrefix: "VALC",
             additionalMetadataReferences: [typeof(Validator<>), typeof(Validation<>)],
-            trackingSteps: [TrackingSteps.ValidationRuleInfoResultTrackingName, TrackingSteps.ValidatorInfoResultTrackingName], 
+            trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
             inputs: [InputRequests, InputValidationRules, InputValidator], 
             outputs: [ExpectedNotNullExtensions],
             diagnostics: ["Rule cannot be mapped to a validation rule. Try moving the rule out of the invocation chain."],

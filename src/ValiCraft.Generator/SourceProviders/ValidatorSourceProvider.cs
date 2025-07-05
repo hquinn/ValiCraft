@@ -25,12 +25,12 @@ public static class ValidatorSourceProvider
         foreach (var validatorResult in validatorResults)
         {
             if (HasReportedDiagnostics(validatorResult, context) ||
-                !RuleChainLinkingService.TryLinkWeakSemanticRules(validatorResult, validRules, context, out var validatorInfo))
+                !RuleChainLinkingService.TryLinkWeakSemanticRules(validatorResult, validRules, context, out var validator))
             {
                 continue;
             }
 
-            var sourceCode = GenerateSourceCode(validatorInfo);
+            var sourceCode = GenerateSourceCode(validator);
 
             context.AddSource($"{validatorResult.Value!.Class.Name}.g.cs", SourceText.From(sourceCode, Encoding.UTF8));
         }

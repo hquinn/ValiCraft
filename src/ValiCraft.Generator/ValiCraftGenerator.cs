@@ -14,14 +14,14 @@ public class ValiCraftGenerator : IIncrementalGenerator
                 KnownNames.Attributes.GenerateRuleExtensionAttribute,
                 ValidationRuleExtensionSyntaxProvider.Predicate,
                 ValidationRuleExtensionSyntaxProvider.Transform)
-            .WithTrackingName(TrackingSteps.ValidationRuleInfoResultTrackingName);
+            .WithTrackingName(TrackingSteps.ValidationRuleResultTrackingName);
 
         var validatorsValuesProvider = context.SyntaxProvider
             .ForAttributeWithMetadataName(
                 KnownNames.Attributes.GenerateValidatorAttribute,
-                ValidatorInfoProvider.Predicate,
-                ValidatorInfoProvider.Transform)
-            .WithTrackingName(TrackingSteps.ValidatorInfoResultTrackingName);
+                ValidatorSyntaxProvider.Predicate,
+                ValidatorSyntaxProvider.Transform)
+            .WithTrackingName(TrackingSteps.ValidatorResultTrackingName);
 
         var allValidationRulesProvider = validationRulesValuesProvider.Collect();
         var allValidatorProvider = validatorsValuesProvider.Collect();

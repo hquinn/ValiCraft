@@ -27,7 +27,7 @@ public class VALC102Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
         AssertGenerator(
             errorCodePrefix: "VALC",
             additionalMetadataReferences: [typeof(Validator<>), typeof(Validation<>)],
-            trackingSteps: [TrackingSteps.ValidationRuleInfoResultTrackingName, TrackingSteps.ValidatorInfoResultTrackingName], 
+            trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
             inputs: [Input], 
             outputs: [],
             diagnostics: ["Missing ValiCraft.IValidationRule interface on Validation Rule marked with [GenerateRuleExtension]"],

@@ -9,7 +9,7 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.SyntaxProviders;
 
-public static class ValidatorInfoProvider
+public static class ValidatorSyntaxProvider
 {
     public static bool Predicate(SyntaxNode node, CancellationToken cancellationToken)
     {
@@ -40,12 +40,12 @@ public static class ValidatorInfoProvider
         var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(classDeclarationSyntax!, classSymbol!, null);
         var ruleChains = RuleChainsSyntaxProvider.DiscoverRuleChains(classDeclarationSyntax!, context);
 
-        var validatorInfo = new Validator(
+        var validator = new Validator(
             classInfo,
             requestTypeName!,
             ruleChains);
 
-        return new ProviderResult<Validator>(validatorInfo, diagnostics);
+        return new ProviderResult<Validator>(validator, diagnostics);
     }
 
     private static bool TryGetRequestTypeName(

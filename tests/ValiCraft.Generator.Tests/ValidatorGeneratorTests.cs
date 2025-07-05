@@ -293,7 +293,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
         AssertGenerator(
             errorCodePrefix: "VALC",
             additionalMetadataReferences: [typeof(Validator<>), typeof(Validation<>)],
-            trackingSteps: [TrackingSteps.ValidationRuleInfoResultTrackingName, TrackingSteps.ValidatorInfoResultTrackingName], 
+            trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
             inputs: [InputRequests, InputValidationRulesToGenerate, InputValidationRulesAlreadyGenerated, InputValidatorsToGenerate], 
             outputs: [ExpectedNotEmptyRuleExtensions, ExpectedGreaterThanRuleExtensions, ExpectedLessThanRuleExtensions, ExpectedValidators],
             diagnostics: []);

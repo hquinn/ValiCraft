@@ -59,14 +59,14 @@ public static class ValidationRuleExtensionSyntaxProvider
 
         var rulePlaceholders = RulePlaceholder.CreateFromRulePlaceholderAttributes(classSymbol!);
 
-        var validationRuleInfo = new ValidationRule(
+        var validationRule = new ValidationRule(
             classInfo,
             nameForExtensionMethod!,
             defaultMessage,
             isValidMethodSignature!,
             rulePlaceholders);
 
-        return new ProviderResult<ValidationRule>(validationRuleInfo, diagnostics);
+        return new ProviderResult<ValidationRule>(validationRule, diagnostics);
     }
 
     private static bool TryGetNameForExtensionMethod(

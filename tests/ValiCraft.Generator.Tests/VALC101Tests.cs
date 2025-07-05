@@ -28,7 +28,7 @@ public class VALC101Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
         AssertGenerator(
             errorCodePrefix: "VALC",
             additionalMetadataReferences: [typeof(Validator<>), typeof(Validation<>)],
-            trackingSteps: [TrackingSteps.ValidationRuleInfoResultTrackingName, TrackingSteps.ValidatorInfoResultTrackingName], 
+            trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
             inputs: [Input], 
             outputs: [],
             diagnostics: ["Missing Validation Rule Extension Name"],

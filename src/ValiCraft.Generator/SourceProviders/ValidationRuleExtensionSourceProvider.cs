@@ -12,14 +12,14 @@ namespace ValiCraft.Generator.SourceProviders;
 public static class ValidationRuleExtensionSourceProvider
 {
     public static void EmitSourceCode(
-        ImmutableArray<ProviderResult<ValidationRule>> validationRuleInfoResults,
+        ImmutableArray<ProviderResult<ValidationRule>> validationRuleResults,
         SourceProductionContext context)
     {
-        foreach (var validationRuleInfoResult in validationRuleInfoResults)
+        foreach (var validationRuleResult in validationRuleResults)
         {
-            if (validationRuleInfoResult.Diagnostics is { Count: > 0 })
+            if (validationRuleResult.Diagnostics is { Count: > 0 })
             {
-                foreach (var diagnostic in validationRuleInfoResult.Diagnostics)
+                foreach (var diagnostic in validationRuleResult.Diagnostics)
                 {
                     context.ReportDiagnostic(diagnostic.CreateDiagnostic());
                 }
@@ -27,7 +27,7 @@ public static class ValidationRuleExtensionSourceProvider
                 continue;
             }
 
-            var validationRule = validationRuleInfoResult.Value!;
+            var validationRule = validationRuleResult.Value!;
             var mapToValidationRuleData = validationRule.GetMapToValidationRuleData();
 
             var attributesBuilder = new StringBuilder();

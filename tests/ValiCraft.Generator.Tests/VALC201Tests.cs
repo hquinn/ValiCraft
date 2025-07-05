@@ -65,7 +65,7 @@ public class VALC201Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
         AssertGenerator(
             errorCodePrefix: "VALC",
             additionalMetadataReferences: [typeof(Validator<>), typeof(Validation<>)],
-            trackingSteps: [TrackingSteps.ValidationRuleInfoResultTrackingName, TrackingSteps.ValidatorInfoResultTrackingName], 
+            trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
             inputs: [InputRequests, InputValidationRules, InputValidator], 
             outputs: [],
             diagnostics: ["Missing partial keyword on Validator marked with [GenerateValidator]"],
