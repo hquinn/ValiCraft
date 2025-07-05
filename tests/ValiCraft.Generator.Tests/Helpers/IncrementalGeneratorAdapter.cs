@@ -164,28 +164,46 @@ public class IncrementalGeneratorAdapter
         var visited = new HashSet<object>();
         var bannedTypes = _options.BannedTypesForAnalysis;
 
-        if (bannedTypes is null || bannedTypes.Count == 0) return; // No types to check against
+        if (bannedTypes is null || bannedTypes.Count == 0)
+        {
+            return; // No types to check against
+        }
 
         // Check all of the outputs
-        foreach (var (obj, _) in runStep.Outputs) Visit(obj);
+        foreach (var (obj, _) in runStep.Outputs)
+        {
+            Visit(obj);
+        }
 
         void Visit(object? node)
         {
             // If we've already seen this object, or it's null, stop.
-            if (node is null || !visited.Add(node)) return;
+            if (node is null || !visited.Add(node))
+            {
+                return;
+            }
 
             foreach (var bannedType in bannedTypes)
                 // Assert that the node is not one of the banned types.
+            {
                 node.Should().NotBeAssignableTo(bannedType, because);
+            }
 
             // We don't need to inspect primitives, enums, or strings further.
             var type = node.GetType();
-            if (type.IsPrimitive || type.IsEnum || type == typeof(string)) return;
+            if (type.IsPrimitive || type.IsEnum || type == typeof(string))
+            {
+                return;
+            }
 
             // If the object is a collection, recursively visit each element.
             if (node is IEnumerable collection)
             {
-                foreach (var element in collection) Visit(element);
+                foreach (var element in collection)
+                {
+                    Visit(element);
+                }
+
                 return;
             }
 

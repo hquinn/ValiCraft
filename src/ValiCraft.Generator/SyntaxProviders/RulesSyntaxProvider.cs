@@ -29,7 +29,7 @@ public static class RulesSyntaxProvider
         {
             FillRulesFromStatement(statement, rules, context);
         }
-        
+
         return rules.ToEquatableImmutableArray();
     }
 
@@ -59,7 +59,7 @@ public static class RulesSyntaxProvider
         }
 
         RuleBuilder? ruleBuilder = null;
-        
+
         // Skip the Ensure method as that's not a rule.
         foreach (var ruleInvocation in invocationChain.Skip(1))
         {
@@ -78,12 +78,12 @@ public static class RulesSyntaxProvider
         // Invocation chains will always start at the last method invocation.
         // We want to "climb up" the invocation chain until we reach the first method invocation.
         var invocationChain = new List<InvocationExpressionSyntax>();
-        
+
         if (statement.Expression is not InvocationExpressionSyntax outermostInvocation)
         {
             return invocationChain;
         }
-        
+
         ExpressionSyntax currentExpression = outermostInvocation;
 
         // Perform the invocation climb, adding all the method invocations.
@@ -96,8 +96,8 @@ public static class RulesSyntaxProvider
                 currentExpression = memberAccess.Expression;
             }
             else
-            {
                 // We've reached the start of the chain
+            {
                 break;
             }
         }
@@ -120,15 +120,15 @@ public static class RulesSyntaxProvider
             ensureInvocation = null;
             return false;
         }
-        
+
         ensureInvocation = invocationChain[0];
         var ensureMemberAccess = ensureInvocation.Expression as MemberAccessExpressionSyntax;
-        
+
         if (ensureMemberAccess?.Name.Identifier.ValueText != KnownNames.Methods.Ensure)
         {
             return false;
         }
-        
+
         return true;
     }
 
@@ -176,7 +176,7 @@ public static class RulesSyntaxProvider
         {
             return ruleBuilder;
         }
-        
+
         // If we were building a previous rule, then we can add it to the list of rules.
         if (ruleBuilder is not null)
         {
@@ -226,7 +226,7 @@ public static class RulesSyntaxProvider
 
                 return true;
         }
-        
+
         return false;
     }
 
@@ -240,9 +240,10 @@ public static class RulesSyntaxProvider
         var containingType = methodSymbol.ContainingType;
 
         return new RuleBuilder(
+            SemanticMode.RichSemanticMode,
             property,
             methodName,
-            invocation.GetArguments(methodSymbol, semanticModel),
+            invocation.GetArguments(methodSymbol, semanticModel, [property]).ToEquatableImmutableArray(),
             MapToValidationRuleData.CreateFromMethodAndAttribute(
                 methodSymbol, KnownNames.Attributes.MapToValidationRuleAttribute),
             MessageInfo.CreateFromAttribute(containingType, KnownNames.Attributes.DefaultMessageAttribute),
@@ -259,9 +260,10 @@ public static class RulesSyntaxProvider
         // We'll be able to (hopefully) add all the necessary information when it comes time later in the pipeline
         // when we have access to the generated validation rules (unique to the weak semantics mode).
         return new RuleBuilder(
+            SemanticMode.WeakSemanticMode,
             property,
             methodName,
-            invocation.GetArguments(null, semanticModel),
+            invocation.GetArguments(null, semanticModel, [property]).ToEquatableImmutableArray(),
             null,
             null,
             EquatableArray<RulePlaceholderInfo>.Empty);

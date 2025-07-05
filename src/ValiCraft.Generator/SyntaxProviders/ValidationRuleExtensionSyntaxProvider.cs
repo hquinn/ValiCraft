@@ -34,13 +34,13 @@ public static class ValidationRuleExtensionSyntaxProvider
             classSymbol!,
             diagnostics,
             out var nameForExtensionMethod);
-        
+
         succeeded &= TryGetValidationRuleInterface(
             classDeclarationSyntax!,
             classSymbol!,
             diagnostics,
             out var validationRuleInterface);
-        
+
         succeeded &= TryGetIsValidMethod(
             classDeclarationSyntax!,
             classSymbol!,
@@ -56,10 +56,10 @@ public static class ValidationRuleExtensionSyntaxProvider
 
         var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(
             classDeclarationSyntax!, classSymbol!, validationRuleInterface);
-        
+
         var defaultMessage = MessageInfo.CreateFromAttribute(
             classSymbol, KnownNames.Attributes.DefaultMessageAttribute);
-        
+
         var rulePlaceholders = RulePlaceholderInfo.CreateFromRulePlaceholderAttributes(classSymbol!);
 
         var validationRuleInfo = new ValidationRuleInfo(
@@ -83,7 +83,8 @@ public static class ValidationRuleExtensionSyntaxProvider
 
         if (nameForExtensionMethod is null)
         {
-            diagnostics.Add(DefinedDiagnostics.MissingValidationRuleExtensionName(classDeclarationSyntax.GetLocation()));
+            diagnostics.Add(
+                DefinedDiagnostics.MissingValidationRuleExtensionName(classDeclarationSyntax.GetLocation()));
             return false;
         }
 

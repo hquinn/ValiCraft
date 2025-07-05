@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ValiCraft.Generator;
 
@@ -17,7 +16,7 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
-    
+
     public static Diagnostic CouldNotFindSymbol(Location location)
     {
         return Diagnostic.Create(
@@ -30,7 +29,7 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
-    
+
     public static Diagnostic MissingValidationRuleExtensionName(Location location)
     {
         return Diagnostic.Create(
@@ -43,7 +42,7 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
-    
+
     public static Diagnostic MissingIValidationRuleInterface(Location location)
     {
         return Diagnostic.Create(
@@ -56,7 +55,7 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
-    
+
     public static Diagnostic MissingIsValidMethod(Location location)
     {
         return Diagnostic.Create(
@@ -69,7 +68,7 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
-    
+
     public static Diagnostic MissingPartialKeyword(Location location)
     {
         return Diagnostic.Create(
@@ -82,7 +81,7 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
-    
+
     public static Diagnostic MissingValidatorBaseClass(Location location)
     {
         return Diagnostic.Create(

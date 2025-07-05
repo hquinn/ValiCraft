@@ -54,14 +54,22 @@ public class IncrementalGeneratorTestOptions
 
         foreach (var assembly in loadedAssemblies)
             // We can't create a reference to dynamic or in-memory assemblies, so we skip them.
+        {
             if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location))
+            {
                 references.Add(MetadataReference.CreateFromFile(assembly.Location));
+            }
+        }
 
         // Your existing logic for adding specific types is still useful as a fallback
         // in case an assembly wasn't loaded for some reason.
         foreach (var type in additionalMetadataReferenceTypes)
+        {
             if (!references.Any(r => Path.GetFileName(r.Display) == Path.GetFileName(type.Assembly.Location)))
+            {
                 references.Add(MetadataReference.CreateFromFile(type.Assembly.Location));
+            }
+        }
 
         return new IncrementalGeneratorTestOptions
         {

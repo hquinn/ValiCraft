@@ -38,7 +38,10 @@ public record ValidationRuleInfo
     {
         var parameterCount = IsValidSignature.Parameters.Count - 1;
 
-        if (parameterCount == 0) return builderParameter;
+        if (parameterCount == 0)
+        {
+            return builderParameter;
+        }
 
         var parameters = IsValidSignature.Parameters.Skip(1).Select(parameter =>
         {
@@ -52,6 +55,7 @@ public record ValidationRuleInfo
                     parameter = parameter with { TypeName = "TPropertyType" };
                 }
             }
+
             return parameter.ToString();
         });
 
@@ -65,16 +69,25 @@ public record ValidationRuleInfo
             Class.GenericParameters
                 .Select(x => x.InheritedPositions.Contains(0) ? "TPropertyType" : x.Name));
 
-        if (string.IsNullOrWhiteSpace(genericParametersOutput)) return "TRequest, TPropertyType";
+        if (string.IsNullOrWhiteSpace(genericParametersOutput))
+        {
+            return "TRequest, TPropertyType";
+        }
 
-        if (genericParametersOutput.Contains("TPropertyType")) return $"TRequest, {genericParametersOutput}";
+        if (genericParametersOutput.Contains("TPropertyType"))
+        {
+            return $"TRequest, {genericParametersOutput}";
+        }
 
         return $"TRequest, TPropertyType, {genericParametersOutput}";
     }
 
     public string GetValidationRuleGenericFormat()
     {
-        if (Class.GenericParameters.Count == 0) return string.Empty;
+        if (Class.GenericParameters.Count == 0)
+        {
+            return string.Empty;
+        }
 
         var mappingIndexes = new int[Class.GenericParameters.Count];
 
@@ -100,7 +113,10 @@ public record ValidationRuleInfo
                 }
             }
 
-            if (!found) mappingIndexes[genericParameterIndex] = -1;
+            if (!found)
+            {
+                mappingIndexes[genericParameterIndex] = -1;
+            }
         }
 
         return $"<{string.Join(", ", mappingIndexes.Select(x => $"{{{x}}}"))}>";

@@ -51,7 +51,7 @@ public record GenericConstraintsInfo(string Type, EquatableArray<string> Constra
 
         return new GenericConstraintsInfo(typeParameter.Name, constraints.ToEquatableImmutableArray());
     }
-    
+
     public override string ToString()
     {
         return $"where {Type} : {string.Join(", ", Constraints)}";

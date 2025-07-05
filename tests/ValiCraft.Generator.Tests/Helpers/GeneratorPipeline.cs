@@ -50,8 +50,10 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     private GeneratorPipeline<T> CreateInitialCompilation(bool assertInitialCompilation = false)
     {
         if (_syntaxTrees is null)
+        {
             throw new InvalidOperationException(
                 "Cannot create compilation before parsing sources. Call ParseSources() first.");
+        }
 
         _compilation = CSharpCompilation.Create(
             _options.CompilationName,
@@ -113,11 +115,16 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     /// </summary>
     public GeneratorPipeline<T> AssertCacheability()
     {
-        if (!_options.AssertCacheability) return this;
+        if (!_options.AssertCacheability)
+        {
+            return this;
+        }
 
         if (_driver is null || _compilation is null || _firstRunResult is null)
+        {
             throw new InvalidOperationException(
                 "Cannot assert cacheability before running the generator. Call RunGenerator() first.");
+        }
 
         var clone = _compilation.Clone();
         var secondRunResult = _driver
@@ -146,8 +153,10 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     public (ImmutableArray<Diagnostic> Diagnostics, string[] Output) GetResult()
     {
         if (_firstRunResult is null || _finalCompilation is null)
+        {
             throw new InvalidOperationException(
                 "Cannot get the result before running the generator. Call RunGenerator() first.");
+        }
 
         // Get diagnostics from the FINAL compilation, which should be error-free.
         var finalDiagnostics = _finalCompilation.GetDiagnostics()

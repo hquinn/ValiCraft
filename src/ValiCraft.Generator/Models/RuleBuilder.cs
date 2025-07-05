@@ -4,6 +4,7 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.Models;
 
 public class RuleBuilder(
+    SemanticMode semanticMode,
     ArgumentInfo property,
     string methodName,
     EquatableArray<ArgumentInfo> arguments,
@@ -33,6 +34,7 @@ public class RuleBuilder(
     public Rule Build()
     {
         return new Rule(
+            semanticMode,
             property,
             methodName,
             arguments,

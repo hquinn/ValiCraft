@@ -1,14 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.Types;
-using ValiCraft.Generator.Utils;
 
 namespace ValiCraft.Generator.SyntaxProviders;
 
@@ -68,7 +65,8 @@ public static class ValidatorInfoProvider
         return true;
     }
 
-    private static bool TryCheckPartialKeyword(ClassDeclarationSyntax classDeclarationSyntax,
+    private static bool TryCheckPartialKeyword(
+        ClassDeclarationSyntax classDeclarationSyntax,
         List<Diagnostic> diagnostics)
     {
         if (!classDeclarationSyntax.IsPartial())

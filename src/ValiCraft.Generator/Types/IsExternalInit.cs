@@ -4,7 +4,6 @@ using System.ComponentModel;
 namespace System.Runtime.CompilerServices;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
-
 [EditorBrowsable(EditorBrowsableState.Never)]
 public class IsExternalInit
 {

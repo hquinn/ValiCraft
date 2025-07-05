@@ -14,18 +14,26 @@ public static class NamedTypeSymbolExtensions
         string fullyQualifiedBaseTypeName,
         int genericArgumentCount)
     {
-        if (symbol.BaseType is null) return false;
+        if (symbol.BaseType is null)
+        {
+            return false;
+        }
 
         if (symbol.BaseType.OriginalDefinition.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) !=
             fullyQualifiedBaseTypeName)
+        {
             return false;
+        }
 
         return symbol.BaseType.TypeArguments.Length == genericArgumentCount;
     }
 
     public static string GetFullyQualifiedUnboundedName(this INamedTypeSymbol symbol)
     {
-        if (!symbol.IsGenericType) return symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        if (!symbol.IsGenericType)
+        {
+            return symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        }
 
         var unboundGenericType = symbol.ConstructUnboundGenericType();
 
@@ -39,13 +47,22 @@ public static class NamedTypeSymbolExtensions
         var attributeData = symbol.GetAttributes()
             .FirstOrDefault(ad => ad.AttributeClass?.ToDisplayString() == attributeFullName);
 
-        if (attributeData == null) return null;
+        if (attributeData == null)
+        {
+            return null;
+        }
 
-        if (attributeData.ConstructorArguments.IsDefaultOrEmpty) return null;
+        if (attributeData.ConstructorArguments.IsDefaultOrEmpty)
+        {
+            return null;
+        }
 
         var firstArgument = attributeData.ConstructorArguments[0];
 
-        if (firstArgument is { Kind: TypedConstantKind.Primitive, Value: string stringValue }) return stringValue;
+        if (firstArgument is { Kind: TypedConstantKind.Primitive, Value: string stringValue })
+        {
+            return stringValue;
+        }
 
         return null;
     }
@@ -74,7 +91,9 @@ public static class NamedTypeSymbolExtensions
         var genericParameterInfos = new List<GenericParameterInfo>();
 
         if (!classSymbol.IsGenericType || implementedInterfaceSymbol is null)
+        {
             return genericParameterInfos.ToEquatableImmutableArray();
+        }
 
         foreach (var classTypeParameter in classSymbol.TypeParameters)
         {
@@ -85,7 +104,9 @@ public static class NamedTypeSymbolExtensions
                 var interfaceTypeArgument = implementedInterfaceSymbol.TypeArguments[i];
 
                 if (SymbolEqualityComparer.Default.Equals(classTypeParameter, interfaceTypeArgument))
+                {
                     inheritedPositions.Add(i);
+                }
             }
 
             var constraints = GenericConstraintsInfo.CreateFromTypeParameterSymbol(classTypeParameter);
@@ -115,7 +136,7 @@ public static class NamedTypeSymbolExtensions
                 return new GenericArgumentInfo(fullyQualifiedType, isGeneric);
             })
             .ToEquatableImmutableArray();
-        
+
         return typeArguments;
     }
 }

@@ -22,15 +22,15 @@ public record MapToValidationRuleData(
         {
             return CreateFromAttribute(attribute);
         }
-        
+
         return null;
     }
-    
+
     public static MapToValidationRuleData CreateFromAttribute(AttributeData attributeData)
     {
         return new(
             (attributeData.ConstructorArguments[0].Value as INamedTypeSymbol)
-                ?.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) ?? string.Empty,
+            ?.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) ?? string.Empty,
             "", // Not needed here
             attributeData.ConstructorArguments[1].Value as string ?? string.Empty);
     }
