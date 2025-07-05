@@ -17,7 +17,7 @@ public static class ValidationRuleExtensionSyntaxProvider
         return node is ClassDeclarationSyntax;
     }
 
-    public static ProviderResult<ValidationRuleInfo> Transform(
+    public static ProviderResult<ValidationRule> Transform(
         GeneratorAttributeSyntaxContext context,
         CancellationToken cancellationToken)
     {
@@ -26,7 +26,7 @@ public static class ValidationRuleExtensionSyntaxProvider
         // If we can't get the class syntax and symbol, then return early
         if (!context.TryGetClassNodeAndSymbol(diagnostics, out var classDeclarationSyntax, out var classSymbol))
         {
-            return new ProviderResult<ValidationRuleInfo>(diagnostics);
+            return new ProviderResult<ValidationRule>(diagnostics);
         }
 
         var succeeded = TryGetNameForExtensionMethod(
@@ -49,7 +49,7 @@ public static class ValidationRuleExtensionSyntaxProvider
 
         if (!succeeded)
         {
-            return new ProviderResult<ValidationRuleInfo>(diagnostics);
+            return new ProviderResult<ValidationRule>(diagnostics);
         }
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -62,14 +62,14 @@ public static class ValidationRuleExtensionSyntaxProvider
 
         var rulePlaceholders = RulePlaceholderInfo.CreateFromRulePlaceholderAttributes(classSymbol!);
 
-        var validationRuleInfo = new ValidationRuleInfo(
+        var validationRuleInfo = new ValidationRule(
             classInfo,
             nameForExtensionMethod!,
             defaultMessage,
             isValidMethodSignature!,
             rulePlaceholders);
 
-        return new ProviderResult<ValidationRuleInfo>(validationRuleInfo, diagnostics);
+        return new ProviderResult<ValidationRule>(validationRuleInfo, diagnostics);
     }
 
     private static bool TryGetNameForExtensionMethod(

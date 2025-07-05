@@ -5,9 +5,9 @@ using ValiCraft.Generator.Utils;
 
 namespace ValiCraft.Generator.Models;
 
-public record ValidationRuleInfo
+public record ValidationRule
 {
-    public ValidationRuleInfo(
+    public ValidationRule(
         ClassInfo classInfo,
         string nameForExtensionMethod,
         MessageInfo? defaultMessage,

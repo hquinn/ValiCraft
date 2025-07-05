@@ -12,7 +12,7 @@ namespace ValiCraft.Generator.SourceProviders;
 public static class ValidationRuleExtensionSourceProvider
 {
     public static void EmitSourceCode(
-        ImmutableArray<ProviderResult<ValidationRuleInfo>> validationRuleInfoResults,
+        ImmutableArray<ProviderResult<ValidationRule>> validationRuleInfoResults,
         SourceProductionContext context)
     {
         foreach (var validationRuleInfoResult in validationRuleInfoResults)
@@ -69,12 +69,12 @@ public static class ValidationRuleExtensionSourceProvider
         }
     }
 
-    private static string GetFullWhereClause(ValidationRuleInfo validationRuleInfo)
+    private static string GetFullWhereClause(ValidationRule validationRule)
     {
         var clauses = new List<string> { "where TRequest : class" };
 
         // Get all the constraint clauses we discovered from the rule's generic parameters.
-        var additionalClauses = validationRuleInfo.Class.GenericParameters
+        var additionalClauses = validationRule.Class.GenericParameters
             .Select(p => (p.InheritedPositions, p.Constraints))
             .Where(c => c.Constraints is not null)
             .Select(x =>
@@ -93,9 +93,9 @@ public static class ValidationRuleExtensionSourceProvider
         return string.Join(" ", clauses);
     }
 
-    private static string GetMethodParameters(ValidationRuleInfo validationRuleInfo)
+    private static string GetMethodParameters(ValidationRule validationRule)
     {
-        return validationRuleInfo.GetParametersForExtensionMethod(
+        return validationRule.GetParametersForExtensionMethod(
             $"this global::{KnownNames.Interfaces.IBuilderType}<TRequest, TPropertyType> builder");
     }
 }

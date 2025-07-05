@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Models;
@@ -36,8 +37,82 @@ public record Rule(
     EquatableArray<RulePlaceholderInfo> Placeholders)
 {
     private const string FallbackMessage = "\"An error has occurred\"";
+    
+    public ValidationRule? MapToValidationRule(ValidationRule[] validValidationRules)
+    {
+        ValidationRule? bestMatchedRule = null;
 
-    public string GetValidationMessage()
+        foreach (var validRule in validValidationRules.Where(x => x.NameForExtensionMethod == MethodName))
+        {
+            // We skip the first parameter as this will always be the property type
+            var matchesResult = validRule.IsValidSignature.MatchesTypes(Arguments);
+
+            // Check if we have a direct match with signature types
+            // If so, we can return early
+            if (matchesResult == SignatureMatching.Full)
+            {
+                return validRule;
+            }
+
+            // We may want to do some rankings in the future
+            // if we can determine if a parameter is non-generic and matches
+            if (matchesResult == SignatureMatching.Partial)
+            {
+                bestMatchedRule = validRule;
+            }
+        }
+
+        return bestMatchedRule;
+    }
+
+    public Rule EnrichRuleFromValidationRule(ValidationRule? matchedRule)
+    {
+        if (matchedRule is null)
+        {
+            return this;
+        }
+
+        return this with
+        {
+            Arguments = EnrichArguments(matchedRule).ToEquatableImmutableArray(),
+            ValidationRuleData = matchedRule.GetMapToValidationRuleData(),
+            DefaultMessage = matchedRule.DefaultMessage,
+            Placeholders = matchedRule.RulePlaceholders
+        };
+    }
+
+    public string GenerateCodeForRule(int assignedErrorsCount)
+    {
+        const string errorTypeName = $"global::{KnownNames.Types.Error}";
+        var propertyAccessString = $"request.{Property.Value}";
+        var validationRuleInvocation =
+            $"global::{ValidationRuleData?.FullyQualifiedValidationRule}{ConstructValidationRuleGeneric()}";
+
+        var isValidCallArgs = new List<string> { propertyAccessString };
+        isValidCallArgs.AddRange(Arguments.GetArray()?.Skip(1).Select(x => x.Value) ?? []);
+        var isValidCallArgsString = string.Join(", ", isValidCallArgs);
+
+        return $$"""
+                             if (!{{validationRuleInvocation}}.IsValid({{isValidCallArgsString}}))
+                             {
+                                 errors ??= new({{assignedErrorsCount}});
+                                 errors.Add({{errorTypeName}}.Validation({{GetValidationErrorCode(validationRuleInvocation)}}, {{GetValidationMessage()}}));
+                             }
+                 """;
+    }
+    
+    private IEnumerable<ArgumentInfo> EnrichArguments(ValidationRule matchedRule)
+    {
+        for (var i = 0; i < Arguments.Count; i++)
+        {
+            var argument = Arguments[i];
+            var parameter = matchedRule.IsValidSignature.Parameters[i];
+
+            yield return argument with { Name = parameter.Name };
+        }
+    }
+    
+    private string GetValidationMessage()
     {
         var messageInfo = RuleOverrides.OverrideMessage ?? DefaultMessage;
         if (messageInfo is null)
@@ -138,5 +213,34 @@ public record Rule(
         }
 
         return expressionBuilder.ToString();
+    }
+
+    private string GetValidationErrorCode(string validationRuleInvocation)
+    {
+        if (RuleOverrides.OverrideErrorCode is null)
+        {
+            return $"nameof({validationRuleInvocation})";
+        }
+
+        if (RuleOverrides.OverrideErrorCode.IsLiteral)
+        {
+            return $"\"{RuleOverrides.OverrideErrorCode.Value}\"";
+        }
+
+        return RuleOverrides.OverrideErrorCode.Value;
+    }
+    
+    private string? ConstructValidationRuleGeneric()
+    {
+        if (string.IsNullOrEmpty(ValidationRuleData?.ValidationRuleGenericFormat))
+        {
+            return null;
+        }
+
+        var args = Arguments
+            .Select(argument => argument.Type)
+            .ToArray<object>();
+
+        return string.Format(ValidationRuleData!.ValidationRuleGenericFormat, args);
     }
 }
