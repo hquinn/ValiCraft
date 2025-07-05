@@ -34,7 +34,8 @@ public record Rule(
     MapToValidationRuleData? ValidationRuleData,
     RuleOverrideData RuleOverrides,
     MessageInfo? DefaultMessage,
-    EquatableArray<RulePlaceholderInfo> Placeholders)
+    EquatableArray<RulePlaceholderInfo> Placeholders,
+    LocationInfo Location)
 {
     private const string FallbackMessage = "\"An error has occurred\"";
     
@@ -156,14 +157,12 @@ public record Rule(
         MessageInfo messageTemplate,
         Dictionary<string, ArgumentInfo> placeholderMap)
     {
-        // Case 1: The message template is a LITERAL.
         // We can do maximum compile-time optimization and generate an efficient interpolated string.
         if (messageTemplate.IsLiteral)
         {
             return BuildMessageFromLiteral(messageTemplate, placeholderMap);
         }
 
-        // Case 2: The message template is a DYNAMIC EXPRESSION.
         // We must generate a chain of .Replace() calls to be executed at runtime.
         return BuildMessageFromExpression(messageTemplate, placeholderMap);
     }

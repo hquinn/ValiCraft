@@ -1,32 +1,19 @@
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
+using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
 
 namespace ValiCraft.Generator.Types;
 
-public record ProviderResult<TValue> where TValue : class
+public record ProviderResult<TValue>(TValue? Value, EquatableArray<DiagnosticInfo> Diagnostics)
+    where TValue : class
 {
-    public ProviderResult(EquatableArray<Diagnostic> diagnostics)
-        : this(null, diagnostics)
-    {
-    }
-
-    public ProviderResult(List<Diagnostic> diagnostics)
+    public ProviderResult(List<DiagnosticInfo> diagnostics)
         : this(null, diagnostics.ToEquatableImmutableArray())
     {
     }
 
-    public ProviderResult(TValue? value, List<Diagnostic> diagnostics)
+    public ProviderResult(TValue? value, List<DiagnosticInfo> diagnostics)
         : this(value, diagnostics.ToEquatableImmutableArray())
     {
     }
-
-    public ProviderResult(TValue? value, EquatableArray<Diagnostic> diagnostics)
-    {
-        Value = value;
-        Diagnostics = diagnostics;
-    }
-
-    public TValue? Value { get; init; }
-    public EquatableArray<Diagnostic> Diagnostics { get; init; }
 }

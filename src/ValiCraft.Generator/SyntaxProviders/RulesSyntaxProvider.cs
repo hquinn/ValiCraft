@@ -247,7 +247,8 @@ public static class RulesSyntaxProvider
             MapToValidationRuleData.CreateFromMethodAndAttribute(
                 methodSymbol, KnownNames.Attributes.MapToValidationRuleAttribute),
             MessageInfo.CreateFromAttribute(containingType, KnownNames.Attributes.DefaultMessageAttribute),
-            RulePlaceholderInfo.CreateFromRulePlaceholderAttributes(containingType));
+            RulePlaceholderInfo.CreateFromRulePlaceholderAttributes(containingType),
+            LocationInfo.CreateFrom(invocation)!);
     }
 
     private static RuleBuilder CreateFromWeakSemantics(
@@ -266,6 +267,7 @@ public static class RulesSyntaxProvider
             invocation.GetArguments(null, semanticModel, [property]).ToEquatableImmutableArray(),
             null,
             null,
-            EquatableArray<RulePlaceholderInfo>.Empty);
+            EquatableArray<RulePlaceholderInfo>.Empty,
+            LocationInfo.CreateFrom(invocation)!);
     }
 }

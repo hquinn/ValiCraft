@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ValiCraft.Generator.Concepts;
 
 namespace ValiCraft.Generator.Extensions;
 
@@ -8,7 +9,7 @@ public static class SyntaxContextExtensions
 {
     public static bool TryGetClassNodeAndSymbol(
         this GeneratorAttributeSyntaxContext context,
-        List<Diagnostic> diagnostics,
+        List<DiagnosticInfo> diagnostics,
         out ClassDeclarationSyntax? classDeclarationSyntax,
         out INamedTypeSymbol? classSymbol)
     {

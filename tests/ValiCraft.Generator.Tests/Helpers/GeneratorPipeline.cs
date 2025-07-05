@@ -157,14 +157,16 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
             throw new InvalidOperationException(
                 "Cannot get the result before running the generator. Call RunGenerator() first.");
         }
-
-        // Get diagnostics from the FINAL compilation, which should be error-free.
-        var finalDiagnostics = _finalCompilation.GetDiagnostics()
-            .Where(x => x.Severity >= DiagnosticSeverity.Error)
+        
+        // Get diagnostics from the first compilation (only our custom diagnostics) and the final compilation 
+        var allDiagnostics = _firstRunResult.Diagnostics
+            .Where(x => x.Id.StartsWith("VALC"))
+            .Concat(_finalCompilation.GetDiagnostics()
+                    .Where(x => x.Severity >= DiagnosticSeverity.Error))
             .ToImmutableArray();
 
         var output = _firstRunResult.GeneratedTrees.Select(x => x.ToString()).ToArray();
 
-        return (finalDiagnostics, output);
+        return (allDiagnostics, output);
     }
 }

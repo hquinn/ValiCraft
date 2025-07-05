@@ -1,12 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
+using ValiCraft.Generator.Concepts;
 
 namespace ValiCraft.Generator;
 
 public static class DefinedDiagnostics
 {
-    public static Diagnostic CouldNotFindDeclaredSyntax(Location location)
+    public static DiagnosticInfo CouldNotFindDeclaredSyntax(Location location)
     {
-        return Diagnostic.Create(
+        return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC001",
                 "Internal Error",
@@ -17,9 +18,9 @@ public static class DefinedDiagnostics
             location);
     }
 
-    public static Diagnostic CouldNotFindSymbol(Location location)
+    public static DiagnosticInfo CouldNotFindSymbol(Location location)
     {
-        return Diagnostic.Create(
+        return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC002",
                 "Internal Error",
@@ -30,9 +31,9 @@ public static class DefinedDiagnostics
             location);
     }
 
-    public static Diagnostic MissingValidationRuleExtensionName(Location location)
+    public static DiagnosticInfo MissingValidationRuleExtensionName(Location location)
     {
-        return Diagnostic.Create(
+        return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC101",
                 "Missing Validation Rule Extension Name",
@@ -43,9 +44,9 @@ public static class DefinedDiagnostics
             location);
     }
 
-    public static Diagnostic MissingIValidationRuleInterface(Location location)
+    public static DiagnosticInfo MissingIValidationRuleInterface(Location location)
     {
-        return Diagnostic.Create(
+        return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC102",
                 "Missing IValidationRule interface",
@@ -56,9 +57,9 @@ public static class DefinedDiagnostics
             location);
     }
 
-    public static Diagnostic MissingIsValidMethod(Location location)
+    public static DiagnosticInfo MissingIsValidMethod(Location location)
     {
-        return Diagnostic.Create(
+        return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC103",
                 "Missing IsValid method",
@@ -69,9 +70,9 @@ public static class DefinedDiagnostics
             location);
     }
 
-    public static Diagnostic MissingPartialKeyword(Location location)
+    public static DiagnosticInfo MissingPartialKeyword(Location location)
     {
-        return Diagnostic.Create(
+        return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC201",
                 "Missing partial keyword",
@@ -82,13 +83,26 @@ public static class DefinedDiagnostics
             location);
     }
 
-    public static Diagnostic MissingValidatorBaseClass(Location location)
+    public static DiagnosticInfo MissingValidatorBaseClass(Location location)
     {
-        return Diagnostic.Create(
+        return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC202",
                 "Missing Validator base class",
                 "Missing Validator base class on Validator marked with [GenerateValidator]",
+                "ValiCraft",
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
+    public static DiagnosticInfo UnrecognizableRuleInvocation(Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC203",
+                "Unrecognizable Rule Invocation",
+                "Rule cannot be mapped to a validation rule. Try moving the rule out of the invocation chain.",
                 "ValiCraft",
                 DiagnosticSeverity.Error,
                 true),

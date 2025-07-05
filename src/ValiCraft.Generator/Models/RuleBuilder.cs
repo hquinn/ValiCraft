@@ -10,7 +10,8 @@ public class RuleBuilder(
     EquatableArray<ArgumentInfo> arguments,
     MapToValidationRuleData? mapData,
     MessageInfo? defaultMessage,
-    EquatableArray<RulePlaceholderInfo> rulePlaceholders)
+    EquatableArray<RulePlaceholderInfo> rulePlaceholders,
+    LocationInfo location)
 {
     private MessageInfo? _errorCode;
     private MessageInfo? _message;
@@ -41,6 +42,7 @@ public class RuleBuilder(
             mapData,
             new RuleOverrideData(_message, _propertyName, _errorCode),
             defaultMessage,
-            rulePlaceholders);
+            rulePlaceholders,
+            location);
     }
 }

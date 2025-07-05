@@ -20,7 +20,7 @@ public static class ValidatorInfoProvider
         GeneratorAttributeSyntaxContext context,
         CancellationToken cancellationToken)
     {
-        var diagnostics = new List<Diagnostic>();
+        var diagnostics = new List<DiagnosticInfo>();
 
         if (!context.TryGetClassNodeAndSymbol(diagnostics, out var classDeclarationSyntax, out var classSymbol))
         {
@@ -51,7 +51,7 @@ public static class ValidatorInfoProvider
     private static bool TryGetRequestTypeName(
         ClassDeclarationSyntax classDeclarationSyntax,
         INamedTypeSymbol classSymbol,
-        List<Diagnostic> diagnostics,
+        List<DiagnosticInfo> diagnostics,
         out string? requestTypeName)
     {
         requestTypeName = null;
@@ -67,7 +67,7 @@ public static class ValidatorInfoProvider
 
     private static bool TryCheckPartialKeyword(
         ClassDeclarationSyntax classDeclarationSyntax,
-        List<Diagnostic> diagnostics)
+        List<DiagnosticInfo> diagnostics)
     {
         if (!classDeclarationSyntax.IsPartial())
         {

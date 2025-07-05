@@ -21,7 +21,7 @@ public static class ValidationRuleExtensionSourceProvider
             {
                 foreach (var diagnostic in validationRuleInfoResult.Diagnostics)
                 {
-                    context.ReportDiagnostic(diagnostic);
+                    context.ReportDiagnostic(diagnostic.CreateDiagnostic());
                 }
 
                 continue;

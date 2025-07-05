@@ -21,7 +21,7 @@ public static class ValidationRuleExtensionSyntaxProvider
         GeneratorAttributeSyntaxContext context,
         CancellationToken cancellationToken)
     {
-        var diagnostics = new List<Diagnostic>();
+        var diagnostics = new List<DiagnosticInfo>();
 
         // If we can't get the class syntax and symbol, then return early
         if (!context.TryGetClassNodeAndSymbol(diagnostics, out var classDeclarationSyntax, out var classSymbol))
@@ -75,7 +75,7 @@ public static class ValidationRuleExtensionSyntaxProvider
     private static bool TryGetNameForExtensionMethod(
         ClassDeclarationSyntax classDeclarationSyntax,
         INamedTypeSymbol classSymbol,
-        List<Diagnostic> diagnostics,
+        List<DiagnosticInfo> diagnostics,
         out string? nameForExtensionMethod)
     {
         nameForExtensionMethod = classSymbol.GetAttributeStringArgument(
@@ -94,7 +94,7 @@ public static class ValidationRuleExtensionSyntaxProvider
     private static bool TryGetValidationRuleInterface(
         ClassDeclarationSyntax classDeclarationSyntax,
         INamedTypeSymbol classSymbol,
-        List<Diagnostic> diagnostics,
+        List<DiagnosticInfo> diagnostics,
         out INamedTypeSymbol? validationRuleInterface)
     {
         validationRuleInterface = classSymbol.GetInterface(KnownNames.Interfaces.IValidationRule);
@@ -112,7 +112,7 @@ public static class ValidationRuleExtensionSyntaxProvider
     private static bool TryGetIsValidMethod(
         ClassDeclarationSyntax classDeclarationSyntax,
         INamedTypeSymbol classSymbol,
-        List<Diagnostic> diagnostics,
+        List<DiagnosticInfo> diagnostics,
         out MethodSignature? isValidMethodSignature)
     {
         var isValidMethod = classSymbol.GetMembers("IsValid")
