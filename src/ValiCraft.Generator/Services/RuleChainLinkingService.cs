@@ -57,6 +57,10 @@ public static class RuleChainLinkingService
             
             itemRuleChains.Add(linkedItemCollectionRuleChain);
         }
+        else if (itemRuleChain is ValidateWithRuleChain itemValidateWithRuleChain)
+        {
+            itemRuleChains.Add(itemValidateWithRuleChain);
+        }
 
         return true;
     }

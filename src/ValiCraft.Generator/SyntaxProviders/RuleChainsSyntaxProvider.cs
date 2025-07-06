@@ -62,7 +62,9 @@ public static class RuleChainsSyntaxProvider
         return ensureInvocationKind switch
         {
             EnsureInvocationKind.Ensure => GetPropertyRuleChain(invocationChain, property, depth, context),
-            EnsureInvocationKind.EnsureEachInline => GetCollectionRuleChain(ensureInvocation, property, depth, context),
+            EnsureInvocationKind.EnsureValidateWith => GetValidateWithRuleChain(invocationChain, property, depth, false),
+            EnsureInvocationKind.EnsureEach => GetInlineCollectionRuleChain(ensureInvocation, property, depth, context),
+            EnsureInvocationKind.EnsureEachValidateWith => GetValidateWithCollectionRuleChain(invocationChain, property, depth),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
@@ -89,10 +91,29 @@ public static class RuleChainsSyntaxProvider
         }
         
         // Now that we have all the rules in the chain, we can now create the rule chain
-        return new PropertyRuleChain(property!, rules.ToEquatableImmutableArray(), depth, rules.Count);
+        return new PropertyRuleChain(property!, depth, rules.Count, rules.ToEquatableImmutableArray());
     }
 
-    private static CollectionRuleChain? GetCollectionRuleChain(
+    private static ValidateWithRuleChain? GetValidateWithRuleChain(
+        List<InvocationExpressionSyntax> invocationChain,
+        ArgumentInfo? property,
+        int depth,
+        bool fromCollection)
+    {
+        var validateWithInvocation = invocationChain.Skip(1).First();
+        var argumentExpression = validateWithInvocation.ArgumentList.Arguments.FirstOrDefault()?.Expression;
+
+        if (argumentExpression is null)
+        {
+            return null;
+        }
+
+        var validatorExpression = argumentExpression.ToString();
+
+        return new ValidateWithRuleChain(property!, depth, validatorExpression, fromCollection);
+    }
+
+    private static CollectionRuleChain? GetInlineCollectionRuleChain(
         InvocationExpressionSyntax? ensureInvocation,
         ArgumentInfo? property,
         int depth,
@@ -121,9 +142,26 @@ public static class RuleChainsSyntaxProvider
         
         return new CollectionRuleChain(
             property!,
-            collectionRuleChains.ToEquatableImmutableArray(),
             depth,
-            collectionRuleChains.Sum(x => x.NumberOfRules));
+            collectionRuleChains.Sum(x => x.NumberOfRules), collectionRuleChains.ToEquatableImmutableArray());
+    }
+
+    private static CollectionRuleChain? GetValidateWithCollectionRuleChain(
+        List<InvocationExpressionSyntax> invocationChain,
+        ArgumentInfo? property,
+        int depth)
+    {
+        var validateWithRuleChain = GetValidateWithRuleChain(invocationChain, property, depth + 1, true);
+
+        if (validateWithRuleChain is null)
+        {
+            return null;
+        }
+
+        var validateWithRuleChainArray = new EquatableArray<RuleChain>([validateWithRuleChain]);
+    
+        // Create and return the existing ValidateWithRuleChain model.
+        return new CollectionRuleChain(property!, depth, 1, validateWithRuleChainArray);
     }
 
     private static List<InvocationExpressionSyntax> GetRuleInvocationsFromStatement(ExpressionStatementSyntax statement)
@@ -165,8 +203,9 @@ public static class RuleChainsSyntaxProvider
     {
         None,
         Ensure,
+        EnsureValidateWith,
         EnsureEach,
-        EnsureEachInline
+        EnsureEachValidateWith
     }
     
     private static EnsureInvocationKind TryGetEnsureOrEnsureEachInvocation(
@@ -180,19 +219,28 @@ public static class RuleChainsSyntaxProvider
             return EnsureInvocationKind.None;
         }
         
-        var memberAccess = firstInvocation.Expression as MemberAccessExpressionSyntax;
-        var methodName = memberAccess?.Name.Identifier.ValueText;
+        var firstMemberAccess = firstInvocation.Expression as MemberAccessExpressionSyntax;
+        var firstMethodName = firstMemberAccess?.Name.Identifier.ValueText;
+        
+        var secondInvocation = invocationChain.Skip(1).FirstOrDefault();
+        var secondInvocationIsValidateWith = secondInvocation is
+        {
+            Expression: MemberAccessExpressionSyntax
+            {
+                Name.Identifier.ValueText: KnownNames.Methods.ValidateWith
+            }
+        };
 
-        return methodName switch
+        return firstMethodName switch
         {
             // We don't have a valid rule chain if we have zero or one method invocations
             // As the first invocation should be the Ensure method.
             KnownNames.Methods.Ensure => invocationChain.Count > 1 
-                ? EnsureInvocationKind.Ensure 
+                ? secondInvocationIsValidateWith ? EnsureInvocationKind.EnsureValidateWith : EnsureInvocationKind.Ensure 
                 : EnsureInvocationKind.None,
             KnownNames.Methods.EnsureEach => invocationChain.Count > 1
-                ? EnsureInvocationKind.EnsureEach
-                : EnsureInvocationKind.EnsureEachInline,
+                ? secondInvocationIsValidateWith ? EnsureInvocationKind.EnsureEachValidateWith : EnsureInvocationKind.None
+                : EnsureInvocationKind.EnsureEach,
             _ => EnsureInvocationKind.None
         };
     }
@@ -255,8 +303,7 @@ public static class RuleChainsSyntaxProvider
         //    and they used the [GenerateRuleValidation] attribute.
         if (context.SemanticModel.GetSymbolInfo(invocation).Symbol is IMethodSymbol methodSymbol)
         {
-            return CreateFromRichSemantics(
-                methodSymbol, invocation, memberName, property, context.SemanticModel);
+            return CreateFromRichSemantics(methodSymbol, invocation, memberName, property, context.SemanticModel);
         }
 
         return CreateFromWeakSemantics(invocation, memberName, property, context.SemanticModel);

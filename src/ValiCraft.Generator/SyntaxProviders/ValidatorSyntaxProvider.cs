@@ -36,14 +36,15 @@ public static class ValidatorSyntaxProvider
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-
+        
         var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(classDeclarationSyntax!, classSymbol!, null);
         var ruleChains = RuleChainsSyntaxProvider.DiscoverRuleChains(classDeclarationSyntax!, context);
 
         var validator = new Validator(
             classInfo,
             requestTypeName!,
-            ruleChains);
+            ruleChains,
+            classDeclarationSyntax!.GetUsingDirectives());
 
         return new ProviderResult<Validator>(validator, diagnostics);
     }

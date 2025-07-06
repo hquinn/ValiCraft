@@ -7,9 +7,9 @@ namespace ValiCraft.Generator.Models;
 
 public record CollectionRuleChain(
     ArgumentInfo Property,
-    EquatableArray<RuleChain> ItemRuleChains,
     int Depth,
-    int NumberOfRules) : RuleChain(Depth, NumberOfRules)
+    int NumberOfRules,
+    EquatableArray<RuleChain> ItemRuleChains) : RuleChain(Property, Depth, NumberOfRules)
 {
     public override string GenerateCodeForRuleChain(ref int assignedErrorsCount)
     {

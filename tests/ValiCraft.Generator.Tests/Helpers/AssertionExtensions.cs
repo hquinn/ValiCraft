@@ -10,8 +10,8 @@ public static class AssertionExtensions
         this (ImmutableArray<Diagnostic> Diagnostics, string[] Output) result,
         string[] expected)
     {
-        var diagnosticMessages = result.Diagnostics.Select(x => x.Descriptor.MessageFormat.ToString()).ToArray();
-        diagnosticMessages.Should().BeEquivalentTo(expected);
+        var actualDiagnosticMessages = result.Diagnostics.Select(d => d.GetMessage()).ToArray();
+        actualDiagnosticMessages.Should().BeEquivalentTo(expected);
 
         return result;
     }

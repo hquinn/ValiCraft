@@ -1,6 +1,9 @@
+using ValiCraft.Generator.Concepts;
+
 namespace ValiCraft.Generator.Models;
 
 public abstract record RuleChain(
+    ArgumentInfo Property,
     int Depth,
     int NumberOfRules)
 {

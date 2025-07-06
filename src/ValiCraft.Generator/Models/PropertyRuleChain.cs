@@ -6,14 +6,13 @@ namespace ValiCraft.Generator.Models;
 
 public record PropertyRuleChain(
     ArgumentInfo Property,
-    EquatableArray<Rule> Rules,
     int Depth,
-    int NumberOfRules) : RuleChain(Depth, NumberOfRules)
+    int NumberOfRules,
+    EquatableArray<Rule> Rules) : RuleChain(Property, Depth, NumberOfRules)
 {
     public override string GenerateCodeForRuleChain(ref int assignedErrorsCount)
     {
         var ruleCodes = new List<string>(NumberOfRules);
-        var indent = GetIndent();
 
         foreach (var rule in Rules)
         {

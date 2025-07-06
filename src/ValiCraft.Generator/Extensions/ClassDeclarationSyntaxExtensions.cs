@@ -2,6 +2,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Extensions;
 
@@ -20,5 +21,14 @@ public static class ClassDeclarationSyntaxExtensions
         }
 
         return string.Empty;
+    }
+
+    public static EquatableArray<string> GetUsingDirectives(this ClassDeclarationSyntax classDeclarationSyntax)
+    {
+        return classDeclarationSyntax!.SyntaxTree.GetRoot()
+            .DescendantNodes()
+            .OfType<UsingDirectiveSyntax>()
+            .Select(u => u.ToString())
+            .ToEquatableImmutableArray();
     }
 }

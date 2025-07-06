@@ -6,4 +6,5 @@ namespace ValiCraft.Generator.Models;
 public record Validator(
     ClassInfo Class,
     string RequestTypeName,
-    EquatableArray<RuleChain> RuleChains);
+    EquatableArray<RuleChain> RuleChains,
+    EquatableArray<string> UsingDirectives);
