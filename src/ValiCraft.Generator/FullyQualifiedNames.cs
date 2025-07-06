@@ -37,5 +37,6 @@ public static class KnownNames
     {
         public const string DefineRules = "DefineRules";
         public const string Ensure = "Ensure";
+        public const string EnsureEach = "EnsureEach";
     }
 }

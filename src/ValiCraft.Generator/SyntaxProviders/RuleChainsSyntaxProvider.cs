@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -23,14 +24,13 @@ public static class RuleChainsSyntaxProvider
             return EquatableArray<RuleChain>.Empty;
         }
 
-        var ruleChains = new List<RuleChain>();
+        var ruleChains = defineRulesMethodBody.Statements
+            .OfType<ExpressionStatementSyntax>()
+            .Select(statement => GetRuleChainFromStatement(statement, 0, context))
+            .OfType<RuleChain>()
+            .ToEquatableImmutableArray();
 
-        foreach (var statement in defineRulesMethodBody.Statements.OfType<ExpressionStatementSyntax>())
-        {
-            GetRuleChainFromStatement(statement, ruleChains, context);
-        }
-
-        return ruleChains.ToEquatableImmutableArray();
+        return ruleChains;
     }
 
     private static BlockSyntax? GetDefineRulesMethodBody(ClassDeclarationSyntax classDeclarationSyntax)
@@ -41,40 +41,89 @@ public static class RuleChainsSyntaxProvider
             .Body;
     }
 
-    private static void GetRuleChainFromStatement(
+    private static RuleChain? GetRuleChainFromStatement(
         ExpressionStatementSyntax statement,
-        List<RuleChain> ruleChains,
+        int depth,
         GeneratorAttributeSyntaxContext context)
     {
         var invocationChain = GetRuleInvocationsFromStatement(statement);
 
-        if (!TryGetEnsureInvocation(invocationChain, out var ensureInvocation))
+        var ensureInvocationKind = TryGetEnsureOrEnsureEachInvocation(invocationChain, out var ensureInvocation); 
+        if (ensureInvocationKind == EnsureInvocationKind.None)
         {
-            return;
+            return null;
         }
 
         if (!TryGetPropertyFromEnsureMethod(ensureInvocation!, context, out var property))
         {
-            return;
+            return null;
         }
 
+        return ensureInvocationKind switch
+        {
+            EnsureInvocationKind.Ensure => GetPropertyRuleChain(invocationChain, property, depth, context),
+            EnsureInvocationKind.EnsureEachInline => GetCollectionRuleChain(ensureInvocation, property, depth, context),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    private static PropertyRuleChain GetPropertyRuleChain(
+        List<InvocationExpressionSyntax> invocationChain,
+        ArgumentInfo? property,
+        int depth,
+        GeneratorAttributeSyntaxContext context)
+    {
         RuleBuilder? ruleBuilder = null;
         var rules = new List<Rule>();
-        
+
         // Skip the Ensure method as that's not a rule.
         foreach (var ruleInvocation in invocationChain.Skip(1))
         {
             ruleBuilder = ProcessNextInChain(ruleBuilder, ruleInvocation, rules, property!, context);
         }
 
-        // Add the last rule into the rules list
+        // Add the last rule into the rule list
         if (ruleBuilder is not null)
         {
             rules.Add(ruleBuilder.Build());
         }
         
         // Now that we have all the rules in the chain, we can now create the rule chain
-        ruleChains.Add(new PropertyRuleChain(property!, rules.ToEquatableImmutableArray(), rules.Count));
+        return new PropertyRuleChain(property!, rules.ToEquatableImmutableArray(), depth, rules.Count);
+    }
+
+    private static CollectionRuleChain? GetCollectionRuleChain(
+        InvocationExpressionSyntax? ensureInvocation,
+        ArgumentInfo? property,
+        int depth,
+        GeneratorAttributeSyntaxContext context)
+    {
+        var collectionStatements = ensureInvocation!.GetRuleStatementsFromEnsureEach();
+        var collectionRuleChains = new List<RuleChain>();
+        var collectionDepth = depth + 1;
+
+        foreach (var collectionStatement in collectionStatements)
+        {
+            var collectionRuleChain = GetRuleChainFromStatement(
+                collectionStatement, collectionDepth, context);
+
+            if (collectionRuleChain is not null)
+            {
+                collectionRuleChains.Add(collectionRuleChain);
+            }
+        }
+
+        // If we don't have any rule chains in the collection, then don't bother
+        if (collectionRuleChains.Count == 0)
+        {
+            return null;
+        }
+        
+        return new CollectionRuleChain(
+            property!,
+            collectionRuleChains.ToEquatableImmutableArray(),
+            depth,
+            collectionRuleChains.Sum(x => x.NumberOfRules));
     }
 
     private static List<InvocationExpressionSyntax> GetRuleInvocationsFromStatement(ExpressionStatementSyntax statement)
@@ -99,8 +148,7 @@ public static class RuleChainsSyntaxProvider
             {
                 currentExpression = memberAccess.Expression;
             }
-            else
-                // We've reached the start of the chain
+            else // We've reached the start of the chain
             {
                 break;
             }
@@ -113,27 +161,40 @@ public static class RuleChainsSyntaxProvider
         return invocationChain;
     }
 
-    private static bool TryGetEnsureInvocation(
-        List<InvocationExpressionSyntax> invocationChain,
-        out InvocationExpressionSyntax? ensureInvocation)
+    private enum EnsureInvocationKind
     {
-        // We don't have a valid rule chain if we have zero or one method invocations
-        // As the first invocation should be the Ensure method.
-        if (invocationChain.Count <= 1)
+        None,
+        Ensure,
+        EnsureEach,
+        EnsureEachInline
+    }
+    
+    private static EnsureInvocationKind TryGetEnsureOrEnsureEachInvocation(
+        List<InvocationExpressionSyntax> invocationChain,
+        out InvocationExpressionSyntax? firstInvocation)
+    {
+        firstInvocation = invocationChain.FirstOrDefault();
+
+        if (firstInvocation is null)
         {
-            ensureInvocation = null;
-            return false;
+            return EnsureInvocationKind.None;
         }
+        
+        var memberAccess = firstInvocation.Expression as MemberAccessExpressionSyntax;
+        var methodName = memberAccess?.Name.Identifier.ValueText;
 
-        ensureInvocation = invocationChain[0];
-        var ensureMemberAccess = ensureInvocation.Expression as MemberAccessExpressionSyntax;
-
-        if (ensureMemberAccess?.Name.Identifier.ValueText != KnownNames.Methods.Ensure)
+        return methodName switch
         {
-            return false;
-        }
-
-        return true;
+            // We don't have a valid rule chain if we have zero or one method invocations
+            // As the first invocation should be the Ensure method.
+            KnownNames.Methods.Ensure => invocationChain.Count > 1 
+                ? EnsureInvocationKind.Ensure 
+                : EnsureInvocationKind.None,
+            KnownNames.Methods.EnsureEach => invocationChain.Count > 1
+                ? EnsureInvocationKind.EnsureEach
+                : EnsureInvocationKind.EnsureEachInline,
+            _ => EnsureInvocationKind.None
+        };
     }
 
     private static bool TryGetPropertyFromEnsureMethod(

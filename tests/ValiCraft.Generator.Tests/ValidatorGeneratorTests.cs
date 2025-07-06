@@ -35,6 +35,13 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                  public required string SKU { get; set; }
                                                                  public int Quantity { get; set; }
                                                                  public decimal PricePerUnit { get; set; }
+                                                                 public required List<Discount> Discounts { get; set; }
+                                                             }
+                                                             
+                                                             public class Discount
+                                                             {
+                                                                 public required string Code { get; set; }
+                                                                 public decimal Amount { get; set; }
                                                              }
                                                              """;
 
@@ -155,20 +162,36 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                              private string ShippingReferenceEmptyMessage
                                                                                  => "'{PropertyName}' assigned is invalid.";
 
-                                                                             protected override void DefineRules(IValidationRuleBuilder<Order> builder)
+                                                                             protected override void DefineRules(IValidationRuleBuilder<Order> orderBuilder)
                                                                              {
-                                                                                 builder.Ensure(x => x.OrderNumber)
+                                                                                 orderBuilder.EnsureEach(o => o.LineItems, lineItemBuilder =>
+                                                                                 {
+                                                                                     lineItemBuilder.Ensure(li => li.SKU)
+                                                                                         .IsNotNull()
+                                                                                         .IsNotEmpty();
+
+                                                                                     lineItemBuilder.Ensure(li => li.Quantity)
+                                                                                         .IsGreaterThan(0);
+                                                                                     
+                                                                                     lineItemBuilder.EnsureEach(li => li.Discounts, discountBuilder =>
+                                                                                     {
+                                                                                         discountBuilder.Ensure(li => li.Amount)
+                                                                                             .IsGreaterThan(10);
+                                                                                     });
+                                                                                 });
+
+                                                                                 orderBuilder.Ensure(o => o.OrderNumber)
                                                                                      .IsNotNull()
                                                                                      .IsNotEmpty();
-                                                                                 
-                                                                                 builder.Ensure(x => x.OrderNumber)
+
+                                                                                 orderBuilder.Ensure(o => o.OrderNumber)
                                                                                      .HasLength(10);
-                                                                                     
-                                                                                 builder.Ensure(x => x.ShippingReference)
+
+                                                                                 orderBuilder.Ensure(o => o.ShippingReference)
                                                                                      .IsNotNull().WithMessage("'{PropertyName}' needs to be assigned before proceeding").WithPropertyName("Reference")
                                                                                      .IsNotEmpty().WithMessage(ShippingReferenceEmptyMessage);
-                                                                                     
-                                                                                 builder.Ensure(x => x.OrderTotal)
+
+                                                                                 orderBuilder.Ensure(o => o.OrderTotal)
                                                                                      .IsGreaterThan(0)
                                                                                      .IsLessThan(OrderTotalLimit).WithErrorCode("TotalReached");
                                                                              }
@@ -240,6 +263,35 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
                                                                                    
+                                                                                   foreach (var element in request.LineItems)
+                                                                                   {
+                                                                                       if (!global::Test.Rules.NotNullRule<string>.IsValid(element.SKU))
+                                                                                       {
+                                                                                           errors ??= new(11);
+                                                                                           errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotNullRule<string>), $"'SKU' must not be null."));
+                                                                                       }
+                                                                                       if (!global::Test.Rules.NotEmptyRule.IsValid(element.SKU))
+                                                                                       {
+                                                                                           errors ??= new(10);
+                                                                                           errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotEmptyRule), $"'SKU' must not be empty."));
+                                                                                       }
+
+                                                                                       if (!global::Test.Rules.GreaterThanRule<int>.IsValid(element.Quantity, 0))
+                                                                                       {
+                                                                                           errors ??= new(9);
+                                                                                           errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GreaterThanRule<int>), $"'Quantity' must be greater than 0, but received {element.Quantity}."));
+                                                                                       }
+
+                                                                                       foreach (var subElement in element.Discounts)
+                                                                                       {
+                                                                                           if (!global::Test.Rules.GreaterThanRule<decimal>.IsValid(subElement.Amount, 10))
+                                                                                           {
+                                                                                               errors ??= new(8);
+                                                                                               errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GreaterThanRule<decimal>), $"'Amount' must be greater than 10, but received {subElement.Amount}."));
+                                                                                           }
+                                                                                       }
+                                                                                   }
+
                                                                                    if (!global::Test.Rules.NotNullRule<string>.IsValid(request.OrderNumber))
                                                                                    {
                                                                                        errors ??= new(7);

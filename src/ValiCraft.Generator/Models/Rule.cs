@@ -20,7 +20,7 @@ public enum SemanticMode
     ///     Weak Semantic Mode is when we're not able to get semantic information about the validation rule extension method
     ///     from the invocation in the validator. This will happen when the validation rule that has
     ///     the [GenerateRuleExtension] is in the same project as the validator. This can also happen when a rule invocation
-    ///     which happens after one that's a weak semantic mode, e.g. builder.Ensure(x => x.Property).Weak().Rich().
+    ///     which happens after one that's a weak semantic mode, e.g., builder.Ensure(x => x.Property).Weak().Rich().
     ///     In this case, the compiler can't infer where to locate the extension method for Weak(), which also affects Rich()
     /// </summary>
     WeakSemanticMode
@@ -81,10 +81,14 @@ public record Rule(
         };
     }
 
-    public string GenerateCodeForRule(ArgumentInfo property, ref int assignedErrorsCount)
+    public string GenerateCodeForRule(
+        string requestName,
+        string indent,
+        ArgumentInfo property,
+        ref int assignedErrorsCount)
     {
         const string errorTypeName = $"global::{KnownNames.Types.Error}";
-        var propertyAccessString = $"request.{property.Value}";
+        var propertyAccessString = $"{requestName}.{property.Value}";
         var validationRuleInvocation =
             $"global::{ValidationRuleData?.FullyQualifiedValidationRule}{ConstructValidationRuleGeneric()}";
 
@@ -93,11 +97,11 @@ public record Rule(
         var isValidCallArgsString = string.Join(", ", isValidCallArgs);
 
         return $$"""
-                             if (!{{validationRuleInvocation}}.IsValid({{isValidCallArgsString}}))
-                             {
-                                 errors ??= new({{assignedErrorsCount}});
-                                 errors.Add({{errorTypeName}}.Validation({{GetValidationErrorCode(validationRuleInvocation)}}, {{GetValidationMessage(property)}}));
-                             }
+                 {{indent}}if (!{{validationRuleInvocation}}.IsValid({{isValidCallArgsString}}))
+                 {{indent}}{
+                 {{indent}}    errors ??= new({{assignedErrorsCount}});
+                 {{indent}}    errors.Add({{errorTypeName}}.Validation({{GetValidationErrorCode(validationRuleInvocation)}}, {{GetValidationMessage(requestName, property)}}));
+                 {{indent}}}
                  """;
     }
     
@@ -112,7 +116,7 @@ public record Rule(
         }
     }
     
-    private string GetValidationMessage(ArgumentInfo property)
+    private string GetValidationMessage(string requestName, ArgumentInfo property)
     {
         var messageInfo = RuleOverrides.OverrideMessage ?? DefaultMessage;
         if (messageInfo is null)
@@ -121,13 +125,13 @@ public record Rule(
         }
 
         // Build a complete map of all available placeholders for this rule invocation.
-        var placeholderMap = BuildPlaceholderMap(property);
+        var placeholderMap = BuildPlaceholderMap(requestName, property);
 
         // Pass the template and the map to the builder.
         return BuildMessage(messageInfo, placeholderMap);
     }
 
-    private Dictionary<string, ArgumentInfo> BuildPlaceholderMap(ArgumentInfo property)
+    private Dictionary<string, ArgumentInfo> BuildPlaceholderMap(string requestName, ArgumentInfo property)
     {
         var map = new Dictionary<string, ArgumentInfo>();
 
@@ -137,7 +141,7 @@ public record Rule(
         map.Add("{PropertyName}",
             new ArgumentInfo("PropertyName", propertyNameInfo.Value, "string", propertyNameInfo.IsLiteral));
         map.Add("{PropertyValue}",
-            new ArgumentInfo("PropertyValue", $"request.{property.Value}", property.Type, false));
+            new ArgumentInfo("PropertyValue", $"{requestName}.{property.Value}", property.Type, false));
 
         // Add custom placeholders by mapping them to the invocation arguments by name.
         foreach (var placeholder in Placeholders)
