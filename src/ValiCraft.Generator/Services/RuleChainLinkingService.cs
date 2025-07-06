@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
+using ValiCraft.Generator.RuleChains;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Services;
@@ -56,6 +57,15 @@ public static class RuleChainLinkingService
             }
             
             itemRuleChains.Add(linkedItemCollectionRuleChain);
+        }
+        else if (itemRuleChain is CompositeRuleChain itemCompositeRuleChain)
+        {
+            if (!TryLinkCompositeRuleChain(itemCompositeRuleChain, validRules, context, out var linkedCompositeRuleChain))
+            {
+                return false;
+            }
+            
+            itemRuleChains.Add(linkedCompositeRuleChain);
         }
         else if (itemRuleChain is ValidateWithRuleChain itemValidateWithRuleChain)
         {
@@ -124,6 +134,31 @@ public static class RuleChainLinkingService
         linkedCollectionRuleChain = linkedCollectionRuleChain with
         {
             ItemRuleChains = itemRuleChains.ToEquatableImmutableArray()
+        };
+        
+        return true;
+    }
+    
+    private static bool TryLinkCompositeRuleChain(
+        CompositeRuleChain compositeRuleChain,
+        ValidationRule[] validRules,
+        SourceProductionContext context,
+        out CompositeRuleChain linkedCompositeRuleChain)
+    {
+        linkedCompositeRuleChain = compositeRuleChain;
+        var childRuleChains = new List<RuleChain>(compositeRuleChain.ChildRuleChains.Count);
+
+        foreach (var itemRuleChain in compositeRuleChain.ChildRuleChains)
+        {
+            if (!TryLinkRuleChain(childRuleChains, validRules, itemRuleChain, context))
+            {
+                return false;
+            }
+        }
+
+        linkedCompositeRuleChain = linkedCompositeRuleChain with
+        {
+            ChildRuleChains = childRuleChains.ToEquatableImmutableArray()
         };
         
         return true;

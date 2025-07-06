@@ -39,5 +39,11 @@ public static class KnownNames
         public const string Ensure = "Ensure";
         public const string EnsureEach = "EnsureEach";
         public const string ValidateWith = "ValidateWith";
+        public const string WithOnFailure = "WithOnFailure";
+    }
+
+    public static class Enums
+    {
+        public const string OnFailureMode = "OnFailureMode";
     }
 }

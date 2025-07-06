@@ -4,13 +4,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ValiCraft.Generator.Extensions;
 
-public static class EnsureEachParserExtensions
+public static class StatementsParserExtensions
 {
-    public static IEnumerable<ExpressionStatementSyntax> GetRuleStatementsFromEnsureEach(
-        this InvocationExpressionSyntax ensureEachInvocation)
+    public static IEnumerable<ExpressionStatementSyntax> GetRuleStatementsFromLastArgument(
+        this InvocationExpressionSyntax invocation)
     {
-        if (ensureEachInvocation.ArgumentList.Arguments.Count < 2 ||
-            ensureEachInvocation.ArgumentList.Arguments[1].Expression is not LambdaExpressionSyntax lambda)
+        if (invocation.ArgumentList.Arguments.LastOrDefault()?.Expression is not LambdaExpressionSyntax lambda)
         {
             return [];
         }

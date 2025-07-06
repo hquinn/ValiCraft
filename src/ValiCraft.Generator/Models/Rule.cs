@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
+using ValiCraft.Generator.RuleChains;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Models;
@@ -85,7 +86,7 @@ public record Rule(
         string requestName,
         string indent,
         ArgumentInfo property,
-        ref int assignedErrorsCount)
+        RuleChainContext context)
     {
         const string errorTypeName = $"global::{KnownNames.Types.Error}";
         var propertyAccessString = $"{requestName}.{property.Value}";
@@ -96,13 +97,39 @@ public record Rule(
         isValidCallArgs.AddRange(Arguments.GetArray()?.Skip(1).Select(x => x.Value) ?? []);
         var isValidCallArgsString = string.Join(", ", isValidCallArgs);
 
-        return $$"""
-                 {{indent}}if (!{{validationRuleInvocation}}.IsValid({{isValidCallArgsString}}))
+        var code = $$"""
+                 {{indent}}{{GetIfElseIfKeyword(context)}} (!{{validationRuleInvocation}}.IsValid({{isValidCallArgsString}}))
                  {{indent}}{
-                 {{indent}}    errors ??= new({{assignedErrorsCount}});
+                 {{indent}}    errors ??= new({{context.Counter}});
                  {{indent}}    errors.Add({{errorTypeName}}.Validation({{GetValidationErrorCode(validationRuleInvocation)}}, {{GetValidationMessage(requestName, property)}}));
-                 {{indent}}}
+                 {{GetGotoLabelIfNeeded(indent, context)}}{{indent}}}
                  """;
+        
+        context.UpdateIfElseMode();
+        
+        return code;
+    }
+
+    private string GetIfElseIfKeyword(RuleChainContext context)
+    {
+        return context.IfElseMode switch
+        {
+            IfElseMode.ElseIf => "else if",
+            _ => "if"
+        };
+    }
+
+    private string GetGotoLabelIfNeeded(string indent, RuleChainContext context)
+    {
+        if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })
+        {
+            return $"""
+                   {indent}    goto {context.HaltLabel};
+                   
+                   """;
+        }
+
+        return string.Empty;
     }
     
     private IEnumerable<ArgumentInfo> EnrichArguments(ValidationRule matchedRule)

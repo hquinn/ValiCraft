@@ -176,22 +176,29 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                  orderBuilder.EnsureEach(o => o.LineItems)
                                                                                      .ValidateWith(_lineItemValidator);
 
-                                                                                 orderBuilder.Ensure(o => o.Customer)
-                                                                                     .ValidateWith(_customerValidator);
-
-                                                                                 orderBuilder.EnsureEach(o => o.LineItems, lineItemBuilder =>
+                                                                                 orderBuilder.WithOnFailure(OnFailureMode.Halt, b =>
                                                                                  {
-                                                                                     lineItemBuilder.Ensure(li => li.SKU)
-                                                                                         .IsNotNull()
-                                                                                         .IsNotEmpty();
+                                                                                     b.Ensure(o => o.Customer)
+                                                                                         .ValidateWith(_customerValidator);
 
-                                                                                     lineItemBuilder.Ensure(li => li.Quantity)
-                                                                                         .IsGreaterThan(0);
-                                                                                     
-                                                                                     lineItemBuilder.EnsureEach(li => li.Discounts, discountBuilder =>
+                                                                                     b.EnsureEach(o => o.LineItems, lineItemBuilder =>
                                                                                      {
-                                                                                         discountBuilder.Ensure(li => li.Amount)
-                                                                                             .IsGreaterThan(10);
+                                                                                         lineItemBuilder.WithOnFailure(OnFailureMode.Continue, l =>
+                                                                                         {
+                                                                                             l.Ensure(li => li.SKU)
+                                                                                                 .IsNotNull()
+                                                                                                 .IsNotEmpty()
+                                                                                                 ;
+
+                                                                                             l.Ensure(li => li.Quantity)
+                                                                                                 .IsGreaterThan(0);
+                                                                                         });    
+
+                                                                                         lineItemBuilder.EnsureEach(li => li.Discounts, discountBuilder =>
+                                                                                         {
+                                                                                             discountBuilder.Ensure(li => li.Amount)
+                                                                                                 .IsGreaterThan(10);
+                                                                                         });
                                                                                      });
                                                                                  });
 
@@ -202,7 +209,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                  orderBuilder.Ensure(o => o.OrderNumber)
                                                                                      .HasLength(10);
 
-                                                                                 orderBuilder.Ensure(o => o.ShippingReference)
+                                                                                 orderBuilder.Ensure(o => o.ShippingReference, OnFailureMode.Halt)
                                                                                      .IsNotNull().WithMessage("'{PropertyName}' needs to be assigned before proceeding").WithPropertyName("Reference")
                                                                                      .IsNotEmpty().WithMessage(ShippingReferenceEmptyMessage);
 
@@ -275,7 +282,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                        using ValiCraft;
                                                                        using ValiCraft.Attributes;
                                                                        using ValiCraft.BuilderTypes;
-
+                                                                       
                                                                        namespace Test.Validators
                                                                        {
                                                                            public partial class OrderValidator : global::ValiCraft.IValidator<global::Test.Requests.Order>
@@ -283,7 +290,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                public global::LitePrimitives.Validation<global::Test.Requests.Order> Validate(global::Test.Requests.Order request)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
-
+                                                                       
                                                                                    foreach (var element in request.LineItems)
                                                                                    {
                                                                                        if (_lineItemValidator.Validate(element).Errors is {} errors13)
@@ -298,19 +305,20 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                            }
                                                                                        }
                                                                                    }
-
+                                                                       
                                                                                    if (_customerValidator.Validate(request.Customer).Errors is {} errors12)
                                                                                    {
                                                                                        if (errors is null)
                                                                                        {
                                                                                            errors = new(errors12);
+                                                                                           goto HaltValidation_12;
                                                                                        }
                                                                                        else
                                                                                        {
                                                                                            errors.AddRange(errors12);
+                                                                                           goto HaltValidation_12;
                                                                                        }
                                                                                    }
-
                                                                                    foreach (var element in request.LineItems)
                                                                                    {
                                                                                        if (!global::Test.Rules.NotNullRule<string>.IsValid(element.SKU))
@@ -323,62 +331,63 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                            errors ??= new(10);
                                                                                            errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotEmptyRule), $"'SKU' must not be empty."));
                                                                                        }
-
                                                                                        if (!global::Test.Rules.GreaterThanRule<int>.IsValid(element.Quantity, 0))
                                                                                        {
                                                                                            errors ??= new(9);
                                                                                            errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GreaterThanRule<int>), $"'Quantity' must be greater than 0, but received {element.Quantity}."));
                                                                                        }
-
                                                                                        foreach (var subElement in element.Discounts)
                                                                                        {
                                                                                            if (!global::Test.Rules.GreaterThanRule<decimal>.IsValid(subElement.Amount, 10))
                                                                                            {
-                                                                                               errors ??= new(8);
+                                                                                               errors ??= new(11);
                                                                                                errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GreaterThanRule<decimal>), $"'Amount' must be greater than 10, but received {subElement.Amount}."));
+                                                                                               goto HaltValidation_12;
                                                                                            }
                                                                                        }
                                                                                    }
-
+                                                                       
+                                                                                   HaltValidation_12:
+                                                                       
                                                                                    if (!global::Test.Rules.NotNullRule<string>.IsValid(request.OrderNumber))
                                                                                    {
-                                                                                       errors ??= new(7);
+                                                                                       errors ??= new(12);
                                                                                        errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotNullRule<string>), $"'OrderNumber' must not be null."));
                                                                                    }
                                                                                    if (!global::Test.Rules.NotEmptyRule.IsValid(request.OrderNumber))
                                                                                    {
-                                                                                       errors ??= new(6);
+                                                                                       errors ??= new(11);
                                                                                        errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotEmptyRule), $"'OrderNumber' must not be empty."));
                                                                                    }
-
+                                                                       
                                                                                    if (!global::Test.Rules.LengthRule.IsValid(request.OrderNumber, 10))
                                                                                    {
-                                                                                       errors ??= new(5);
+                                                                                       errors ??= new(10);
                                                                                        errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.LengthRule), $"'OrderNumber' must have a length of 10."));
                                                                                    }
-
+                                                                       
                                                                                    if (!global::Test.Rules.NotNullRule<string>.IsValid(request.ShippingReference))
                                                                                    {
-                                                                                       errors ??= new(4);
+                                                                                       errors ??= new(9);
                                                                                        errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotNullRule<string>), $"'Reference' needs to be assigned before proceeding"));
                                                                                    }
-                                                                                   if (!global::Test.Rules.NotEmptyRule.IsValid(request.ShippingReference))
+                                                                                   else if (!global::Test.Rules.NotEmptyRule.IsValid(request.ShippingReference))
                                                                                    {
-                                                                                       errors ??= new(3);
+                                                                                       errors ??= new(8);
                                                                                        errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotEmptyRule), ShippingReferenceEmptyMessage.Replace("{PropertyName}", "ShippingReference").Replace("{PropertyValue}", request.ShippingReference)));
                                                                                    }
-
+                                                                       
                                                                                    if (!global::Test.Rules.GreaterThanRule<decimal>.IsValid(request.OrderTotal, 0))
                                                                                    {
-                                                                                       errors ??= new(2);
+                                                                                       errors ??= new(9);
                                                                                        errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GreaterThanRule<decimal>), $"'OrderTotal' must be greater than 0, but received {request.OrderTotal}."));
                                                                                    }
                                                                                    if (!global::Test.Rules.LessThanRule<decimal>.IsValid(request.OrderTotal, OrderTotalLimit))
                                                                                    {
-                                                                                       errors ??= new(1);
+                                                                                       errors ??= new(8);
                                                                                        errors.Add(global::LitePrimitives.Error.Validation("TotalReached", $"'OrderTotal' must be less than {OrderTotalLimit}, but received {request.OrderTotal}."));
                                                                                    }
-
+                                                                       
                                                                                    return errors is not null
                                                                                        ? global::LitePrimitives.Validation<global::Test.Requests.Order>.Failure(errors)
                                                                                        : global::LitePrimitives.Validation<global::Test.Requests.Order>.Success(request);

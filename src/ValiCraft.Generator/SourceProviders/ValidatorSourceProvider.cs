@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using ValiCraft.Generator.Models;
+using ValiCraft.Generator.RuleChains;
 using ValiCraft.Generator.Services;
 using ValiCraft.Generator.Types;
 
@@ -89,11 +90,11 @@ public static class ValidatorSourceProvider
     private static string GenerateCodeForRuleChains(EquatableArray<RuleChain> ruleChains)
     {
         var ruleChainsCode = new List<string>();
-        var assignedErrorsCount = ruleChains.Sum(rc => rc.NumberOfRules);
+        var context = new RuleChainContext(ruleChains.Sum(rc => rc.NumberOfRules));
         
         foreach (var ruleChain in ruleChains)
         {
-            ruleChainsCode.Add(ruleChain.GenerateCodeForRuleChain(ref assignedErrorsCount));
+            ruleChainsCode.Add(ruleChain.GenerateCode(context));
         }
         
         return string.Join("\r\n\r\n", ruleChainsCode);

@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
+using ValiCraft.Generator.RuleChains;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.SyntaxProviders;
@@ -48,28 +49,31 @@ public static class RuleChainsSyntaxProvider
     {
         var invocationChain = GetRuleInvocationsFromStatement(statement);
 
-        var ensureInvocationKind = TryGetEnsureOrEnsureEachInvocation(invocationChain, out var ensureInvocation); 
-        if (ensureInvocationKind == EnsureInvocationKind.None)
+        var startingInvocationKind = TryGetValidStartingInvocation(invocationChain, out var startingInvocation); 
+        if (startingInvocationKind == ChainStartKind.Invalid)
         {
             return null;
         }
 
-        if (!TryGetPropertyFromEnsureMethod(ensureInvocation!, context, out var property))
+        if (!TryGetPropertyFromEnsureMethod(startingInvocation!, context, out var property) &&
+            startingInvocationKind != ChainStartKind.Composite)
         {
             return null;
         }
 
-        return ensureInvocationKind switch
+        return startingInvocationKind switch
         {
-            EnsureInvocationKind.Ensure => GetPropertyRuleChain(invocationChain, property, depth, context),
-            EnsureInvocationKind.EnsureValidateWith => GetValidateWithRuleChain(invocationChain, property, depth, false),
-            EnsureInvocationKind.EnsureEach => GetInlineCollectionRuleChain(ensureInvocation, property, depth, context),
-            EnsureInvocationKind.EnsureEachValidateWith => GetValidateWithCollectionRuleChain(invocationChain, property, depth),
+            ChainStartKind.Ensure => GetPropertyRuleChain(startingInvocation, invocationChain, property, depth, context),
+            ChainStartKind.EnsureValidateWith => GetValidateWithRuleChain(startingInvocation, invocationChain, property, depth, false),
+            ChainStartKind.EnsureEach => GetInlineCollectionRuleChain(startingInvocation, property, depth, context),
+            ChainStartKind.EnsureEachValidateWith => GetValidateWithCollectionRuleChain(startingInvocation, invocationChain, property, depth),
+            ChainStartKind.Composite => GetCompositeRuleChain(startingInvocation, depth, context),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
     private static PropertyRuleChain GetPropertyRuleChain(
+        InvocationExpressionSyntax? ensureInvocation,
         List<InvocationExpressionSyntax> invocationChain,
         ArgumentInfo? property,
         int depth,
@@ -91,10 +95,16 @@ public static class RuleChainsSyntaxProvider
         }
         
         // Now that we have all the rules in the chain, we can now create the rule chain
-        return new PropertyRuleChain(property!, depth, rules.Count, rules.ToEquatableImmutableArray());
+        return new PropertyRuleChain(
+            depth,
+            rules.Count,
+            ensureInvocation?.GetOnFailureModeFromSyntax(),
+            property!,
+            rules.ToEquatableImmutableArray());
     }
 
     private static ValidateWithRuleChain? GetValidateWithRuleChain(
+        InvocationExpressionSyntax? ensureInvocation,
         List<InvocationExpressionSyntax> invocationChain,
         ArgumentInfo? property,
         int depth,
@@ -110,7 +120,12 @@ public static class RuleChainsSyntaxProvider
 
         var validatorExpression = argumentExpression.ToString();
 
-        return new ValidateWithRuleChain(property!, depth, validatorExpression, fromCollection);
+        return new ValidateWithRuleChain(
+            depth,
+            ensureInvocation?.GetOnFailureModeFromSyntax(),
+            property!,
+            validatorExpression,
+            fromCollection);
     }
 
     private static CollectionRuleChain? GetInlineCollectionRuleChain(
@@ -119,39 +134,41 @@ public static class RuleChainsSyntaxProvider
         int depth,
         GeneratorAttributeSyntaxContext context)
     {
-        var collectionStatements = ensureInvocation!.GetRuleStatementsFromEnsureEach();
-        var collectionRuleChains = new List<RuleChain>();
-        var collectionDepth = depth + 1;
+        var statements = ensureInvocation!.GetRuleStatementsFromLastArgument();
+        var ruleChains = new List<RuleChain>();
+        var elementDepth = depth + 1;
 
-        foreach (var collectionStatement in collectionStatements)
+        foreach (var statement in statements)
         {
-            var collectionRuleChain = GetRuleChainFromStatement(
-                collectionStatement, collectionDepth, context);
+            var ruleChain = GetRuleChainFromStatement(statement, elementDepth, context);
 
-            if (collectionRuleChain is not null)
+            if (ruleChain is not null)
             {
-                collectionRuleChains.Add(collectionRuleChain);
+                ruleChains.Add(ruleChain);
             }
         }
 
         // If we don't have any rule chains in the collection, then don't bother
-        if (collectionRuleChains.Count == 0)
+        if (ruleChains.Count == 0)
         {
             return null;
         }
         
         return new CollectionRuleChain(
-            property!,
             depth,
-            collectionRuleChains.Sum(x => x.NumberOfRules), collectionRuleChains.ToEquatableImmutableArray());
+            ruleChains.Sum(x => x.NumberOfRules),
+            ensureInvocation?.GetOnFailureModeFromSyntax(),
+            property!,
+            ruleChains.ToEquatableImmutableArray());
     }
 
     private static CollectionRuleChain? GetValidateWithCollectionRuleChain(
+        InvocationExpressionSyntax? ensureInvocation,
         List<InvocationExpressionSyntax> invocationChain,
         ArgumentInfo? property,
         int depth)
     {
-        var validateWithRuleChain = GetValidateWithRuleChain(invocationChain, property, depth + 1, true);
+        var validateWithRuleChain = GetValidateWithRuleChain(ensureInvocation, invocationChain, property, depth + 1, true);
 
         if (validateWithRuleChain is null)
         {
@@ -161,7 +178,50 @@ public static class RuleChainsSyntaxProvider
         var validateWithRuleChainArray = new EquatableArray<RuleChain>([validateWithRuleChain]);
     
         // Create and return the existing ValidateWithRuleChain model.
-        return new CollectionRuleChain(property!, depth, 1, validateWithRuleChainArray);
+        return new CollectionRuleChain(
+            depth,
+            1,
+            ensureInvocation?.GetOnFailureModeFromSyntax(),
+            property!,
+            validateWithRuleChainArray);
+    }
+
+    private static CompositeRuleChain? GetCompositeRuleChain(
+        InvocationExpressionSyntax? withOnFailureInvocation,
+        int depth,
+        GeneratorAttributeSyntaxContext context)
+    {
+        var onFailureArgument = withOnFailureInvocation?.GetOnFailureModeFromSyntax();
+
+        if (onFailureArgument is null)
+        {
+            return null;
+        }
+        
+        var statements = withOnFailureInvocation?.GetRuleStatementsFromLastArgument() ?? [];
+        var ruleChains = new List<RuleChain>();
+
+        foreach (var statement in statements)
+        {
+            var ruleChain = GetRuleChainFromStatement(statement, depth, context);
+
+            if (ruleChain is not null)
+            {
+                ruleChains.Add(ruleChain);
+            }
+        }
+
+        // If we don't have any rule chains, then don't bother
+        if (ruleChains.Count == 0)
+        {
+            return null;
+        }
+        
+        return new CompositeRuleChain(
+            depth,
+            ruleChains.Sum(x => x.NumberOfRules),
+            onFailureArgument,
+            ruleChains.ToEquatableImmutableArray());
     }
 
     private static List<InvocationExpressionSyntax> GetRuleInvocationsFromStatement(ExpressionStatementSyntax statement)
@@ -199,16 +259,17 @@ public static class RuleChainsSyntaxProvider
         return invocationChain;
     }
 
-    private enum EnsureInvocationKind
+    private enum ChainStartKind
     {
-        None,
+        Invalid,
         Ensure,
         EnsureValidateWith,
         EnsureEach,
-        EnsureEachValidateWith
+        EnsureEachValidateWith,
+        Composite
     }
     
-    private static EnsureInvocationKind TryGetEnsureOrEnsureEachInvocation(
+    private static ChainStartKind TryGetValidStartingInvocation(
         List<InvocationExpressionSyntax> invocationChain,
         out InvocationExpressionSyntax? firstInvocation)
     {
@@ -216,7 +277,7 @@ public static class RuleChainsSyntaxProvider
 
         if (firstInvocation is null)
         {
-            return EnsureInvocationKind.None;
+            return ChainStartKind.Invalid;
         }
         
         var firstMemberAccess = firstInvocation.Expression as MemberAccessExpressionSyntax;
@@ -236,12 +297,13 @@ public static class RuleChainsSyntaxProvider
             // We don't have a valid rule chain if we have zero or one method invocations
             // As the first invocation should be the Ensure method.
             KnownNames.Methods.Ensure => invocationChain.Count > 1 
-                ? secondInvocationIsValidateWith ? EnsureInvocationKind.EnsureValidateWith : EnsureInvocationKind.Ensure 
-                : EnsureInvocationKind.None,
+                ? secondInvocationIsValidateWith ? ChainStartKind.EnsureValidateWith : ChainStartKind.Ensure 
+                : ChainStartKind.Invalid,
             KnownNames.Methods.EnsureEach => invocationChain.Count > 1
-                ? secondInvocationIsValidateWith ? EnsureInvocationKind.EnsureEachValidateWith : EnsureInvocationKind.None
-                : EnsureInvocationKind.EnsureEach,
-            _ => EnsureInvocationKind.None
+                ? secondInvocationIsValidateWith ? ChainStartKind.EnsureEachValidateWith : ChainStartKind.Invalid
+                : ChainStartKind.EnsureEach,
+            KnownNames.Methods.WithOnFailure => ChainStartKind.Composite,
+            _ => ChainStartKind.Invalid
         };
     }
 

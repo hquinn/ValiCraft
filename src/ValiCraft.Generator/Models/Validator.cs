@@ -1,4 +1,5 @@
 using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.RuleChains;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Models;
