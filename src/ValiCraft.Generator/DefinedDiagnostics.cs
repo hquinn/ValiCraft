@@ -95,4 +95,48 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
+
+    // Not sure how to test this scenario, but is there as a fallback
+    public static DiagnosticInfo InvalidLambdaDefined(string ruleChainName, Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC204",
+                "Invalid lambda defined",
+                $"{ruleChainName} expects a lambda as the last parameter.",
+                "ValiCraft",
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
+    // Not sure how to test this scenario, but is there as a fallback
+    public static DiagnosticInfo MissingLambdaParameterName(Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC205",
+                "Invalid lambda defined",
+                "Cannot retrieve the parameter name from lambda definition.",
+                "ValiCraft",
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
+    public static DiagnosticInfo InvalidBuilderArgumentUsedInScope(
+        string expectedBuilderArgument,
+        string actualBuilderArgument,
+        Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC206",
+                "Invalid builder argument",
+                $"'{actualBuilderArgument}' cannot be used in this scope. Try using '{expectedBuilderArgument}'.",
+                "ValiCraft",
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
 }

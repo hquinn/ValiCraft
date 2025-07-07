@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Types;
 using ValiCraft.Generator.Utils;
+using TypeInfo = ValiCraft.Generator.Concepts.TypeInfo;
 
 namespace ValiCraft.Generator.Extensions;
 
@@ -112,7 +113,7 @@ public static class NamedTypeSymbolExtensions
             var constraints = GenericConstraintsInfo.CreateFromTypeParameterSymbol(classTypeParameter);
 
             genericParameterInfos.Add(new GenericParameterInfo(
-                classTypeParameter.Name,
+                new TypeInfo(classTypeParameter.Name, true, classTypeParameter.NullableAnnotation == NullableAnnotation.Annotated),
                 inheritedPositions.ToEquatableImmutableArray(),
                 constraints));
         }

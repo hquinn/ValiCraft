@@ -1,21 +1,15 @@
 using ValiCraft.Generator.Models;
 
-namespace ValiCraft.Generator.RuleChains;
-
-public enum IfElseMode
-{
-    AlwaysIf,
-    BeginIfElseIf,
-    ElseIf
-}
+namespace ValiCraft.Generator.RuleChains.Context;
 
 public class RuleChainContext
 {
     public RuleChainContext(int counter)
     {
-        Counter = counter;
+        Counter = new Counter(counter);
         ParentFailureMode = null;
         HaltLabel = null;
+        IfElseMode = IfElseMode.AlwaysIf;
     }
 
     private RuleChainContext(RuleChainContext parent)
@@ -23,12 +17,13 @@ public class RuleChainContext
         ParentFailureMode = parent.ParentFailureMode;
         HaltLabel = parent.HaltLabel;
         Counter = parent.Counter;
+        IfElseMode = parent.IfElseMode;
     }
     
-    public int Counter { get; private set; }
+    public Counter Counter { get; private set; }
     public OnFailureMode? ParentFailureMode { get; private set; }
     public string? HaltLabel { get; private set; }
-    public IfElseMode IfElseMode { get; private set; } = IfElseMode.AlwaysIf;
+    public IfElseMode IfElseMode { get; private set; }
 
     public RuleChainContext CreateHaltContext(bool needsLabel)
     {
@@ -64,5 +59,5 @@ public class RuleChainContext
         IfElseMode = IfElseMode.AlwaysIf;
     }
     
-    public void DecrementCountdown() => Counter--;
+    public void DecrementCountdown() => Counter.Value--;
 }

@@ -4,9 +4,9 @@ namespace ValiCraft.Rules;
 
 [GenerateRuleExtension("IsNotNull")]
 [DefaultMessage("{PropertyName} is required.")]
-public class NotNull<T> : IValidationRule<T?>
+public class NotNull<TPropertyType> : IValidationRule<TPropertyType?>
 {
-    public static bool IsValid(T? propertyValue)
+    public static bool IsValid(TPropertyType? propertyValue)
     {
         return propertyValue is not null;
     }

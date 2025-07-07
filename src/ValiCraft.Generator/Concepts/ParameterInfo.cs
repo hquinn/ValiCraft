@@ -1,13 +1,9 @@
 namespace ValiCraft.Generator.Concepts;
 
-public record ParameterInfo(
-    string TypeName,
-    string Name,
-    bool TypeIsGeneric,
-    bool IsNullable)
+public record ParameterInfo(string Name, TypeInfo Type)
 {
     public override string ToString()
     {
-        return $"{TypeName} {Name}";
+        return $"{Type.TypeName} {Name}";
     }
 }

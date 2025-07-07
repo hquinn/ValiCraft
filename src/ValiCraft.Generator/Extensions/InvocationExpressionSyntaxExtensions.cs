@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
+using TypeInfo = ValiCraft.Generator.Concepts.TypeInfo;
 
 namespace ValiCraft.Generator.Extensions;
 
@@ -11,32 +12,24 @@ public static class InvocationExpressionSyntaxExtensions
     public static IEnumerable<ArgumentInfo> GetArguments(
         this InvocationExpressionSyntax invocation,
         IMethodSymbol? methodSymbol,
-        SemanticModel semanticModel,
-        IEnumerable<ArgumentInfo> prependWith)
+        SemanticModel semanticModel)
     {
         // Your existing logic for getting arguments
-        return prependWith.Concat(invocation.ArgumentList.Arguments
+        return invocation.ArgumentList.Arguments
             .Select((arg, i) =>
             {
-                string name;
+                var argumentExpression = arg.Expression;
+                var constantValueResult = semanticModel.GetConstantValue(argumentExpression);
+                var type = semanticModel.GetTypeInfo(argumentExpression).Type;
 
-                if (methodSymbol is null)
-                {
-                    name = "";
-                }
-                else
-                {
-                    name = methodSymbol.Parameters[i].Name;
-                }
-
-                var value = arg.Expression.ToString();
-                var type = semanticModel.GetTypeInfo(arg.Expression).Type;
-                var isLiteral = arg.Expression is LiteralExpressionSyntax;
-
-                return type is not null
-                    ? new ArgumentInfo(name, value, type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                        isLiteral)
-                    : new ArgumentInfo(name, value, "ERROR", isLiteral);
-            }));
+                var name = methodSymbol?.Parameters[i].Name ?? "";
+                var value = argumentExpression.ToString();
+                var typeString = type?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? "";
+                var typeInfo = new TypeInfo(typeString, type is not null && type.TypeKind == TypeKind.TypeParameter, type is not null && type.NullableAnnotation == NullableAnnotation.Annotated, argumentExpression is SimpleLambdaExpressionSyntax);
+                var isLiteral = constantValueResult.HasValue;
+                var constantValue = isLiteral ? constantValueResult.Value : null;
+                
+                return new ArgumentInfo(name, value, typeInfo, isLiteral, constantValue);
+            });
     }
 }

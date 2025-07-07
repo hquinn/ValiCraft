@@ -1,15 +1,42 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Models;
+using ValiCraft.Generator.RuleChains.Context;
 
 namespace ValiCraft.Generator.RuleChains;
 
 public abstract record RuleChain(
+    ValidationTarget? Target,
     int Depth,
     int NumberOfRules,
     OnFailureMode? FailureMode)
 {
     private const int TabIndexSize = 4;
     private const int BaseLineIndent = TabIndexSize * 3;
+
+    public bool TryLinkRuleChain(
+        List<RuleChain> ruleChains,
+        ValidationRule[] validRules,
+        SourceProductionContext context)
+    {
+        if (!TryLinkRuleChain(validRules, context, out var ruleChain))
+        {
+            return false;
+        }
+        
+        ruleChains.Add(ruleChain);
+        return true;
+    }
+
+    protected abstract bool TryLinkRuleChain(
+        ValidationRule[] validRules,
+        SourceProductionContext context,
+        out RuleChain linkedRuleChain);
     
     public string GenerateCode(RuleChainContext context)
     {
@@ -29,12 +56,22 @@ public abstract record RuleChain(
 
     public string GetRequestParameterName()
     {
-        return Depth switch
+        return CalculateRequestParameterName(Depth);
+    }
+
+    public string GetItemRequestParameterName()
+    {
+        return CalculateRequestParameterName(Depth + 1);
+    }
+
+    private static string CalculateRequestParameterName(int depth)
+    {
+        return depth switch
         {
             0 => "request",
             1 => "element",
             2 => "subElement",
-            _ => $"subElement{Depth - 1}"
+            _ => $"subElement{depth - 1}"
         };
     }
 

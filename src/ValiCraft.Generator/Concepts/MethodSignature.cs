@@ -1,5 +1,4 @@
 using ValiCraft.Generator.Types;
-using ValiCraft.Generator.Utils;
 
 namespace ValiCraft.Generator.Concepts;
 
@@ -10,9 +9,9 @@ public enum SignatureMatching
     Partial
 }
 
-public record MethodSignature(string MethodName, EquatableArray<ParameterInfo> Parameters)
+public record MethodSignature(EquatableArray<ParameterInfo> Parameters)
 {
-    public SignatureMatching MatchesTypes(EquatableArray<ArgumentInfo> arguments)
+    public SignatureMatching MatchesTypes(EquatableArray<TypeInfo> arguments)
     {
         if (Parameters.Count != arguments.Count)
         {
@@ -26,13 +25,13 @@ public record MethodSignature(string MethodName, EquatableArray<ParameterInfo> P
             var parameter = Parameters[i];
             var argument = arguments[i];
 
-            if (TypeComparisonUtils.AreEquivalent(parameter.TypeName, argument.Type))
+            if (argument.Matches(parameter.Type))
             {
                 continue;
             }
 
             // If our concrete type doesn't match, then we can return early
-            if (!parameter.TypeIsGeneric)
+            if (!parameter.Type.IsGeneric)
             {
                 return SignatureMatching.None;
             }

@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains;
-using ValiCraft.Generator.Services;
+using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.SourceProviders;
@@ -26,12 +26,12 @@ public static class ValidatorSourceProvider
         foreach (var validatorResult in validatorResults)
         {
             if (HasReportedDiagnostics(validatorResult, context) ||
-                !RuleChainLinkingService.TryLinkWeakSemanticRules(validatorResult, validRules, context, out var validator))
+                !validatorResult.Value!.TryLinkWeakSemanticRules(validRules, context, out var validator))
             {
                 continue;
             }
 
-            var sourceCode = GenerateSourceCode(validator);
+            var sourceCode = GenerateSourceCode(validator!);
 
             context.AddSource($"{validatorResult.Value!.Class.Name}.g.cs", SourceText.From(sourceCode, Encoding.UTF8));
         }

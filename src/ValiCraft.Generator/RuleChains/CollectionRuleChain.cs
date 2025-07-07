@@ -1,18 +1,43 @@
 using System.Collections.Generic;
-using System.Linq;
-using ValiCraft.Generator.Concepts;
+using Microsoft.CodeAnalysis;
+using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
+using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.RuleChains;
 
 public record CollectionRuleChain(
+    ValidationTarget Target,
     int Depth,
     int NumberOfRules,
     OnFailureMode? FailureMode,
-    ArgumentInfo Property,
-    EquatableArray<RuleChain> ItemRuleChains) : RuleChain(Depth, NumberOfRules, FailureMode)
+    EquatableArray<RuleChain> ItemRuleChains) : RuleChain(Target, Depth, NumberOfRules, FailureMode)
 {
+    protected override bool TryLinkRuleChain(
+        ValidationRule[] validRules,
+        SourceProductionContext context,
+        out RuleChain linkedRuleChain)
+    {
+        var itemRuleChains = new List<RuleChain>(ItemRuleChains.Count);
+
+        foreach (var itemRuleChain in ItemRuleChains)
+        {
+            if (!itemRuleChain.TryLinkRuleChain(itemRuleChains, validRules, context))
+            {
+                linkedRuleChain = this;
+                return false;
+            }
+        }
+
+        linkedRuleChain = this with
+        {
+            ItemRuleChains = itemRuleChains.ToEquatableImmutableArray()
+        };
+        
+        return true;
+    }
+
     public override bool NeedsGotoLabels()
     {
         // Loops have no reliable way (besides break and return) to exit loops early
@@ -35,11 +60,14 @@ public record CollectionRuleChain(
 
         var indent = GetIndent();
         var requestName = GetRequestParameterName();
-        var itemRequestName = ItemRuleChains.First().GetRequestParameterName();
+        var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
+        
+        var itemRequestName = GetItemRequestParameterName();
+
         var ruleChainCodes = string.Join("\r\n", itemRuleChainCodes);
         
         return $$"""
-               {{indent}}foreach (var {{itemRequestName}} in {{requestName}}.{{Property.Value}})
+               {{indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
                {{indent}}{
                {{ruleChainCodes}}
                {{indent}}}

@@ -16,6 +16,8 @@ public abstract class IncrementalGeneratorTestBase<TGenerator> where TGenerator 
         bool assertTrackingSteps = true)
     {
         using var assertionScope = new AssertionScope();
+        assertionScope.FormattingOptions.MaxLines = 30000;
+        assertionScope.FormattingOptions.MaxDepth = 1000;
 
         var options = IncrementalGeneratorTestOptions.CreateDefault(additionalMetadataReferences);
 

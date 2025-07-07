@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
-using ValiCraft.Generator.RuleChains;
+using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Models;
@@ -39,14 +39,15 @@ public record Rule(
 {
     private const string FallbackMessage = "\"An error has occurred\"";
     
-    public ValidationRule? MapToValidationRule(ValidationRule[] validValidationRules)
+    public ValidationRule? MapToValidationRule(ValidationTarget target, ValidationRule[] validRules)
     {
         ValidationRule? bestMatchedRule = null;
 
-        foreach (var validRule in validValidationRules.Where(x => x.NameForExtensionMethod == MethodName))
+        foreach (var validRule in validRules.Where(x => x.NameForExtensionMethod == MethodName))
         {
+            var argumentTypes = Arguments.Select(x => x.Type).Prepend(target.Type).ToEquatableImmutableArray();
             // We skip the first parameter as this will always be the property type
-            var matchesResult = validRule.IsValidSignature.MatchesTypes(Arguments);
+            var matchesResult = validRule.IsValidSignature.MatchesTypes(argumentTypes);
 
             // Check if we have a direct match with signature types
             // If so, we can return early
@@ -85,23 +86,23 @@ public record Rule(
     public string GenerateCodeForRule(
         string requestName,
         string indent,
-        ArgumentInfo property,
+        ValidationTarget target,
         RuleChainContext context)
     {
         const string errorTypeName = $"global::{KnownNames.Types.Error}";
-        var propertyAccessString = $"{requestName}.{property.Value}";
+        var targetAccess = string.Format(target.AccessorExpressionFormat, requestName);
         var validationRuleInvocation =
-            $"global::{ValidationRuleData?.FullyQualifiedValidationRule}{ConstructValidationRuleGeneric()}";
+            $"global::{ValidationRuleData?.FullyQualifiedValidationRule}{ConstructValidationRuleGeneric(target)}";
 
-        var isValidCallArgs = new List<string> { propertyAccessString };
-        isValidCallArgs.AddRange(Arguments.GetArray()?.Skip(1).Select(x => x.Value) ?? []);
+        var isValidCallArgs = new List<string> { targetAccess };
+        isValidCallArgs.AddRange(Arguments.GetArray()?.Select(x => x.Value) ?? []);
         var isValidCallArgsString = string.Join(", ", isValidCallArgs);
 
         var code = $$"""
                  {{indent}}{{GetIfElseIfKeyword(context)}} (!{{validationRuleInvocation}}.IsValid({{isValidCallArgsString}}))
                  {{indent}}{
                  {{indent}}    errors ??= new({{context.Counter}});
-                 {{indent}}    errors.Add({{errorTypeName}}.Validation({{GetValidationErrorCode(validationRuleInvocation)}}, {{GetValidationMessage(requestName, property)}}));
+                 {{indent}}    errors.Add({{errorTypeName}}.Validation({{GetValidationErrorCode(validationRuleInvocation)}}, {{GetValidationMessage(requestName, target)}}));
                  {{GetGotoLabelIfNeeded(indent, context)}}{{indent}}}
                  """;
         
@@ -134,16 +135,17 @@ public record Rule(
     
     private IEnumerable<ArgumentInfo> EnrichArguments(ValidationRule matchedRule)
     {
-        for (var i = 0; i < Arguments.Count; i++)
+        // Property is not in the argument list, so skip the first one
+        for (var i = 1; i < matchedRule.IsValidSignature.Parameters.Count; i++)
         {
-            var argument = Arguments[i];
+            var argument = Arguments[i - 1];
             var parameter = matchedRule.IsValidSignature.Parameters[i];
 
             yield return argument with { Name = parameter.Name };
         }
     }
     
-    private string GetValidationMessage(string requestName, ArgumentInfo property)
+    private string GetValidationMessage(string requestName, ValidationTarget target)
     {
         var messageInfo = RuleOverrides.OverrideMessage ?? DefaultMessage;
         if (messageInfo is null)
@@ -152,23 +154,33 @@ public record Rule(
         }
 
         // Build a complete map of all available placeholders for this rule invocation.
-        var placeholderMap = BuildPlaceholderMap(requestName, property);
+        var placeholderMap = BuildPlaceholderMap(requestName, target);
 
         // Pass the template and the map to the builder.
         return BuildMessage(messageInfo, placeholderMap);
     }
 
-    private Dictionary<string, ArgumentInfo> BuildPlaceholderMap(string requestName, ArgumentInfo property)
+    private Dictionary<string, ArgumentInfo> BuildPlaceholderMap(string requestName, ValidationTarget target)
     {
         var map = new Dictionary<string, ArgumentInfo>();
 
         // Add the standard placeholders.
         // We treat them just like any other argument.
-        var propertyNameInfo = RuleOverrides.OverridePropertyName ?? new MessageInfo(property.Value, true);
+        var propertyNameInfo = RuleOverrides.OverridePropertyName ?? new MessageInfo(target.DefaultPropertyName, true);
         map.Add("{PropertyName}",
-            new ArgumentInfo("PropertyName", propertyNameInfo.Value, "string", propertyNameInfo.IsLiteral));
+            new ArgumentInfo(
+                "PropertyName",
+                propertyNameInfo.Value,
+                new TypeInfo("string", false, false),
+                propertyNameInfo.IsLiteral,
+                null));
         map.Add("{PropertyValue}",
-            new ArgumentInfo("PropertyValue", $"{requestName}.{property.Value}", property.Type, false));
+            new ArgumentInfo(
+                "PropertyValue",
+                string.Format(target.AccessorExpressionFormat, requestName),
+                target.Type,
+                false,
+                null));
 
         // Add custom placeholders by mapping them to the invocation arguments by name.
         foreach (var placeholder in Placeholders)
@@ -211,7 +223,7 @@ public record Rule(
             // If the replacement value is a literal, bake it in.
             // Otherwise, create a C# interpolation hole for the expression.
             var replacementExpression = replacementInfo.IsLiteral
-                ? replacementInfo.Value
+                ? replacementInfo.ConstantValue?.ToString() ?? replacementInfo.Value
                 : $"{{{replacementInfo.Value}}}";
 
             templateBuilder.Replace(placeholderText, replacementExpression);
@@ -234,7 +246,7 @@ public record Rule(
 
             var valueExpression = replacementInfo.IsLiteral ? $"\"{replacementInfo.Value}\"" : replacementInfo.Value;
 
-            var finalReplacementExpression = replacementInfo.Type.EndsWith("string")
+            var finalReplacementExpression = replacementInfo.Type.TypeName.EndsWith("string")
                 ? valueExpression
                 : $"{valueExpression}?.ToString() ?? \"\"";
 
@@ -259,7 +271,7 @@ public record Rule(
         return RuleOverrides.OverrideErrorCode.Value;
     }
     
-    private string? ConstructValidationRuleGeneric()
+    private string? ConstructValidationRuleGeneric(ValidationTarget target)
     {
         if (string.IsNullOrEmpty(ValidationRuleData?.ValidationRuleGenericFormat))
         {
@@ -267,7 +279,8 @@ public record Rule(
         }
 
         var args = Arguments
-            .Select(argument => argument.Type)
+            .Select(argument => argument.Type.TypeName)
+            .Prepend(target.Type.TypeName)
             .ToArray<object>();
 
         return string.Format(ValidationRuleData!.ValidationRuleGenericFormat, args);

@@ -6,22 +6,22 @@ namespace ValiCraft.Generator.Concepts;
 
 public record GenericParameterInfo
 {
-    public GenericParameterInfo(string name, List<int> inheritedPositions)
-        : this(name, inheritedPositions.ToEquatableImmutableArray(), null)
+    public GenericParameterInfo(TypeInfo type, List<int> inheritedPositions)
+        : this(type, inheritedPositions.ToEquatableImmutableArray(), null)
     {
     }
 
     public GenericParameterInfo(
-        string name,
+        TypeInfo type,
         EquatableArray<int> inheritedPositions,
         GenericConstraintsInfo? constraints)
     {
-        Name = name;
+        Type = type;
         InheritedPositions = inheritedPositions;
         Constraints = constraints;
     }
 
-    public string Name { get; init; }
+    public TypeInfo Type { get; init; }
     public EquatableArray<int> InheritedPositions { get; init; }
     public GenericConstraintsInfo? Constraints { get; init; }
 }

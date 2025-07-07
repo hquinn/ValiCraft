@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -38,7 +39,11 @@ public static class ValidatorSyntaxProvider
         cancellationToken.ThrowIfCancellationRequested();
         
         var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(classDeclarationSyntax!, classSymbol!, null);
-        var ruleChains = RuleChainsSyntaxProvider.DiscoverRuleChains(classDeclarationSyntax!, context);
+        var ruleChains = RuleChainsSyntaxProvider.DiscoverRuleChains(
+            diagnostics,
+            classDeclarationSyntax!,
+            classSymbol!,
+            context);
 
         var validator = new Validator(
             classInfo,
@@ -58,7 +63,7 @@ public static class ValidatorSyntaxProvider
         requestTypeName = null;
         if (!classSymbol.Inherits(KnownNames.Classes.Validator, 1))
         {
-            diagnostics.Add(DefinedDiagnostics.MissingValidatorBaseClass(classDeclarationSyntax.GetLocation()));
+            diagnostics.Add(DefinedDiagnostics.MissingValidatorBaseClass(classDeclarationSyntax.Identifier.GetLocation()));
             return false;
         }
 
@@ -72,7 +77,7 @@ public static class ValidatorSyntaxProvider
     {
         if (!classDeclarationSyntax.IsPartial())
         {
-            diagnostics.Add(DefinedDiagnostics.MissingPartialKeyword(classDeclarationSyntax.GetLocation()));
+            diagnostics.Add(DefinedDiagnostics.MissingPartialKeyword(classDeclarationSyntax.Identifier.GetLocation()));
             return false;
         }
 

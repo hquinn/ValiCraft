@@ -110,7 +110,7 @@ public static class ValidationRuleExtensionSyntaxProvider
         INamedTypeSymbol classSymbol,
         out MethodSignature? isValidMethodSignature)
     {
-        var isValidMethod = classSymbol.GetMembers("IsValid")
+        var isValidMethod = classSymbol.GetMembers(KnownNames.Methods.IsValid)
             .OfType<IMethodSymbol>()
             .FirstOrDefault(m => m.IsStatic && m.DeclaredAccessibility == Accessibility.Public && m.Parameters.Any());
 

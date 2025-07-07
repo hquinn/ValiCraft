@@ -1,17 +1,57 @@
 using System.Collections.Generic;
-using ValiCraft.Generator.Concepts;
+using Microsoft.CodeAnalysis;
+using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
+using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.RuleChains;
 
 public record PropertyRuleChain(
+    ValidationTarget Target,
     int Depth,
     int NumberOfRules,
     OnFailureMode? FailureMode,
-    ArgumentInfo Property,
-    EquatableArray<Rule> Rules) : RuleChain(Depth, NumberOfRules, FailureMode)
+    EquatableArray<Rule> Rules) : RuleChain(Target, Depth, NumberOfRules, FailureMode)
 {
+    protected override bool TryLinkRuleChain(
+        ValidationRule[] validRules,
+        SourceProductionContext context,
+        out RuleChain linkedRuleChain)
+    {
+        var rules = new List<Rule>(Rules.Count);
+
+        foreach (var rule in Rules)
+        {
+            if (rule.SemanticMode is SemanticMode.WeakSemanticMode)
+            {
+                var matchedValidationRule = rule.MapToValidationRule(Target!, validRules);
+
+                if (matchedValidationRule is null)
+                {
+                    var diagnostics =
+                        DefinedDiagnostics.UnrecognizableRuleInvocation(rule.Location.ToLocation());
+                    context.ReportDiagnostic(diagnostics.CreateDiagnostic());
+
+                    linkedRuleChain = this;
+                    return false;
+                }
+
+                rules.Add(rule.EnrichRuleFromValidationRule(matchedValidationRule));
+                continue;
+            }
+            
+            rules.Add(rule);
+        }
+
+        linkedRuleChain = this with
+        {
+            Rules = rules.ToEquatableImmutableArray()
+        };
+        
+        return true;
+    }
+
     public override bool NeedsGotoLabels()
     {
         // Property Rule Chains themselves don't require the need for goto labels,
@@ -28,7 +68,7 @@ public record PropertyRuleChain(
             ruleCodes.Add(rule.GenerateCodeForRule(
                 GetRequestParameterName(),
                 GetIndent(),
-                Property,
+                Target!,
                 context));
             context.DecrementCountdown();
         }

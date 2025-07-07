@@ -1,32 +1,16 @@
 ﻿using System.Linq;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Types;
-using ValiCraft.Generator.Utils;
 
 namespace ValiCraft.Generator.Models;
 
-public record ValidationRule
+public record ValidationRule(
+    ClassInfo Class,
+    string NameForExtensionMethod,
+    MessageInfo? DefaultMessage,
+    MethodSignature IsValidSignature,
+    EquatableArray<RulePlaceholder> RulePlaceholders)
 {
-    public ValidationRule(
-        ClassInfo classInfo,
-        string nameForExtensionMethod,
-        MessageInfo? defaultMessage,
-        MethodSignature isValidSignature,
-        EquatableArray<RulePlaceholder> rulePlaceholders)
-    {
-        Class = classInfo;
-        NameForExtensionMethod = nameForExtensionMethod;
-        DefaultMessage = defaultMessage;
-        IsValidSignature = isValidSignature;
-        RulePlaceholders = rulePlaceholders;
-    }
-
-    public ClassInfo Class { get; init; }
-    public string NameForExtensionMethod { get; init; }
-    public MessageInfo? DefaultMessage { get; init; }
-    public MethodSignature IsValidSignature { get; init; }
-    public EquatableArray<RulePlaceholder> RulePlaceholders { get; init; }
-
     public MapToValidationRuleData GetMapToValidationRuleData()
     {
         return new MapToValidationRuleData(Class.FullyQualifiedWithoutGenerics,
@@ -45,14 +29,14 @@ public record ValidationRule
 
         var parameters = IsValidSignature.Parameters.Skip(1).Select(parameter =>
         {
-            if (parameter.TypeIsGeneric)
+            if (parameter.Type.IsGeneric)
             {
                 var genericParameter = Class.GenericParameters
-                    .First(genericParameter => genericParameter.Name == parameter.TypeName);
+                    .First(genericParameter => genericParameter.Type.Matches(parameter.Type));
 
                 if (genericParameter.InheritedPositions.Contains(0))
                 {
-                    parameter = parameter with { TypeName = "TPropertyType" };
+                    parameter = parameter with { Type = new("TPropertyType", true, false) };
                 }
             }
 
@@ -67,7 +51,7 @@ public record ValidationRule
         var genericParametersOutput = string.Join(", ",
             // Check if any has an inherited position of 0, which maps to TPropertyType on IValidationRule
             Class.GenericParameters
-                .Select(x => x.InheritedPositions.Contains(0) ? "TPropertyType" : x.Name));
+                .Select(x => (x.InheritedPositions.Contains(0) ? x.Type with {TypeName = "TPropertyType" } : x.Type).TypeName));
 
         if (string.IsNullOrWhiteSpace(genericParametersOutput))
         {
@@ -82,7 +66,7 @@ public record ValidationRule
         return $"TRequest, TPropertyType, {genericParametersOutput}";
     }
 
-    public string GetValidationRuleGenericFormat()
+    private string GetValidationRuleGenericFormat()
     {
         if (Class.GenericParameters.Count == 0)
         {
@@ -91,23 +75,18 @@ public record ValidationRule
 
         var mappingIndexes = new int[Class.GenericParameters.Count];
 
-        for (var genericParameterIndex = 0;
-             genericParameterIndex < Class.GenericParameters.Count;
-             genericParameterIndex++)
+        for (var genericIndex = 0; genericIndex < Class.GenericParameters.Count; genericIndex++)
         {
-            var genericParameter = Class.GenericParameters[genericParameterIndex];
+            var genericParameter = Class.GenericParameters[genericIndex];
 
             var found = false;
-            for (var methodParameterIndex = 0;
-                 methodParameterIndex < IsValidSignature.Parameters.Count;
-                 methodParameterIndex++)
+            for (var methodIndex = 0; methodIndex < IsValidSignature.Parameters.Count; methodIndex++)
             {
-                var methodParameter = IsValidSignature.Parameters[methodParameterIndex];
+                var methodParameter = IsValidSignature.Parameters[methodIndex];
 
-                if (methodParameter.TypeIsGeneric &&
-                    TypeComparisonUtils.AreEquivalent(methodParameter.TypeName, genericParameter.Name))
+                if (methodParameter.Type.Matches(genericParameter.Type))
                 {
-                    mappingIndexes[genericParameterIndex] = methodParameterIndex;
+                    mappingIndexes[genericIndex] = methodIndex;
                     found = true;
                     break;
                 }
@@ -115,7 +94,7 @@ public record ValidationRule
 
             if (!found)
             {
-                mappingIndexes[genericParameterIndex] = -1;
+                mappingIndexes[genericIndex] = -1;
             }
         }
 

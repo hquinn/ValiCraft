@@ -6,10 +6,10 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{PropertyName} must not be equal to {ValueToCompare}. Value received is {PropertyValue}")]
 [RulePlaceholder("{ValueToCompare}", "parameter")]
 public class NotEqual<TPropertyType> : IValidationRule<TPropertyType, TPropertyType>
-    where TPropertyType : IComparable
+    where TPropertyType : IEquatable<TPropertyType>
 {
     public static bool IsValid(TPropertyType property, TPropertyType parameter)
     {
-        return property.CompareTo(parameter) != 0;
+        return !property.Equals(parameter);
     }
 }
