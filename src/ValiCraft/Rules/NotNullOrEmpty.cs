@@ -3,11 +3,11 @@ using ValiCraft.Attributes;
 namespace ValiCraft.Rules;
 
 [GenerateRuleExtension("IsNotNullOrEmpty")]
-[DefaultMessage("{PropertyName} is must be not null or empty.")]
+[DefaultMessage("{TargetName} is must be not null or empty.")]
 public class NotNullOrEmpty : IValidationRule<string?>
 {
-    public static bool IsValid(string? propertyValue)
+    public static bool IsValid(string? targetValue)
     {
-        return !string.IsNullOrEmpty(propertyValue);
+        return !string.IsNullOrEmpty(targetValue);
     }
 }

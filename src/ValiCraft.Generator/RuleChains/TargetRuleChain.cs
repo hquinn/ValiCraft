@@ -7,7 +7,7 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.RuleChains;
 
-public record PropertyRuleChain(
+public record TargetRuleChain(
     ValidationTarget Target,
     int Depth,
     int NumberOfRules,

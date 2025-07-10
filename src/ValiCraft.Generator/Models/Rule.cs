@@ -89,7 +89,8 @@ public record Rule(
         ValidationTarget target,
         RuleChainContext context)
     {
-        const string errorTypeName = $"global::{KnownNames.Types.Error}";
+        const string errorTypeName = $"global::{KnownNames.Types.ValidationError}";
+        const string errorSeverity = $"global::{KnownNames.Enums.ErrorSeverity}";
         var targetAccess = string.Format(target.AccessorExpressionFormat, requestName);
         var validationRuleInvocation =
             $"global::{ValidationRuleData?.FullyQualifiedValidationRule}{ConstructValidationRuleGeneric(target)}";
@@ -97,12 +98,21 @@ public record Rule(
         var isValidCallArgs = new List<string> { targetAccess };
         isValidCallArgs.AddRange(Arguments.GetArray()?.Select(x => x.Value) ?? []);
         var isValidCallArgsString = string.Join(", ", isValidCallArgs);
+        var targetNameInfo = RuleOverrides.OverrideTargetName ?? target.DefaultTargetName;
 
         var code = $$"""
                  {{indent}}{{GetIfElseIfKeyword(context)}} (!{{validationRuleInvocation}}.IsValid({{isValidCallArgsString}}))
                  {{indent}}{
                  {{indent}}    errors ??= new({{context.Counter}});
-                 {{indent}}    errors.Add({{errorTypeName}}.Validation({{GetValidationErrorCode(validationRuleInvocation)}}, {{GetValidationMessage(requestName, target)}}));
+                 {{indent}}    errors.Add(new {{errorTypeName}}<{{target.Type.FormattedTypeName}}>
+                 {{indent}}    {
+                 {{indent}}        Code = {{GetValidationErrorCode(validationRuleInvocation)}},
+                 {{indent}}        Message = {{GetValidationMessage(requestName, target, targetNameInfo)}},
+                 {{indent}}        Severity = {{errorSeverity}}.Error,
+                 {{indent}}        TargetName = "{{targetNameInfo.Value}}",
+                 {{indent}}        AttemptedValue = {{targetAccess}},
+                 {{indent}}        Cause = null,
+                 {{indent}}    });
                  {{GetGotoLabelIfNeeded(indent, context)}}{{indent}}}
                  """;
         
@@ -145,7 +155,7 @@ public record Rule(
         }
     }
     
-    private string GetValidationMessage(string requestName, ValidationTarget target)
+    private string GetValidationMessage(string requestName, ValidationTarget target, MessageInfo targetNameInfo)
     {
         var messageInfo = RuleOverrides.OverrideMessage ?? DefaultMessage;
         if (messageInfo is null)
@@ -154,29 +164,31 @@ public record Rule(
         }
 
         // Build a complete map of all available placeholders for this rule invocation.
-        var placeholderMap = BuildPlaceholderMap(requestName, target);
+        var placeholderMap = BuildPlaceholderMap(requestName, target, targetNameInfo);
 
         // Pass the template and the map to the builder.
         return BuildMessage(messageInfo, placeholderMap);
     }
 
-    private Dictionary<string, ArgumentInfo> BuildPlaceholderMap(string requestName, ValidationTarget target)
+    private Dictionary<string, ArgumentInfo> BuildPlaceholderMap(
+        string requestName,
+        ValidationTarget target,
+        MessageInfo targetNameInfo)
     {
         var map = new Dictionary<string, ArgumentInfo>();
 
         // Add the standard placeholders.
         // We treat them just like any other argument.
-        var propertyNameInfo = RuleOverrides.OverridePropertyName ?? new MessageInfo(target.DefaultPropertyName, true);
-        map.Add("{PropertyName}",
+        map.Add("{TargetName}",
             new ArgumentInfo(
-                "PropertyName",
-                propertyNameInfo.Value,
+                "TargetName",
+                targetNameInfo.Value,
                 new TypeInfo("string", false, false),
-                propertyNameInfo.IsLiteral,
+                targetNameInfo.IsLiteral,
                 null));
-        map.Add("{PropertyValue}",
+        map.Add("{TargetValue}",
             new ArgumentInfo(
-                "PropertyValue",
+                "TargetValue",
                 string.Format(target.AccessorExpressionFormat, requestName),
                 target.Type,
                 false,
@@ -246,7 +258,7 @@ public record Rule(
 
             var valueExpression = replacementInfo.IsLiteral ? $"\"{replacementInfo.Value}\"" : replacementInfo.Value;
 
-            var finalReplacementExpression = replacementInfo.Type.TypeName.EndsWith("string")
+            var finalReplacementExpression = replacementInfo.Type.PureTypeName.EndsWith("string")
                 ? valueExpression
                 : $"{valueExpression}?.ToString() ?? \"\"";
 
@@ -279,8 +291,8 @@ public record Rule(
         }
 
         var args = Arguments
-            .Select(argument => argument.Type.TypeName)
-            .Prepend(target.Type.TypeName)
+            .Select(argument => argument.Type.FormattedTypeName)
+            .Prepend(target.Type.FormattedTypeName)
             .ToArray<object>();
 
         return string.Format(ValidationRuleData!.ValidationRuleGenericFormat, args);

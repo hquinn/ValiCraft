@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using LitePrimitives;
+using MonadCraft;
 using ValiCraft.Generator.Tests.Helpers;
 
 namespace ValiCraft.Generator.Tests;
@@ -59,37 +59,37 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
         [GenerateRuleExtension("IsNotEmpty")]
         // This is the default message that will be displayed
         // when the validation rule is not valid.
-        [DefaultMessage("'{PropertyName}' must not be empty.")]
+        [DefaultMessage("'{TargetName}' must not be empty.")]
         public class NotEmptyRule : IValidationRule<string?>
         {
             public static bool IsValid(string? value) => !string.IsNullOrEmpty(value);
         }
 
         [GenerateRuleExtension("IsGreaterThan")]
-        // {PropertyName} and {PropertyValue} are in-built placeholders.
+        // {TargetName} and {TargetValue} are in-built placeholders.
         // {ValueToCompare} is a user-defined placeholder.
-        [DefaultMessage("'{PropertyName}' must be greater than {ValueToCompare}, but received {PropertyValue}.")]
+        [DefaultMessage("'{TargetName}' must be greater than {ValueToCompare}, but received {TargetValue}.")]
         // Create a user-defined placeholder, which matches the 'valueToCompare' parameter value.
         [RulePlaceholder("{ValueToCompare}", "valueToCompare")]
-        public class GreaterThanRule<TPropertyValue> : IValidationRule<TPropertyValue, TPropertyValue>
-            where TPropertyValue : IComparable
+        public class GreaterThanRule<TTargetValue> : IValidationRule<TTargetValue, TTargetValue>
+            where TTargetValue : IComparable
         {
-            public static bool IsValid(TPropertyValue value, TPropertyValue valueToCompare) 
+            public static bool IsValid(TTargetValue value, TTargetValue valueToCompare) 
                 => value.CompareTo(valueToCompare) > 0;
         }
 
         [GenerateRuleExtension("IsLessThan")]
-        [DefaultMessage("'{PropertyName}' must be less than {ValueToCompare}, but received {PropertyValue}.")]
+        [DefaultMessage("'{TargetName}' must be less than {ValueToCompare}, but received {TargetValue}.")]
         [RulePlaceholder("{ValueToCompare}", "valueToCompare")]
-        public class LessThanRule<TPropertyValue> : IValidationRule<TPropertyValue, TPropertyValue>
-            where TPropertyValue : IComparable
+        public class LessThanRule<TTargetValue> : IValidationRule<TTargetValue, TTargetValue>
+            where TTargetValue : IComparable
         {
-            public static bool IsValid(TPropertyValue value, TPropertyValue valueToCompare) 
+            public static bool IsValid(TTargetValue value, TTargetValue valueToCompare) 
                 => value.CompareTo(valueToCompare) < 0;
         }
         
         [GenerateRuleExtension("Must")]
-        [DefaultMessage("{PropertyName} doesn't satisfy the condition")]
+        [DefaultMessage("{TargetName} doesn't satisfy the condition")]
         public class Must<TPropertyType> : IValidationRule<TPropertyType?, Func<TPropertyType?, bool>>
         {
             public static bool IsValid(TPropertyType? property, Func<TPropertyType?, bool> predicate)
@@ -111,13 +111,13 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
         namespace Test.Rules;
 
         // Removing the [GenerateRuleExtension] attribute will not generate the extension method.
-        [DefaultMessage("'{PropertyName}' must not be null.")]
-        public class NotNullRule<TPropertyValue> : IValidationRule<TPropertyValue?>
+        [DefaultMessage("'{TargetName}' must not be null.")]
+        public class NotNullRule<TTargetValue> : IValidationRule<TTargetValue?>
         {
-            public static bool IsValid(TPropertyValue? value) => value is not null;
+            public static bool IsValid(TTargetValue? value) => value is not null;
         }
 
-        [DefaultMessage("'{PropertyName}' must have a length of {Length}.")]
+        [DefaultMessage("'{TargetName}' must have a length of {Length}.")]
         [RulePlaceholder("{Length}", "length")]
         public class LengthRule : IValidationRule<string?, int>
         {
@@ -125,7 +125,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
         }
 
         // We copy any attribute besides [GenerateRuleExtension] to the extension method.
-        [DefaultMessage("'{PropertyName}' must not be null.")]
+        [DefaultMessage("'{TargetName}' must not be null.")]
         public static class NotNullRuleExtensions
         {
             // We need to define the [MapToValidationRule] attribute so we know how to link the extension method
@@ -138,7 +138,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 => throw new NotImplementedException("Extension methods never get called.");
         }
 
-        [DefaultMessage("'{PropertyName}' must have a length of {Length}.")]
+        [DefaultMessage("'{TargetName}' must have a length of {Length}.")]
         [RulePlaceholder("{Length}", "length")]
         public static class LengthRuleExtensions
         {
@@ -179,7 +179,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                  => 999M;
 
                                                                              private string ShippingReferenceEmptyMessage
-                                                                                 => "'{PropertyName}' assigned is invalid.";
+                                                                                 => "'{TargetName}' assigned is invalid.";
 
                                                                              protected override void DefineRules(IValidationRuleBuilder<Order> orderBuilder)
                                                                              {
@@ -223,7 +223,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                      .HasLength(10);
 
                                                                                  orderBuilder.Ensure(o => o.ShippingReference, OnFailureMode.Halt)
-                                                                                     .IsNotNull().WithMessage("'{PropertyName}' needs to be assigned before proceeding").WithPropertyName("Reference")
+                                                                                     .IsNotNull().WithMessage("'{TargetName}' needs to be assigned before proceeding").WithTargetName("Reference")
                                                                                      .IsNotEmpty().WithMessage(ShippingReferenceEmptyMessage);
 
                                                                                  orderBuilder.Ensure(o => o.OrderTotal)
@@ -239,7 +239,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
 
         namespace Test.Rules
         {
-            [global::ValiCraft.Attributes.DefaultMessage("'{PropertyName}' must not be empty.")]
+            [global::ValiCraft.Attributes.DefaultMessage("'{TargetName}' must not be empty.")]
             public static class NotEmptyRuleExtensions
             {
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotEmptyRule), "")]
@@ -256,7 +256,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
 
         namespace Test.Rules
         {
-            [global::ValiCraft.Attributes.DefaultMessage("'{PropertyName}' must be greater than {ValueToCompare}, but received {PropertyValue}.")]
+            [global::ValiCraft.Attributes.DefaultMessage("'{TargetName}' must be greater than {ValueToCompare}, but received {TargetValue}.")]
             [global::ValiCraft.Attributes.RulePlaceholder("{ValueToCompare}", "valueToCompare")]
             public static class GreaterThanRuleExtensions
             {
@@ -274,7 +274,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
 
         namespace Test.Rules
         {
-            [global::ValiCraft.Attributes.DefaultMessage("'{PropertyName}' must be less than {ValueToCompare}, but received {PropertyValue}.")]
+            [global::ValiCraft.Attributes.DefaultMessage("'{TargetName}' must be less than {ValueToCompare}, but received {TargetValue}.")]
             [global::ValiCraft.Attributes.RulePlaceholder("{ValueToCompare}", "valueToCompare")]
             public static class LessThanRuleExtensions
             {
@@ -292,7 +292,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
 
                                                                            namespace Test.Rules
                                                                            {
-                                                                               [global::ValiCraft.Attributes.DefaultMessage("{PropertyName} doesn't satisfy the condition")]
+                                                                               [global::ValiCraft.Attributes.DefaultMessage("{TargetName} doesn't satisfy the condition")]
                                                                                public static class MustExtensions
                                                                                {
                                                                                    [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Must<>), "<{0}>")]
@@ -319,19 +319,42 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                        {
                                                                            public partial class OrderValidator : global::ValiCraft.IValidator<global::Test.Requests.Order>
                                                                            {
-                                                                               public global::LitePrimitives.Validation<global::Test.Requests.Order> Validate(global::Test.Requests.Order request)
+                                                                               public global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>, global::Test.Requests.Order> Validate(global::Test.Requests.Order request)
                                                                                {
-                                                                                   global::System.Collections.Generic.List<global::LitePrimitives.Error>? errors = null;
+                                                                                   var errors = RunValidationLogic(request);
+
+                                                                                   return errors is not null
+                                                                                       ? global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>, global::Test.Requests.Order>.Failure(errors)
+                                                                                       : global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>, global::Test.Requests.Order>.Success(request);
+                                                                               }
+
+                                                                               public global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError> ValidateToList(global::Test.Requests.Order request)
+                                                                               {
+                                                                                   return RunValidationLogic(request) ?? [];
+                                                                               }
+
+                                                                               private global::System.Collections.Generic.List<global::ValiCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Order request)
+                                                                               {
+                                                                                   global::System.Collections.Generic.List<global::ValiCraft.IValidationError>? errors = null;
 
                                                                                    if (!global::Test.Rules.Must<global::Test.Requests.Order>.IsValid(request, o => o.OrderNumber is not null))
                                                                                    {
                                                                                        errors ??= new(14);
-                                                                                       errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.Must<global::Test.Requests.Order>), $"Order doesn't satisfy the condition"));
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.Must<global::Test.Requests.Order>),
+                                                                                           Message = $"Order doesn't satisfy the condition",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           AttemptedValue = request,
+                                                                                           Cause = null,
+                                                                                       });
                                                                                    }
 
                                                                                    foreach (var element in request.LineItems)
                                                                                    {
-                                                                                       if (_lineItemValidator.Validate(element).Errors is {} errors13)
+                                                                                       var errors13 = _lineItemValidator.ValidateToList(element);
+                                                                                       if (errors13.Count != 0)
                                                                                        {
                                                                                            if (errors is null)
                                                                                            {
@@ -344,7 +367,8 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        }
                                                                                    }
                                                                        
-                                                                                   if (_customerValidator.Validate(request.Customer).Errors is {} errors12)
+                                                                                   var errors12 = _customerValidator.ValidateToList(request.Customer);
+                                                                                   if (errors12.Count != 0)
                                                                                    {
                                                                                        if (errors is null)
                                                                                        {
@@ -362,24 +386,56 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        if (!global::Test.Rules.NotNullRule<string>.IsValid(element.SKU))
                                                                                        {
                                                                                            errors ??= new(11);
-                                                                                           errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotNullRule<string>), $"'SKU' must not be null."));
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.NotNullRule<string>),
+                                                                                               Message = $"'SKU' must not be null.",
+                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               TargetName = "SKU",
+                                                                                               AttemptedValue = element.SKU,
+                                                                                               Cause = null,
+                                                                                           });
                                                                                        }
                                                                                        if (!global::Test.Rules.NotEmptyRule.IsValid(element.SKU))
                                                                                        {
                                                                                            errors ??= new(10);
-                                                                                           errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotEmptyRule), $"'SKU' must not be empty."));
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.NotEmptyRule),
+                                                                                               Message = $"'SKU' must not be empty.",
+                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               TargetName = "SKU",
+                                                                                               AttemptedValue = element.SKU,
+                                                                                               Cause = null,
+                                                                                           });
                                                                                        }
                                                                                        if (!global::Test.Rules.GreaterThanRule<int>.IsValid(element.Quantity, 0))
                                                                                        {
                                                                                            errors ??= new(9);
-                                                                                           errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GreaterThanRule<int>), $"'Quantity' must be greater than 0, but received {element.Quantity}."));
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<int>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.GreaterThanRule<int>),
+                                                                                               Message = $"'Quantity' must be greater than 0, but received {element.Quantity}.",
+                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               TargetName = "Quantity",
+                                                                                               AttemptedValue = element.Quantity,
+                                                                                               Cause = null,
+                                                                                           });
                                                                                        }
                                                                                        foreach (var subElement in element.Discounts)
                                                                                        {
                                                                                            if (!global::Test.Rules.GreaterThanRule<decimal>.IsValid(subElement.Amount, 10))
                                                                                            {
                                                                                                errors ??= new(8);
-                                                                                               errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GreaterThanRule<decimal>), $"'Amount' must be greater than 10, but received {subElement.Amount}."));
+                                                                                               errors.Add(new global::ValiCraft.ValidationError<decimal>
+                                                                                               {
+                                                                                                   Code = nameof(global::Test.Rules.GreaterThanRule<decimal>),
+                                                                                                   Message = $"'Amount' must be greater than 10, but received {subElement.Amount}.",
+                                                                                                   Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                                   TargetName = "Amount",
+                                                                                                   AttemptedValue = subElement.Amount,
+                                                                                                   Cause = null,
+                                                                                               });
                                                                                                goto HaltValidation_12;
                                                                                            }
                                                                                        }
@@ -390,45 +446,99 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                    if (!global::Test.Rules.NotNullRule<string>.IsValid(request.OrderNumber))
                                                                                    {
                                                                                        errors ??= new(7);
-                                                                                       errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotNullRule<string>), $"'OrderNumber' must not be null."));
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<string>),
+                                                                                           Message = $"'OrderNumber' must not be null.",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "OrderNumber",
+                                                                                           AttemptedValue = request.OrderNumber,
+                                                                                           Cause = null,
+                                                                                       });
                                                                                    }
                                                                                    if (!global::Test.Rules.NotEmptyRule.IsValid(request.OrderNumber))
                                                                                    {
                                                                                        errors ??= new(6);
-                                                                                       errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotEmptyRule), $"'OrderNumber' must not be empty."));
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotEmptyRule),
+                                                                                           Message = $"'OrderNumber' must not be empty.",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "OrderNumber",
+                                                                                           AttemptedValue = request.OrderNumber,
+                                                                                           Cause = null,
+                                                                                       });
                                                                                    }
                                                                        
                                                                                    if (!global::Test.Rules.LengthRule.IsValid(request.OrderNumber, 10))
                                                                                    {
                                                                                        errors ??= new(5);
-                                                                                       errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.LengthRule), $"'OrderNumber' must have a length of 10."));
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.LengthRule),
+                                                                                           Message = $"'OrderNumber' must have a length of 10.",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "OrderNumber",
+                                                                                           AttemptedValue = request.OrderNumber,
+                                                                                           Cause = null,
+                                                                                       });
                                                                                    }
                                                                        
-                                                                                   if (!global::Test.Rules.NotNullRule<string>.IsValid(request.ShippingReference))
+                                                                                   if (!global::Test.Rules.NotNullRule<string?>.IsValid(request.ShippingReference))
                                                                                    {
                                                                                        errors ??= new(4);
-                                                                                       errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotNullRule<string>), $"'Reference' needs to be assigned before proceeding"));
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string?>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<string?>),
+                                                                                           Message = $"'Reference' needs to be assigned before proceeding",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "Reference",
+                                                                                           AttemptedValue = request.ShippingReference,
+                                                                                           Cause = null,
+                                                                                       });
                                                                                    }
                                                                                    else if (!global::Test.Rules.NotEmptyRule.IsValid(request.ShippingReference))
                                                                                    {
                                                                                        errors ??= new(3);
-                                                                                       errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.NotEmptyRule), ShippingReferenceEmptyMessage.Replace("{PropertyName}", "ShippingReference").Replace("{PropertyValue}", request.ShippingReference)));
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string?>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotEmptyRule),
+                                                                                           Message = ShippingReferenceEmptyMessage.Replace("{TargetName}", "ShippingReference").Replace("{TargetValue}", request.ShippingReference),
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "ShippingReference",
+                                                                                           AttemptedValue = request.ShippingReference,
+                                                                                           Cause = null,
+                                                                                       });
                                                                                    }
                                                                        
                                                                                    if (!global::Test.Rules.GreaterThanRule<decimal>.IsValid(request.OrderTotal, 0M))
                                                                                    {
                                                                                        errors ??= new(2);
-                                                                                       errors.Add(global::LitePrimitives.Error.Validation(nameof(global::Test.Rules.GreaterThanRule<decimal>), $"'OrderTotal' must be greater than 0, but received {request.OrderTotal}."));
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<decimal>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.GreaterThanRule<decimal>),
+                                                                                           Message = $"'OrderTotal' must be greater than 0, but received {request.OrderTotal}.",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "OrderTotal",
+                                                                                           AttemptedValue = request.OrderTotal,
+                                                                                           Cause = null,
+                                                                                       });
                                                                                    }
                                                                                    if (!global::Test.Rules.LessThanRule<decimal>.IsValid(request.OrderTotal, OrderTotalLimit))
                                                                                    {
                                                                                        errors ??= new(1);
-                                                                                       errors.Add(global::LitePrimitives.Error.Validation("TotalReached", $"'OrderTotal' must be less than {OrderTotalLimit}, but received {request.OrderTotal}."));
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<decimal>
+                                                                                       {
+                                                                                           Code = "TotalReached",
+                                                                                           Message = $"'OrderTotal' must be less than {OrderTotalLimit}, but received {request.OrderTotal}.",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "OrderTotal",
+                                                                                           AttemptedValue = request.OrderTotal,
+                                                                                           Cause = null,
+                                                                                       });
                                                                                    }
-                                                                       
-                                                                                   return errors is not null
-                                                                                       ? global::LitePrimitives.Validation<global::Test.Requests.Order>.Failure(errors)
-                                                                                       : global::LitePrimitives.Validation<global::Test.Requests.Order>.Success(request);
+
+                                                                                   return errors;
                                                                                }
                                                                            }
                                                                        }
@@ -439,7 +549,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
     {
         AssertGenerator(
             errorCodePrefix: "VALC",
-            additionalMetadataReferences: [typeof(Validator<>), typeof(Validation<>)],
+            additionalMetadataReferences: [typeof(Validator<>), typeof(Result<,>)],
             trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
             inputs: [InputRequests, InputValidationRulesToGenerate, InputValidationRulesAlreadyGenerated, InputValidatorsToGenerate], 
             outputs: [ExpectedNotEmptyRuleExtensions, ExpectedGreaterThanRuleExtensions, ExpectedLessThanRuleExtensions, ExpectedMustExtensions, ExpectedValidators],

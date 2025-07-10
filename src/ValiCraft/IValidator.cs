@@ -1,8 +1,9 @@
-using LitePrimitives;
+using MonadCraft;
 
 namespace ValiCraft;
 
 public interface IValidator<TRequest> where TRequest : class
 {
-    Validation<TRequest> Validate(TRequest request);
+    Result<IReadOnlyList<IValidationError>, TRequest> Validate(TRequest request);
+    IReadOnlyList<IValidationError> ValidateToList(TRequest request);
 }

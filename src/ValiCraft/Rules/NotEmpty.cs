@@ -3,7 +3,7 @@ using ValiCraft.Attributes;
 namespace ValiCraft.Rules;
 
 [GenerateRuleExtension("IsNotEmpty")]
-[DefaultMessage("{PropertyName} cannot be empty.")]
+[DefaultMessage("{TargetName} cannot be empty.")]
 public class NotEmpty<TPropertyType> : IValidationRule<TPropertyType?>
 {
     public static bool IsValid(TPropertyType? property)

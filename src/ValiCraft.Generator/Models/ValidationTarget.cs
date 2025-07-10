@@ -5,4 +5,4 @@ namespace ValiCraft.Generator.Models;
 public record ValidationTarget(
     string AccessorExpressionFormat,
     TypeInfo Type,
-    string DefaultPropertyName);
+    MessageInfo DefaultTargetName);

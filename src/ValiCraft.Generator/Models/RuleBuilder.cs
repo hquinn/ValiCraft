@@ -10,7 +10,7 @@ public class RuleBuilder
 {
     private MessageInfo? _errorCode;
     private MessageInfo? _message;
-    private MessageInfo? _propertyName;
+    private MessageInfo? _targetName;
     private readonly SemanticMode _semanticMode;
     private readonly string _methodName;
     private readonly EquatableArray<ArgumentInfo> _arguments;
@@ -84,9 +84,9 @@ public class RuleBuilder
         _errorCode = errorCode;
     }
 
-    public void WithPropertyName(MessageInfo? propertyName)
+    public void WithTargetName(MessageInfo? targetName)
     {
-        _propertyName = propertyName;
+        _targetName = targetName;
     }
 
     public Rule Build()
@@ -96,7 +96,7 @@ public class RuleBuilder
             _methodName,
             _arguments,
             _mapData,
-            new RuleOverrideData(_message, _propertyName, _errorCode),
+            new RuleOverrideData(_message, _targetName, _errorCode),
             _defaultMessage,
             _rulePlaceholders,
             _location);

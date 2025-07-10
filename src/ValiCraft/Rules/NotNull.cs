@@ -3,11 +3,11 @@ using ValiCraft.Attributes;
 namespace ValiCraft.Rules;
 
 [GenerateRuleExtension("IsNotNull")]
-[DefaultMessage("{PropertyName} is required.")]
+[DefaultMessage("{TargetName} is required.")]
 public class NotNull<TPropertyType> : IValidationRule<TPropertyType?>
 {
-    public static bool IsValid(TPropertyType? propertyValue)
+    public static bool IsValid(TPropertyType? targetValue)
     {
-        return propertyValue is not null;
+        return targetValue is not null;
     }
 }

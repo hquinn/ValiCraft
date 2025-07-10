@@ -4,7 +4,7 @@ using ValiCraft.Generator.RuleChains.Context;
 
 namespace ValiCraft.Generator.RuleChains;
 
-public record PropertyValidateWithRuleChain(
+public record TargetValidateWithRuleChain(
     ValidationTarget Target,
     int Depth,
     OnFailureMode? FailureMode,
@@ -33,7 +33,8 @@ public record PropertyValidateWithRuleChain(
         
         // A little hacky with the assigned errors, but it's a quick fix to get uniqueness.
         var code = $$"""
-                     {{indent}}{{GetIfElseIfKeyword(context)}} ({{ValidatorExpression}}.Validate({{requestAccessor}}).Errors is {} errors{{context.Counter}})
+                     {{indent}}var errors{{context.Counter}} = {{ValidatorExpression}}.ValidateToList({{requestAccessor}});
+                     {{indent}}{{GetIfElseIfKeyword(context)}} (errors{{context.Counter}}.Count != 0)
                      {{indent}}{
                      {{indent}}    if (errors is null)
                      {{indent}}    {

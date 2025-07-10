@@ -3,7 +3,7 @@ using ValiCraft.Attributes;
 namespace ValiCraft.Rules;
 
 [GenerateRuleExtension("IsEqualTo")]
-[DefaultMessage("{PropertyName} must be equal to {ValueToCompare}. Value received is {PropertyValue}")]
+[DefaultMessage("{TargetName} must be equal to {ValueToCompare}. Value received is {TargetValue}")]
 [RulePlaceholder("{ValueToCompare}", "parameter")]
 public class Equal<TPropertyType> : IValidationRule<TPropertyType, TPropertyType>
     where TPropertyType : IEquatable<TPropertyType>

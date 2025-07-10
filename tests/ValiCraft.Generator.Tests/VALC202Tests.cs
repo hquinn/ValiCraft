@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using LitePrimitives;
+using MonadCraft;
 using ValiCraft.Generator.Tests.Helpers;
 
 namespace ValiCraft.Generator.Tests;
@@ -22,13 +22,13 @@ public class VALC202Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                           
                                                           namespace Test.Rules;
                                                           
-                                                          [DefaultMessage("'{PropertyName}' must not be empty.")]
+                                                          [DefaultMessage("'{TargetName}' must not be empty.")]
                                                           public class NotEmptyRule: IValidationRule<string?>
                                                           {
                                                               public static bool IsValid(string? value) => !string.IsNullOrEmpty(value);
                                                           }
                                                           
-                                                          [DefaultMessage("'{PropertyName}' must not be empty.")]
+                                                          [DefaultMessage("'{TargetName}' must not be empty.")]
                                                           public static class NotEmptyRuleExtensions
                                                           {
                                                               [MapToValidationRule(typeof(NotEmptyRule), "")]
@@ -64,7 +64,7 @@ public class VALC202Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
     {
         AssertGenerator(
             errorCodePrefix: "VALC",
-            additionalMetadataReferences: [typeof(Validator<>), typeof(Validation<>)],
+            additionalMetadataReferences: [typeof(Validator<>), typeof(Result<,>)],
             trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
             inputs: [InputRequests, InputValidationRules, InputValidator], 
             outputs: [],

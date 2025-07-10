@@ -4,5 +4,5 @@ public interface IWithErrorCodeBuilderType<TRequest, TProperty> : IBuilderType<T
     where TRequest : class
 {
     IWithMessageBuilderType<TRequest, TProperty> WithMessage(string message);
-    IWithPropertyNameBuilderType<TRequest, TProperty> WithPropertyName(string propertyName);
+    IWithTargetNameBuilderType<TRequest, TProperty> WithTargetName(string targetName);
 }

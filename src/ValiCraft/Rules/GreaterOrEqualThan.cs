@@ -3,7 +3,7 @@ using ValiCraft.Attributes;
 namespace ValiCraft.Rules;
 
 [GenerateRuleExtension("IsGreaterOrEqualThan")]
-[DefaultMessage("{PropertyName} must be greater or equal than {ValueToCompare}. Value received is {PropertyValue}")]
+[DefaultMessage("{TargetName} must be greater or equal than {ValueToCompare}. Value received is {TargetValue}")]
 [RulePlaceholder("{ValueToCompare}", "parameter")]
 public class GreaterOrEqualThan<TPropertyType> : IValidationRule<TPropertyType, TPropertyType>
     where TPropertyType : IComparable

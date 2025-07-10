@@ -28,7 +28,7 @@ public class PropertyValidateWithRuleChainFactory : IRuleChainFactory
 
         var validatorExpression = argumentExpression.ToString();
 
-        return new PropertyValidateWithRuleChain(
+        return new TargetValidateWithRuleChain(
             target!,
             depth,
             invocation.GetOnFailureModeFromSyntax(),

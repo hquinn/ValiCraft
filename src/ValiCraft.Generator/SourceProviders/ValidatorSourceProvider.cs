@@ -72,15 +72,27 @@ public static class ValidatorSourceProvider
                  {
                      {{validator.Class.Modifiers}} class {{validator.Class.Name}} : global::{{KnownNames.Interfaces.IValidator}}<{{validator.RequestTypeName}}>
                      {
-                         public global::{{KnownNames.Types.Validation}}<{{validator.RequestTypeName}}> Validate({{validator.RequestTypeName}} request)
+                         public global::{{KnownNames.Types.Result}}<global::System.Collections.Generic.IReadOnlyList<global::{{KnownNames.Interfaces.IValidationError}}>, {{validator.RequestTypeName}}> Validate({{validator.RequestTypeName}} request)
                          {
-                             global::System.Collections.Generic.List<global::{{KnownNames.Types.Error}}>? errors = null;
+                             var errors = RunValidationLogic(request);
+
+                             return errors is not null
+                                 ? global::{{KnownNames.Types.Result}}<global::System.Collections.Generic.IReadOnlyList<global::{{KnownNames.Interfaces.IValidationError}}>, {{validator.RequestTypeName}}>.Failure(errors)
+                                 : global::{{KnownNames.Types.Result}}<global::System.Collections.Generic.IReadOnlyList<global::{{KnownNames.Interfaces.IValidationError}}>, {{validator.RequestTypeName}}>.Success(request);
+                         }
+
+                         public global::System.Collections.Generic.IReadOnlyList<global::{{KnownNames.Interfaces.IValidationError}}> ValidateToList({{validator.RequestTypeName}} request)
+                         {
+                             return RunValidationLogic(request) ?? [];
+                         }
+
+                         private global::System.Collections.Generic.List<global::{{KnownNames.Interfaces.IValidationError}}>? RunValidationLogic({{validator.RequestTypeName}} request)
+                         {
+                             global::System.Collections.Generic.List<global::{{KnownNames.Interfaces.IValidationError}}>? errors = null;
 
                  {{GenerateCodeForRuleChains(validator.RuleChains)}}
 
-                             return errors is not null
-                                 ? global::{{KnownNames.Types.Validation}}<{{validator.RequestTypeName}}>.Failure(errors)
-                                 : global::{{KnownNames.Types.Validation}}<{{validator.RequestTypeName}}>.Success(request);
+                             return errors;
                          }
                      }
                  }

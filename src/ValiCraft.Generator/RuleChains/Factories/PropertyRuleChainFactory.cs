@@ -34,7 +34,7 @@ public class PropertyRuleChainFactory : IRuleChainFactory
         }
         
         // Now that we have all the rules in the chain, we can now create the rule chain
-        return new PropertyRuleChain(
+        return new TargetRuleChain(
             target!,
             depth,
             rules.Count,
@@ -96,10 +96,10 @@ public class PropertyRuleChainFactory : IRuleChainFactory
                 }
 
                 return true;
-            case "WithPropertyName":
+            case "WithTargetName":
                 if (argumentExpression is not null)
                 {
-                    ruleBuilder?.WithPropertyName(MessageInfo.CreateFromExpression(argumentExpression));
+                    ruleBuilder?.WithTargetName(MessageInfo.CreateFromExpression(argumentExpression));
                 }
 
                 return true;

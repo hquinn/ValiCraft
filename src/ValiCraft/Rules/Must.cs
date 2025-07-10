@@ -3,7 +3,7 @@
 namespace ValiCraft.Rules;
 
 [GenerateRuleExtension("Must")]
-[DefaultMessage("{PropertyName} doesn't satisfy the condition")]
+[DefaultMessage("{TargetName} doesn't satisfy the condition")]
 public class Must<TPropertyType> : IValidationRule<TPropertyType?, Func<TPropertyType?, bool>>
 {
     public static bool IsValid(TPropertyType? property, Func<TPropertyType?, bool> predicate)

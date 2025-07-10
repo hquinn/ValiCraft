@@ -184,51 +184,80 @@ public static class RuleChainFactory
         // We need to handle the case where we're trying to do property validation (e.g., x => x.Property)
         if (lambda.Body is MemberAccessExpressionSyntax propertyAccess)
         {
-            if (context.SemanticModel.GetSymbolInfo(propertyAccess).Symbol is not IPropertySymbol propertySymbol)
-            {
-                return false;
-            }
-            
-            var propertyName = propertyAccess.Name.Identifier.ValueText;
-            
-            validationTarget = new ValidationTarget(
-                AccessorExpressionFormat: $"{{0}}.{propertyName}",
-                Type: new TypeInfo(propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), propertySymbol.Type.TypeKind == TypeKind.TypeParameter),
-                DefaultPropertyName: propertyName);
-
-            return true;
+            return HandlePropertyAccessValidationTarget(ref validationTarget, propertyAccess, context);
         }
 
         // We also need to handle the case where we're trying to do object validation (e.g., x => x)
         if (lambda.Body is IdentifierNameSyntax identifierAccess)
         {
-            if (lambda.Parameter.Identifier.ValueText != identifierAccess.Identifier.ValueText)
-            {
-                return false;
-            }
-            
-            // Get the TRequest type from the builder that the starting invocation chain is called on.
-            if (startingChainInvocation.Expression is not MemberAccessExpressionSyntax startingChainMemberAccess)
-            {
-                return false;
-            }
-            
-            var builderTypeInfo = context.SemanticModel.GetTypeInfo(startingChainMemberAccess.Expression);
-            if (builderTypeInfo.Type is not INamedTypeSymbol { TypeArguments.Length: > 0 } builderTypeSymbol)
-            {
-                return false;
-            }
-            
-            var requestTypeSymbol = builderTypeSymbol.TypeArguments[0];
-
-            validationTarget = new ValidationTarget(
-                AccessorExpressionFormat: "{0}",
-                Type: new TypeInfo(requestTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), requestTypeSymbol.TypeKind == TypeKind.TypeParameter),
-                DefaultPropertyName: requestTypeSymbol.Name);
-
-            return true;
+            return HandleObjectAccessValidationTarget(
+                ref validationTarget,
+                lambda,
+                identifierAccess, 
+                startingChainInvocation, 
+                context);
         }
         
         return false;
+    }
+
+    private static bool HandlePropertyAccessValidationTarget(
+        ref ValidationTarget? validationTarget,
+        MemberAccessExpressionSyntax propertyAccess,
+        GeneratorAttributeSyntaxContext context)
+    {
+        if (context.SemanticModel.GetSymbolInfo(propertyAccess).Symbol is not IPropertySymbol propertySymbol)
+        {
+            return false;
+        }
+            
+        var targetName = propertyAccess.Name.Identifier.ValueText;
+            
+        validationTarget = new ValidationTarget(
+            AccessorExpressionFormat: $"{{0}}.{targetName}",
+            Type: new TypeInfo(
+                propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                propertySymbol.Type.TypeKind == TypeKind.TypeParameter,
+                propertySymbol.NullableAnnotation == NullableAnnotation.Annotated),
+            DefaultTargetName: new MessageInfo(targetName, true));
+
+        return true;
+    }
+
+    private static bool HandleObjectAccessValidationTarget(
+        ref ValidationTarget? validationTarget,
+        SimpleLambdaExpressionSyntax lambda,
+        IdentifierNameSyntax identifierAccess,
+        InvocationExpressionSyntax startingChainInvocation,
+        GeneratorAttributeSyntaxContext context)
+    {
+        if (lambda.Parameter.Identifier.ValueText != identifierAccess.Identifier.ValueText)
+        {
+            return false;
+        }
+            
+        // Get the TRequest type from the builder that the starting invocation chain is called on.
+        if (startingChainInvocation.Expression is not MemberAccessExpressionSyntax startingChainMemberAccess)
+        {
+            return false;
+        }
+            
+        var builderTypeInfo = context.SemanticModel.GetTypeInfo(startingChainMemberAccess.Expression);
+        if (builderTypeInfo.Type is not INamedTypeSymbol { TypeArguments.Length: > 0 } builderTypeSymbol)
+        {
+            return false;
+        }
+            
+        var requestTypeSymbol = builderTypeSymbol.TypeArguments[0];
+
+        validationTarget = new ValidationTarget(
+            AccessorExpressionFormat: "{0}",
+            Type: new TypeInfo(
+                requestTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                requestTypeSymbol.TypeKind == TypeKind.TypeParameter,
+                requestTypeSymbol.NullableAnnotation == NullableAnnotation.Annotated),
+            DefaultTargetName: new MessageInfo(requestTypeSymbol.Name, true));
+
+        return true;
     }
 }

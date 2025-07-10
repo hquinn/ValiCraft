@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using LitePrimitives;
+using MonadCraft;
 using ValiCraft.Generator.Tests.Helpers;
 
 namespace ValiCraft.Generator.Tests;
@@ -14,7 +14,7 @@ public class VALC102Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                           namespace Test.Rules;
                                                           
                                                           [GenerateRuleExtension("IsNotEmpty")]
-                                                          [DefaultMessage("'{PropertyName}' must not be empty.")]
+                                                          [DefaultMessage("'{TargetName}' must not be empty.")]
                                                           public class NotEmptyRule // Removed IValidationRule to trigger VALC102
                                                           {
                                                               public static bool IsValid(string? value) => !string.IsNullOrEmpty(value);
@@ -26,7 +26,7 @@ public class VALC102Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
     {
         AssertGenerator(
             errorCodePrefix: "VALC",
-            additionalMetadataReferences: [typeof(Validator<>), typeof(Validation<>)],
+            additionalMetadataReferences: [typeof(Validator<>), typeof(Result<,>)],
             trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
             inputs: [Input], 
             outputs: [],

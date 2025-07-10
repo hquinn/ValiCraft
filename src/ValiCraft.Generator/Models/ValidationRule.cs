@@ -51,7 +51,7 @@ public record ValidationRule(
         var genericParametersOutput = string.Join(", ",
             // Check if any has an inherited position of 0, which maps to TPropertyType on IValidationRule
             Class.GenericParameters
-                .Select(x => (x.InheritedPositions.Contains(0) ? x.Type with {TypeName = "TPropertyType" } : x.Type).TypeName));
+                .Select(x => (x.InheritedPositions.Contains(0) ? "TPropertyType" : x.Type.FormattedTypeName)));
 
         if (string.IsNullOrWhiteSpace(genericParametersOutput))
         {

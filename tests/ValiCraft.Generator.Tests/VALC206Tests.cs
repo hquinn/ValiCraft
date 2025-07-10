@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using LitePrimitives;
+using MonadCraft;
 using ValiCraft.Generator.Tests.Helpers;
 
 namespace ValiCraft.Generator.Tests;
@@ -23,19 +23,19 @@ public class VALC206Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                           
                                                           namespace Test.Rules;
                                                           
-                                                          [DefaultMessage("'{PropertyName}' must not be null.")]
+                                                          [DefaultMessage("'{TargetName}' must not be null.")]
                                                           public class NotNullRule<T> : IValidationRule<T?>
                                                           {
                                                               public static bool IsValid(T? value) => value is not null;
                                                           }
                                                           
-                                                          [DefaultMessage("'{PropertyName}' must not be empty.")]
+                                                          [DefaultMessage("'{TargetName}' must not be empty.")]
                                                           public class NotEmptyRule: IValidationRule<string?>
                                                           {
                                                               public static bool IsValid(string? value) => !string.IsNullOrEmpty(value);
                                                           }
                                                           
-                                                          [DefaultMessage("'{PropertyName}' must not be null.")]
+                                                          [DefaultMessage("'{TargetName}' must not be null.")]
                                                           public static class NotNullRuleExtensions
                                                           {
                                                               [MapToValidationRule(typeof(NotNullRule<>), "<{0}>")]
@@ -44,7 +44,7 @@ public class VALC206Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                                   => throw new NotImplementedException("Never gets called");
                                                           }
                                                           
-                                                          [DefaultMessage("'{PropertyName}' must not be empty.")]
+                                                          [DefaultMessage("'{TargetName}' must not be empty.")]
                                                           public static class NotEmptyRuleExtensions
                                                           {
                                                               [MapToValidationRule(typeof(NotEmptyRule), "")]
@@ -83,7 +83,7 @@ public class VALC206Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
     {
         AssertGenerator(
             errorCodePrefix: "VALC",
-            additionalMetadataReferences: [typeof(Validator<>), typeof(Validation<>)],
+            additionalMetadataReferences: [typeof(Validator<>), typeof(Result<,>)],
             trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
             inputs: [InputRequests, InputValidationRules, InputValidator], 
             outputs: [],

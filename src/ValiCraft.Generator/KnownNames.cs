@@ -21,8 +21,8 @@ public static class KnownNames
 
     public static class Types
     {
-        public const string Validation = "LitePrimitives.Validation";
-        public const string Error = "LitePrimitives.Error";
+        public const string Result = "MonadCraft.Result";
+        public const string ValidationError = "ValiCraft.ValidationError";
     }
 
     public static class Interfaces
@@ -31,6 +31,7 @@ public static class KnownNames
         public const string IValidationRule = "ValiCraft.IValidationRule";
         public const string IValidationRuleBuilderType = "ValiCraft.BuilderTypes.IValidationRuleBuilderType";
         public const string IBuilderType = "ValiCraft.BuilderTypes.IBuilderType";
+        public const string IValidationError = "ValiCraft.IValidationError";
     }
 
     public static class Methods
@@ -46,5 +47,6 @@ public static class KnownNames
     public static class Enums
     {
         public const string OnFailureMode = "OnFailureMode";
+        public const string ErrorSeverity = "MonadCraft.Errors.ErrorSeverity";
     }
 }

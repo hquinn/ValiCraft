@@ -1,18 +1,34 @@
 using System.Linq;
+using ValiCraft.Generator.Utils;
 
 namespace ValiCraft.Generator.Concepts;
 
-public record TypeInfo(
-    string TypeName,
-    bool IsGeneric,
-    bool IsNullable,
-    bool IsLambda = false)
+public record TypeInfo
 {
+    public TypeInfo(
+        string typeName,
+        bool isGeneric,
+        bool isNullable,
+        bool isLambda = false)
+    {
+        PureTypeName = TypeExtractor.ToPureTypeName(typeName);
+        FormattedTypeName = TypeExtractor.ToIdiomaticCSharp(typeName, isNullable);
+        IsGeneric = isGeneric;
+        IsNullable = isNullable;
+        IsLambda = isLambda;
+    }
+    
     public TypeInfo(
         string typeName,
         bool isGeneric) : this(typeName, isGeneric, typeName.EndsWith("?"))
     {
     }
+    
+    public string PureTypeName { get; }
+    public string FormattedTypeName { get; }
+    public bool IsGeneric { get; }
+    public bool IsNullable { get; }
+    public bool IsLambda { get; }
 
     public bool Matches(TypeInfo? other)
     {
@@ -21,8 +37,8 @@ public record TypeInfo(
             return false;
         }
         
-        var thisType = TypeName;
-        var otherType = other.TypeName;
+        var thisType = PureTypeName;
+        var otherType = other.PureTypeName;
         
         // This is a case where we cannot resolve the lambda and just need to check against a known Func
         if ((thisType.Contains("System.Func") && other.IsLambda) ||
@@ -34,17 +50,6 @@ public record TypeInfo(
         if (string.IsNullOrEmpty(thisType) || string.IsNullOrEmpty(otherType))
         {
             return false;
-        }
-
-        // Normalize both strings by trimming any trailing '?' character.
-        if (IsNullable)
-        {
-            thisType = thisType.Substring(0, thisType.Length - 1);
-        }
-
-        if (other.IsNullable)
-        {
-            otherType = otherType.Substring(0, otherType.Length - 1);
         }
 
         // Compare the normalized spans for equality.

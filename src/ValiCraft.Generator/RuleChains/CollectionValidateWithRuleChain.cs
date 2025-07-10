@@ -35,7 +35,8 @@ public record CollectionValidateWithRuleChain(
         var code = $$"""
                      {{indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
                      {{indent}}{
-                     {{indent}}    if ({{ValidatorExpression}}.Validate({{itemRequestName}}).Errors is {} errors{{context.Counter}})
+                     {{indent}}    var errors{{context.Counter}} = {{ValidatorExpression}}.ValidateToList({{itemRequestName}});
+                     {{indent}}    if (errors{{context.Counter}}.Count != 0)
                      {{indent}}    {
                      {{indent}}        if (errors is null)
                      {{indent}}        {
