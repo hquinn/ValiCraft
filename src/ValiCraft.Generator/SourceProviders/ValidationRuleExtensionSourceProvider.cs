@@ -57,7 +57,7 @@ public static class ValidationRuleExtensionSourceProvider
                                    {{attributesBuilder}}{{validationRule.Class.Accessibility}} static class {{validationRule.Class.Name}}Extensions
                                    {
                                        [global::{{KnownNames.Attributes.MapToValidationRule}}(typeof({{mapToValidationRuleData.FullyQualifiedUnboundedName}}), "{{mapToValidationRuleData.ValidationRuleGenericFormat}}")]
-                                       {{validationRule.Class.Accessibility}} static global::{{KnownNames.Interfaces.IValidationRuleBuilderType}}<TRequest, TPropertyType> {{validationRule.NameForExtensionMethod}}<{{validationRule.GetGenericArgumentsForExtensionMethod()}}>(
+                                       {{validationRule.Class.Accessibility}} static global::{{KnownNames.Interfaces.IValidationRuleBuilderType}}<TRequest, TTargetType> {{validationRule.NameForExtensionMethod}}<{{validationRule.GetGenericArgumentsForExtensionMethod()}}>(
                                            {{GetMethodParameters(validationRule)}}) {{GetFullWhereClause(validationRule)}}
                                            => throw new global::System.NotImplementedException("Never gets called");
                                    }
@@ -79,10 +79,10 @@ public static class ValidationRuleExtensionSourceProvider
             .Where(c => c.Constraints is not null)
             .Select(x =>
             {
-                // If it's the first parameter, then we know that it's TPropertyType
+                // If it's the first parameter, then we know that it's TTargetType
                 if (x.InheritedPositions.Contains(0))
                 {
-                    return (x.Constraints! with { Type = "TPropertyType" }).ToString();
+                    return (x.Constraints! with { Type = "TTargetType" }).ToString();
                 }
 
                 return x.Constraints!.ToString();
@@ -96,6 +96,6 @@ public static class ValidationRuleExtensionSourceProvider
     private static string GetMethodParameters(ValidationRule validationRule)
     {
         return validationRule.GetParametersForExtensionMethod(
-            $"this global::{KnownNames.Interfaces.IBuilderType}<TRequest, TPropertyType> builder");
+            $"this global::{KnownNames.Interfaces.IBuilderType}<TRequest, TTargetType> builder");
     }
 }

@@ -10,8 +10,8 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 
 public enum RuleChainKind
 {
-    Property,
-    PropertyValidateWith,
+    Target,
+    TargetValidateWith,
     Collection,
     CollectionValidateWith,
     Composite
@@ -25,8 +25,8 @@ public static class RuleChainFactory
     {
         RuleChainFactories = new Dictionary<RuleChainKind, IRuleChainFactory>
         {
-            [RuleChainKind.Property] = new PropertyRuleChainFactory(),
-            [RuleChainKind.PropertyValidateWith] = new PropertyValidateWithRuleChainFactory(),
+            [RuleChainKind.Target] = new TargetRuleChainFactory(),
+            [RuleChainKind.TargetValidateWith] = new TargetValidateWithRuleChainFactory(),
             [RuleChainKind.Collection] = new CollectionRuleChainFactory(),
             [RuleChainKind.CollectionValidateWith] = new CollectionValidateWithRuleChainFactory(),
             [RuleChainKind.Composite] = new CompositeRuleChainFactory()
@@ -157,7 +157,7 @@ public static class RuleChainFactory
             // We don't have a valid rule chain if we have zero or one method invocations
             // As the first invocation should be the Ensure method.
             KnownNames.Methods.Ensure => invocationChain.Count > 1 
-                ? secondInvocationIsValidateWith ? RuleChainKind.PropertyValidateWith : RuleChainKind.Property 
+                ? secondInvocationIsValidateWith ? RuleChainKind.TargetValidateWith : RuleChainKind.Target 
                 : null,
             KnownNames.Methods.EnsureEach => invocationChain.Count > 1
                 ? secondInvocationIsValidateWith ? RuleChainKind.CollectionValidateWith : null

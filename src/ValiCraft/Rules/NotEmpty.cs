@@ -4,10 +4,10 @@ namespace ValiCraft.Rules;
 
 [GenerateRuleExtension("IsNotEmpty")]
 [DefaultMessage("{TargetName} cannot be empty.")]
-public class NotEmpty<TPropertyType> : IValidationRule<TPropertyType?>
+public class NotEmpty<TTargetType> : IValidationRule<TTargetType?>
 {
-    public static bool IsValid(TPropertyType? property)
+    public static bool IsValid(TTargetType? property)
     {
-        return EqualityComparer<TPropertyType>.Default.Equals(property, default);
+        return EqualityComparer<TTargetType>.Default.Equals(property, default);
     }
 }

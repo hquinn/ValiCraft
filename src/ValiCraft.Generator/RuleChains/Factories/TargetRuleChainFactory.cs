@@ -8,7 +8,7 @@ using ValiCraft.Generator.Models;
 
 namespace ValiCraft.Generator.RuleChains.Factories;
 
-public class PropertyRuleChainFactory : IRuleChainFactory
+public class TargetRuleChainFactory : IRuleChainFactory
 {
     public RuleChain? Create(
         ValidationTarget? target,
@@ -60,6 +60,13 @@ public class PropertyRuleChainFactory : IRuleChainFactory
         if (ruleBuilder is not null)
         {
             rules.Add(ruleBuilder.Build());
+        }
+
+        if (memberName == "Must" &&
+            invocation.ArgumentList.Arguments.Count == 1 &&
+            argumentExpression is SimpleLambdaExpressionSyntax lambda)
+        {
+            return RuleBuilder.CreateMustRule(invocation, memberName, lambda, context.SemanticModel);
         }
 
         // We usually get a value here if the invocation is a validation rule which:

@@ -1,8 +1,8 @@
 namespace ValiCraft.BuilderTypes;
 
-public interface IWithErrorCodeBuilderType<TRequest, TProperty> : IBuilderType<TRequest, TProperty>
+public interface IWithErrorCodeBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
     where TRequest : class
 {
-    IWithMessageBuilderType<TRequest, TProperty> WithMessage(string message);
-    IWithTargetNameBuilderType<TRequest, TProperty> WithTargetName(string targetName);
+    IWithMessageBuilderType<TRequest, TTarget> WithMessage(string message);
+    IWithTargetNameBuilderType<TRequest, TTarget> WithTargetName(string targetName);
 }

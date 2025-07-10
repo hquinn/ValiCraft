@@ -5,18 +5,18 @@ namespace ValiCraft;
 
 public interface IValidationRuleBuilder<TRequest> where TRequest : class
 {
-    IEnsureBuilderType<TRequest, TProperty> Ensure<TProperty>(
-        Expression<Func<TRequest, TProperty>> selector,
+    IEnsureBuilderType<TRequest, TTarget> Ensure<TTarget>(
+        Expression<Func<TRequest, TTarget>> selector,
         OnFailureMode? failureMode = null);
-    IEnsureEachBuilderType<TRequest, TProperty> EnsureEach<TProperty>(
-        Expression<Func<TRequest, IEnumerable<TProperty>>> selector,
-        OnFailureMode? failureMode = null) where TProperty : class;
-    void EnsureEach<TProperty>(
-        Expression<Func<TRequest, IEnumerable<TProperty>>> selector,
-        Action<IValidationRuleBuilder<TProperty>> rules) where TProperty : class;
-    void EnsureEach<TProperty>(
-        Expression<Func<TRequest, IEnumerable<TProperty>>> selector,
+    IEnsureEachBuilderType<TRequest, TTarget> EnsureEach<TTarget>(
+        Expression<Func<TRequest, IEnumerable<TTarget>>> selector,
+        OnFailureMode? failureMode = null) where TTarget : class;
+    void EnsureEach<TTarget>(
+        Expression<Func<TRequest, IEnumerable<TTarget>>> selector,
+        Action<IValidationRuleBuilder<TTarget>> rules) where TTarget : class;
+    void EnsureEach<TTarget>(
+        Expression<Func<TRequest, IEnumerable<TTarget>>> selector,
         OnFailureMode failureMode,
-        Action<IValidationRuleBuilder<TProperty>> rules) where TProperty : class;
+        Action<IValidationRuleBuilder<TTarget>> rules) where TTarget : class;
     void WithOnFailure(OnFailureMode failureMode, Action<IValidationRuleBuilder<TRequest>> rules);
 }

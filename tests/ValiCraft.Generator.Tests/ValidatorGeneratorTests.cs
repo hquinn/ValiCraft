@@ -88,11 +88,11 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 => value.CompareTo(valueToCompare) < 0;
         }
         
-        [GenerateRuleExtension("Must")]
+        [GenerateRuleExtension("IsPredicate")]
         [DefaultMessage("{TargetName} doesn't satisfy the condition")]
-        public class Must<TPropertyType> : IValidationRule<TPropertyType?, Func<TPropertyType?, bool>>
+        public class Predicate<TTargetType> : IValidationRule<TTargetType?, Func<TTargetType?, bool>>
         {
-            public static bool IsValid(TPropertyType? property, Func<TPropertyType?, bool> predicate)
+            public static bool IsValid(TTargetType? property, Func<TTargetType?, bool> predicate)
             {
                 return predicate(property);
             }
@@ -133,8 +133,8 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
             //  - First parameter is the type of the validation rule.
             //  - Second parameter is mapping the generic parameters to the IsValid parameter index.
             [MapToValidationRule(typeof(NotNullRule<>), "<{0}>")]
-            public static IValidationRuleBuilderType<TRequest, TPropertyType> IsNotNull<TRequest, TPropertyType>(
-                this IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+            public static IValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
+                this IBuilderType<TRequest, TTargetType> builder) where TRequest : class
                 => throw new NotImplementedException("Extension methods never get called.");
         }
 
@@ -143,8 +143,8 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
         public static class LengthRuleExtensions
         {
             [MapToValidationRule(typeof(LengthRule), "")]
-            public static IValidationRuleBuilderType<TRequest, TPropertyType> HasLength<TRequest, TPropertyType>(
-                this IBuilderType<TRequest, TPropertyType> builder, int length) where TRequest : class
+            public static IValidationRuleBuilderType<TRequest, TTargetType> HasLength<TRequest, TTargetType>(
+                this IBuilderType<TRequest, TTargetType> builder, int length) where TRequest : class
                 => throw new NotImplementedException("Never gets called");
         }
         """;
@@ -184,7 +184,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                              protected override void DefineRules(IValidationRuleBuilder<Order> orderBuilder)
                                                                              {
                                                                                  orderBuilder.Ensure(o => o)
-                                                                                     .Must(o => o.OrderNumber is not null);
+                                                                                     .IsPredicate(o => o.OrderNumber is not null);
 
                                                                                  orderBuilder.EnsureEach(o => o.LineItems)
                                                                                      .ValidateWith(_lineItemValidator);
@@ -243,8 +243,8 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
             public static class NotEmptyRuleExtensions
             {
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotEmptyRule), "")]
-                public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsNotEmpty<TRequest, TPropertyType>(
-                    this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+                public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
+                    this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder) where TRequest : class
                     => throw new global::System.NotImplementedException("Never gets called");
             }
         }
@@ -261,8 +261,8 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
             public static class GreaterThanRuleExtensions
             {
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GreaterThanRule<>), "<{0}>")]
-                public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsGreaterThan<TRequest, TPropertyType>(
-                    this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TPropertyType valueToCompare) where TRequest : class where TPropertyType : global::System.IComparable
+                public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
+                    this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
                     => throw new global::System.NotImplementedException("Never gets called");
             }
         }
@@ -279,25 +279,25 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
             public static class LessThanRuleExtensions
             {
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.LessThanRule<>), "<{0}>")]
-                public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsLessThan<TRequest, TPropertyType>(
-                    this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, TPropertyType valueToCompare) where TRequest : class where TPropertyType : global::System.IComparable
+                public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
+                    this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
                     => throw new global::System.NotImplementedException("Never gets called");
             }
         }
         """;
 
-    [StringSyntax("CSharp")] private const string ExpectedMustExtensions = """
+    [StringSyntax("CSharp")] private const string ExpectedPredicateExtensions = """
                                                                            // <auto-generated />
                                                                            #nullable enable
 
                                                                            namespace Test.Rules
                                                                            {
                                                                                [global::ValiCraft.Attributes.DefaultMessage("{TargetName} doesn't satisfy the condition")]
-                                                                               public static class MustExtensions
+                                                                               public static class PredicateExtensions
                                                                                {
-                                                                                   [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Must<>), "<{0}>")]
-                                                                                   public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> Must<TRequest, TPropertyType>(
-                                                                                       this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder, System.Func<TPropertyType?, bool> predicate) where TRequest : class
+                                                                                   [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Predicate<>), "<{0}>")]
+                                                                                   public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
+                                                                                       this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class
                                                                                        => throw new global::System.NotImplementedException("Never gets called");
                                                                                }
                                                                            }
@@ -337,12 +337,12 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ValiCraft.IValidationError>? errors = null;
 
-                                                                                   if (!global::Test.Rules.Must<global::Test.Requests.Order>.IsValid(request, o => o.OrderNumber is not null))
+                                                                                   if (!global::Test.Rules.Predicate<global::Test.Requests.Order>.IsValid(request, o => o.OrderNumber is not null))
                                                                                    {
                                                                                        errors ??= new(14);
                                                                                        errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
                                                                                        {
-                                                                                           Code = nameof(global::Test.Rules.Must<global::Test.Requests.Order>),
+                                                                                           Code = nameof(global::Test.Rules.Predicate<global::Test.Requests.Order>),
                                                                                            Message = $"Order doesn't satisfy the condition",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
                                                                                            TargetName = "Order",
@@ -552,7 +552,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
             additionalMetadataReferences: [typeof(Validator<>), typeof(Result<,>)],
             trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
             inputs: [InputRequests, InputValidationRulesToGenerate, InputValidationRulesAlreadyGenerated, InputValidatorsToGenerate], 
-            outputs: [ExpectedNotEmptyRuleExtensions, ExpectedGreaterThanRuleExtensions, ExpectedLessThanRuleExtensions, ExpectedMustExtensions, ExpectedValidators],
+            outputs: [ExpectedNotEmptyRuleExtensions, ExpectedGreaterThanRuleExtensions, ExpectedLessThanRuleExtensions, ExpectedPredicateExtensions, ExpectedValidators],
             diagnostics: []);
     }
 }

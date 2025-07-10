@@ -4,9 +4,9 @@ namespace ValiCraft.Rules;
 
 [GenerateRuleExtension("HasItems")]
 [DefaultMessage("{TargetName} cannot be empty.")]
-public class HasItems<TPropertyType> : IValidationRule<IEnumerable<TPropertyType>?>
+public class HasItems<TTargetType> : IValidationRule<IEnumerable<TTargetType>?>
 {
-    public static bool IsValid(IEnumerable<TPropertyType>? property)
+    public static bool IsValid(IEnumerable<TTargetType>? property)
     {
         return property?.Any() ?? false;
     }

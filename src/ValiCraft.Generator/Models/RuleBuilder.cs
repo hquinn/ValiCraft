@@ -37,6 +37,15 @@ public class RuleBuilder
         _location = location;
     }
 
+    public static RuleBuilder CreateMustRule(
+        InvocationExpressionSyntax invocation,
+        string methodName,
+        SimpleLambdaExpressionSyntax lambda,
+        SemanticModel semanticModel)
+    {
+        return default;
+    }
+
     public static RuleBuilder CreateRichSematicRule(
         IMethodSymbol methodSymbol,
         InvocationExpressionSyntax invocation,

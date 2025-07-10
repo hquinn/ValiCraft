@@ -8,7 +8,7 @@ using ValiCraft.Generator.Models;
 
 namespace ValiCraft.Generator.RuleChains.Factories;
 
-public class PropertyValidateWithRuleChainFactory : IRuleChainFactory
+public class TargetValidateWithRuleChainFactory : IRuleChainFactory
 {
     public RuleChain? Create(
         ValidationTarget? target,

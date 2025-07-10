@@ -40,8 +40,8 @@ public class VALC203Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                           public static class NotEmptyRuleExtensions
                                                           {
                                                               [MapToValidationRule(typeof(NotEmptyRule), "")]
-                                                              public static IValidationRuleBuilderType<TRequest, TPropertyType> IsNotEmpty<TRequest, TPropertyType>(
-                                                                  this IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+                                                              public static IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
+                                                                  this IBuilderType<TRequest, TTargetType> builder) where TRequest : class
                                                                   => throw new NotImplementedException("Never gets called");
                                                           }
                                                           """;
@@ -78,8 +78,8 @@ public class VALC203Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                                                   public static class NotNullRuleExtensions
                                                                                   {
                                                                                       [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotNullRule<>), "<{0}>")]
-                                                                                      public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TPropertyType> IsNotNull<TRequest, TPropertyType>(
-                                                                                          this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+                                                                                      public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
+                                                                                          this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder) where TRequest : class
                                                                                           => throw new global::System.NotImplementedException("Never gets called");
                                                                                   }
                                                                               }

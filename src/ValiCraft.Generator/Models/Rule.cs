@@ -175,24 +175,27 @@ public record Rule(
         ValidationTarget target,
         MessageInfo targetNameInfo)
     {
-        var map = new Dictionary<string, ArgumentInfo>();
-
-        // Add the standard placeholders.
-        // We treat them just like any other argument.
-        map.Add("{TargetName}",
-            new ArgumentInfo(
-                "TargetName",
-                targetNameInfo.Value,
-                new TypeInfo("string", false, false),
-                targetNameInfo.IsLiteral,
-                null));
-        map.Add("{TargetValue}",
-            new ArgumentInfo(
-                "TargetValue",
-                string.Format(target.AccessorExpressionFormat, requestName),
-                target.Type,
-                false,
-                null));
+        var map = new Dictionary<string, ArgumentInfo>
+        {
+            // Add the standard placeholders.
+            // We treat them just like any other argument.
+            {
+                "{TargetName}", new ArgumentInfo(
+                    "TargetName",
+                    targetNameInfo.Value,
+                    new TypeInfo("string", false, false),
+                    targetNameInfo.IsLiteral,
+                    null)
+            },
+            {
+                "{TargetValue}", new ArgumentInfo(
+                    "TargetValue",
+                    string.Format(target.AccessorExpressionFormat, requestName),
+                    target.Type,
+                    false,
+                    null)
+            }
+        };
 
         // Add custom placeholders by mapping them to the invocation arguments by name.
         foreach (var placeholder in Placeholders)

@@ -1,9 +1,9 @@
 namespace ValiCraft.BuilderTypes;
 
-public interface IValidationRuleBuilderType<TRequest, TProperty> : IBuilderType<TRequest, TProperty>
+public interface IValidationRuleBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
     where TRequest : class
 {
-    IWithMessageBuilderType<TRequest, TProperty> WithMessage(string message);
-    IWithTargetNameBuilderType<TRequest, TProperty> WithTargetName(string targetName);
-    IWithErrorCodeBuilderType<TRequest, TProperty> WithErrorCode(string errorCode);
+    IWithMessageBuilderType<TRequest, TTarget> WithMessage(string message);
+    IWithTargetNameBuilderType<TRequest, TTarget> WithTargetName(string targetName);
+    IWithErrorCodeBuilderType<TRequest, TTarget> WithErrorCode(string errorCode);
 }

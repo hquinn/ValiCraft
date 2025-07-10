@@ -1,5 +1,5 @@
 namespace ValiCraft.BuilderTypes;
 
-public interface IEnsureEachBuilderType<TRequest, TProperty> 
+public interface IEnsureEachBuilderType<TRequest, TTarget> 
     where TRequest : class
-    where TProperty : class;
+    where TTarget : class;

@@ -39,8 +39,8 @@ public class VALC206Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                           public static class NotNullRuleExtensions
                                                           {
                                                               [MapToValidationRule(typeof(NotNullRule<>), "<{0}>")]
-                                                              public static IValidationRuleBuilderType<TRequest, TPropertyType> IsNotNull<TRequest, TPropertyType>(
-                                                                  this IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+                                                              public static IValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
+                                                                  this IBuilderType<TRequest, TTargetType> builder) where TRequest : class
                                                                   => throw new NotImplementedException("Never gets called");
                                                           }
                                                           
@@ -48,8 +48,8 @@ public class VALC206Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                           public static class NotEmptyRuleExtensions
                                                           {
                                                               [MapToValidationRule(typeof(NotEmptyRule), "")]
-                                                              public static IValidationRuleBuilderType<TRequest, TPropertyType> IsNotEmpty<TRequest, TPropertyType>(
-                                                                  this IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+                                                              public static IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
+                                                                  this IBuilderType<TRequest, TTargetType> builder) where TRequest : class
                                                                   => throw new NotImplementedException("Never gets called");
                                                           }
                                                           """;

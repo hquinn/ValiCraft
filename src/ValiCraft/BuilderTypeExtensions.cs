@@ -4,18 +4,18 @@ namespace ValiCraft;
 
 public static class BuilderTypeExtensions
 {
-    public static IValidateWithBuilderType<TRequest, TProperty> ValidateWith<TRequest, TProperty, TValidator>(
-        this IEnsureEachBuilderType<TRequest, TProperty> builder,
+    public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget, TValidator>(
+        this IEnsureEachBuilderType<TRequest, TTarget> builder,
         TValidator validator)
         where TRequest : class
-        where TProperty : class
-        where TValidator : IValidator<TProperty>
+        where TTarget : class
+        where TValidator : IValidator<TTarget>
         => throw new NotImplementedException("Never gets called");
     
-    public static IValidateWithBuilderType<TRequest, TProperty> ValidateWith<TRequest, TProperty, TValidator>(
-        this IEnsureBuilderType<TRequest, TProperty> builder, TValidator validator)
+    public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget, TValidator>(
+        this IEnsureBuilderType<TRequest, TTarget> builder, TValidator validator)
         where TRequest : class
-        where TProperty : class
-        where TValidator : IValidator<TProperty>
+        where TTarget : class
+        where TValidator : IValidator<TTarget>
         => throw new NotImplementedException("Never gets called");
 }

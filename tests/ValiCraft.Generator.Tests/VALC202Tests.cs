@@ -32,8 +32,8 @@ public class VALC202Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                           public static class NotEmptyRuleExtensions
                                                           {
                                                               [MapToValidationRule(typeof(NotEmptyRule), "")]
-                                                              public static IValidationRuleBuilderType<TRequest, TPropertyType> IsNotEmpty<TRequest, TPropertyType>(
-                                                                  this IBuilderType<TRequest, TPropertyType> builder) where TRequest : class
+                                                              public static IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
+                                                                  this IBuilderType<TRequest, TTargetType> builder) where TRequest : class
                                                                   => throw new NotImplementedException("Never gets called");
                                                           }
                                                           """;

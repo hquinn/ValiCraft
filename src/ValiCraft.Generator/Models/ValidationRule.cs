@@ -36,7 +36,7 @@ public record ValidationRule(
 
                 if (genericParameter.InheritedPositions.Contains(0))
                 {
-                    parameter = parameter with { Type = new("TPropertyType", true, false) };
+                    parameter = parameter with { Type = new("TTargetType", true, false) };
                 }
             }
 
@@ -49,21 +49,21 @@ public record ValidationRule(
     public string GetGenericArgumentsForExtensionMethod()
     {
         var genericParametersOutput = string.Join(", ",
-            // Check if any has an inherited position of 0, which maps to TPropertyType on IValidationRule
+            // Check if any has an inherited position of 0, which maps to TTargetType on IValidationRule
             Class.GenericParameters
-                .Select(x => (x.InheritedPositions.Contains(0) ? "TPropertyType" : x.Type.FormattedTypeName)));
+                .Select(x => (x.InheritedPositions.Contains(0) ? "TTargetType" : x.Type.FormattedTypeName)));
 
         if (string.IsNullOrWhiteSpace(genericParametersOutput))
         {
-            return "TRequest, TPropertyType";
+            return "TRequest, TTargetType";
         }
 
-        if (genericParametersOutput.Contains("TPropertyType"))
+        if (genericParametersOutput.Contains("TTargetType"))
         {
             return $"TRequest, {genericParametersOutput}";
         }
 
-        return $"TRequest, TPropertyType, {genericParametersOutput}";
+        return $"TRequest, TTargetType, {genericParametersOutput}";
     }
 
     private string GetValidationRuleGenericFormat()
