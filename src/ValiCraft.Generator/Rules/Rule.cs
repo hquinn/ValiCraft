@@ -1,90 +1,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Concepts;
-using ValiCraft.Generator.Extensions;
+using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
+using TypeInfo = ValiCraft.Generator.Concepts.TypeInfo;
 
-namespace ValiCraft.Generator.Models;
+namespace ValiCraft.Generator.Rules;
 
-public enum SemanticMode
-{
-    /// <summary>
-    ///     Rich Semantic Mode is when we're able to get semantic information about the validation rule extension method
-    ///     from the invocation in the validator. This will typically happen when the validation rule extension method
-    ///     exists in a separate project or the extension method has manually been created.
-    /// </summary>
-    RichSemanticMode,
-
-    /// <summary>
-    ///     Weak Semantic Mode is when we're not able to get semantic information about the validation rule extension method
-    ///     from the invocation in the validator. This will happen when the validation rule that has
-    ///     the [GenerateRuleExtension] is in the same project as the validator. This can also happen when a rule invocation
-    ///     which happens after one that's a weak semantic mode, e.g., builder.Ensure(x => x.Property).Weak().Rich().
-    ///     In this case, the compiler can't infer where to locate the extension method for Weak(), which also affects Rich()
-    /// </summary>
-    WeakSemanticMode
-}
-
-public record Rule(
-    SemanticMode SemanticMode,
-    string MethodName,
+public abstract record Rule(
     EquatableArray<ArgumentInfo> Arguments,
-    MapToValidationRuleData? ValidationRuleData,
-    RuleOverrideData RuleOverrides,
     MessageInfo? DefaultMessage,
+    RuleOverrideData RuleOverrides,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location)
 {
-    private const string FallbackMessage = "\"An error has occurred\"";
-    
-    public ValidationRule? MapToValidationRule(ValidationTarget target, ValidationRule[] validRules)
-    {
-        ValidationRule? bestMatchedRule = null;
+    private const string FallbackMessage = "\"'An error has occurred\"";
+    public abstract Rule? EnrichRule(
+        ValidationTarget target,
+        ValidationRule[] validRules,
+        SourceProductionContext context);
 
-        foreach (var validRule in validRules.Where(x => x.NameForExtensionMethod == MethodName))
-        {
-            var argumentTypes = Arguments.Select(x => x.Type).Prepend(target.Type).ToEquatableImmutableArray();
-            // We skip the first parameter as this will always be the property type
-            var matchesResult = validRule.IsValidSignature.MatchesTypes(argumentTypes);
-
-            // Check if we have a direct match with signature types
-            // If so, we can return early
-            if (matchesResult == SignatureMatching.Full)
-            {
-                return validRule;
-            }
-
-            // We may want to do some rankings in the future
-            // if we can determine if a parameter is non-generic and matches
-            if (matchesResult == SignatureMatching.Partial)
-            {
-                bestMatchedRule = validRule;
-            }
-        }
-
-        return bestMatchedRule;
-    }
-
-    public Rule EnrichRuleFromValidationRule(ValidationRule? matchedRule)
-    {
-        if (matchedRule is null)
-        {
-            return this;
-        }
-
-        return this with
-        {
-            Arguments = EnrichArguments(matchedRule).ToEquatableImmutableArray(),
-            ValidationRuleData = matchedRule.GetMapToValidationRuleData(),
-            DefaultMessage = matchedRule.DefaultMessage,
-            Placeholders = matchedRule.RulePlaceholders
-        };
-    }
-
-    public string GenerateCodeForRule(
+    public abstract string GenerateCodeForRule(
         string requestName,
+        string indent,
+        ValidationTarget target,
+        RuleChainContext context);
+
+    protected string GetErrorCreation(
+        string requestName,
+        string validationRuleInvocation,
         string indent,
         ValidationTarget target,
         RuleChainContext context)
@@ -92,22 +39,16 @@ public record Rule(
         const string errorTypeName = $"global::{KnownNames.Types.ValidationError}";
         const string errorSeverity = $"global::{KnownNames.Enums.ErrorSeverity}";
         var targetAccess = string.Format(target.AccessorExpressionFormat, requestName);
-        var validationRuleInvocation =
-            $"global::{ValidationRuleData?.FullyQualifiedValidationRule}{ConstructValidationRuleGeneric(target)}";
-
-        var isValidCallArgs = new List<string> { targetAccess };
-        isValidCallArgs.AddRange(Arguments.GetArray()?.Select(x => x.Value) ?? []);
-        var isValidCallArgsString = string.Join(", ", isValidCallArgs);
+        
         var targetNameInfo = RuleOverrides.OverrideTargetName ?? target.DefaultTargetName;
 
-        var code = $$"""
-                 {{indent}}{{GetIfElseIfKeyword(context)}} (!{{validationRuleInvocation}}.IsValid({{isValidCallArgsString}}))
+        return $$"""
                  {{indent}}{
                  {{indent}}    errors ??= new({{context.Counter}});
                  {{indent}}    errors.Add(new {{errorTypeName}}<{{target.Type.FormattedTypeName}}>
                  {{indent}}    {
-                 {{indent}}        Code = {{GetValidationErrorCode(validationRuleInvocation)}},
-                 {{indent}}        Message = {{GetValidationMessage(requestName, target, targetNameInfo)}},
+                 {{indent}}        Code = {{GetErrorCode(validationRuleInvocation)}},
+                 {{indent}}        Message = {{GetErrorMessage(requestName, target, targetNameInfo)}},
                  {{indent}}        Severity = {{errorSeverity}}.Error,
                  {{indent}}        TargetName = "{{targetNameInfo.Value}}",
                  {{indent}}        AttemptedValue = {{targetAccess}},
@@ -115,13 +56,9 @@ public record Rule(
                  {{indent}}    });
                  {{GetGotoLabelIfNeeded(indent, context)}}{{indent}}}
                  """;
-        
-        context.UpdateIfElseMode();
-        
-        return code;
     }
-
-    private string GetIfElseIfKeyword(RuleChainContext context)
+    
+    protected static string GetIfElseIfKeyword(RuleChainContext context)
     {
         return context.IfElseMode switch
         {
@@ -130,32 +67,35 @@ public record Rule(
         };
     }
 
-    private string GetGotoLabelIfNeeded(string indent, RuleChainContext context)
+    private static string GetGotoLabelIfNeeded(string indent, RuleChainContext context)
     {
         if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })
         {
             return $"""
-                   {indent}    goto {context.HaltLabel};
-                   
-                   """;
+                    {indent}    goto {context.HaltLabel};
+
+                    """;
         }
 
         return string.Empty;
     }
-    
-    private IEnumerable<ArgumentInfo> EnrichArguments(ValidationRule matchedRule)
-    {
-        // Property is not in the argument list, so skip the first one
-        for (var i = 1; i < matchedRule.IsValidSignature.Parameters.Count; i++)
-        {
-            var argument = Arguments[i - 1];
-            var parameter = matchedRule.IsValidSignature.Parameters[i];
 
-            yield return argument with { Name = parameter.Name };
+    protected virtual string GetErrorCode(string validationRuleInvocation)
+    {
+        if (RuleOverrides.OverrideErrorCode is null)
+        {
+            return $"nameof({validationRuleInvocation})";
         }
+
+        if (RuleOverrides.OverrideErrorCode.IsLiteral)
+        {
+            return $"\"{RuleOverrides.OverrideErrorCode.Value}\"";
+        }
+
+        return RuleOverrides.OverrideErrorCode.Value;
     }
-    
-    private string GetValidationMessage(string requestName, ValidationTarget target, MessageInfo targetNameInfo)
+
+    private string GetErrorMessage(string requestName, ValidationTarget target, MessageInfo targetNameInfo)
     {
         var messageInfo = RuleOverrides.OverrideMessage ?? DefaultMessage;
         if (messageInfo is null)
@@ -269,35 +209,5 @@ public record Rule(
         }
 
         return expressionBuilder.ToString();
-    }
-
-    private string GetValidationErrorCode(string validationRuleInvocation)
-    {
-        if (RuleOverrides.OverrideErrorCode is null)
-        {
-            return $"nameof({validationRuleInvocation})";
-        }
-
-        if (RuleOverrides.OverrideErrorCode.IsLiteral)
-        {
-            return $"\"{RuleOverrides.OverrideErrorCode.Value}\"";
-        }
-
-        return RuleOverrides.OverrideErrorCode.Value;
-    }
-    
-    private string? ConstructValidationRuleGeneric(ValidationTarget target)
-    {
-        if (string.IsNullOrEmpty(ValidationRuleData?.ValidationRuleGenericFormat))
-        {
-            return null;
-        }
-
-        var args = Arguments
-            .Select(argument => argument.Type.FormattedTypeName)
-            .Prepend(target.Type.FormattedTypeName)
-            .ToArray<object>();
-
-        return string.Format(ValidationRuleData!.ValidationRuleGenericFormat, args);
     }
 }

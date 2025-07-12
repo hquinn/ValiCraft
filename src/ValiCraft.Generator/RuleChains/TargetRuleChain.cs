@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
+using ValiCraft.Generator.Rules;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.RuleChains;
@@ -23,25 +24,12 @@ public record TargetRuleChain(
 
         foreach (var rule in Rules)
         {
-            if (rule.SemanticMode is SemanticMode.WeakSemanticMode)
+            if (rule.EnrichRule(Target!, validRules, context) is not { } linkedRule)
             {
-                var matchedValidationRule = rule.MapToValidationRule(Target!, validRules);
-
-                if (matchedValidationRule is null)
-                {
-                    var diagnostics =
-                        DefinedDiagnostics.UnrecognizableRuleInvocation(rule.Location.ToLocation());
-                    context.ReportDiagnostic(diagnostics.CreateDiagnostic());
-
-                    linkedRuleChain = this;
-                    return false;
-                }
-
-                rules.Add(rule.EnrichRuleFromValidationRule(matchedValidationRule));
-                continue;
+                linkedRuleChain = this;
+                return false;
             }
-            
-            rules.Add(rule);
+            rules.Add(linkedRule);
         }
 
         linkedRuleChain = this with

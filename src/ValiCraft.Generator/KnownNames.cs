@@ -49,4 +49,9 @@ public static class KnownNames
         public const string OnFailureMode = "OnFailureMode";
         public const string ErrorSeverity = "MonadCraft.Errors.ErrorSeverity";
     }
+
+    public static class Targets
+    {
+        public const string Must = "Must";
+    }
 }

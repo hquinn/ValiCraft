@@ -181,8 +181,25 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                              private string ShippingReferenceEmptyMessage
                                                                                  => "'{TargetName}' assigned is invalid.";
 
+                                                                             private bool OrderNumberIsNotNull(Order order)
+                                                                             {
+                                                                                 return order.OrderNumber is not null;
+                                                                             }
+                                                                             
                                                                              protected override void DefineRules(IValidationRuleBuilder<Order> orderBuilder)
                                                                              {
+                                                                                 orderBuilder.Ensure(o => o)
+                                                                                     .Must(OrderNumberIsNotNull);
+
+                                                                                 orderBuilder.Ensure(o => o)
+                                                                                     .Must(o => OrderNumberIsNotNull(o));
+
+                                                                                 orderBuilder.Ensure(o => o)
+                                                                                     .Must((o) => { return o.OrderNumber is not null; });
+
+                                                                                 orderBuilder.Ensure(o => o)
+                                                                                     .Must(o => o.OrderNumber is not null);
+
                                                                                  orderBuilder.Ensure(o => o)
                                                                                      .IsPredicate(o => o.OrderNumber is not null);
 
@@ -337,6 +354,64 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ValiCraft.IValidationError>? errors = null;
 
+                                                                                   if (!OrderNumberIsNotNull(request))
+                                                                                   {
+                                                                                       errors ??= new(18);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = "Must",
+                                                                                           Message = $"'Order' doesn't satisfy the condition",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           AttemptedValue = request,
+                                                                                           Cause = null,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (!OrderNumberIsNotNull(request))
+                                                                                   {
+                                                                                       errors ??= new(17);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = "Must",
+                                                                                           Message = $"'Order' doesn't satisfy the condition",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           AttemptedValue = request,
+                                                                                           Cause = null,
+                                                                                       });
+                                                                                   }
+
+                                                                                   bool __must_16(global::Test.Requests.Order o)
+                                                                                   { return o.OrderNumber is not null; }
+                                                                                   if (!__must_16(request))
+                                                                                   {
+                                                                                       errors ??= new(16);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = "Must",
+                                                                                           Message = $"'Order' doesn't satisfy the condition",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           AttemptedValue = request,
+                                                                                           Cause = null,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (!(request.OrderNumber is not null))
+                                                                                   {
+                                                                                       errors ??= new(15);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = "Must",
+                                                                                           Message = $"'Order' doesn't satisfy the condition",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           AttemptedValue = request,
+                                                                                           Cause = null,
+                                                                                       });
+                                                                                   }
+    
                                                                                    if (!global::Test.Rules.Predicate<global::Test.Requests.Order>.IsValid(request, o => o.OrderNumber is not null))
                                                                                    {
                                                                                        errors ??= new(14);
