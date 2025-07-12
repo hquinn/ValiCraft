@@ -232,7 +232,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                      });
                                                                                  });
 
-                                                                                 orderBuilder.Ensure(o => o.OrderNumber)
+                                                                                 orderBuilder.Ensure((o) => o.OrderNumber)
                                                                                      .IsNotNull()
                                                                                      .IsNotEmpty();
 

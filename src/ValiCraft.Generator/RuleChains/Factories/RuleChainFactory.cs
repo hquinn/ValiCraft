@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
 using TypeInfo = ValiCraft.Generator.Concepts.TypeInfo;
 
@@ -176,7 +177,7 @@ public static class RuleChainFactory
         var validationTargetArgument = startingChainInvocation.ArgumentList.Arguments.FirstOrDefault()?.Expression;
 
         // We expect a lambda for selecting the validation target
-        if (validationTargetArgument is not SimpleLambdaExpressionSyntax lambda)
+        if (validationTargetArgument is not LambdaExpressionSyntax lambda)
         {
             return false;
         }
@@ -226,12 +227,12 @@ public static class RuleChainFactory
 
     private static bool HandleObjectAccessValidationTarget(
         ref ValidationTarget? validationTarget,
-        SimpleLambdaExpressionSyntax lambda,
+        LambdaExpressionSyntax lambda,
         IdentifierNameSyntax identifierAccess,
         InvocationExpressionSyntax startingChainInvocation,
         GeneratorAttributeSyntaxContext context)
     {
-        if (lambda.Parameter.Identifier.ValueText != identifierAccess.Identifier.ValueText)
+        if (lambda.GetParameterName() != identifierAccess.Identifier.ValueText)
         {
             return false;
         }
