@@ -4,7 +4,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace ValiCraft.Generator.Concepts;
 
 public record LambdaInfo(string? ParameterName, IEnumerable<ExpressionStatementSyntax> Statements)
-{    public static bool IsValid(
+{    
+    public static bool IsValid(
         LambdaInfo? lambdaInfo,
         InvocationExpressionSyntax invocation,
         string ruleChain,
