@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Humanizer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
@@ -220,7 +221,7 @@ public static class RuleChainFactory
                 propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 propertySymbol.Type.TypeKind == TypeKind.TypeParameter,
                 propertySymbol.NullableAnnotation == NullableAnnotation.Annotated),
-            DefaultTargetName: new MessageInfo(targetName, true));
+            DefaultTargetName: new MessageInfo(targetName.Humanize(), true));
 
         return true;
     }
@@ -257,7 +258,7 @@ public static class RuleChainFactory
                 requestTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 requestTypeSymbol.TypeKind == TypeKind.TypeParameter,
                 requestTypeSymbol.NullableAnnotation == NullableAnnotation.Annotated),
-            DefaultTargetName: new MessageInfo(requestTypeSymbol.Name, true));
+            DefaultTargetName: new MessageInfo(requestTypeSymbol.Name.Humanize(), true));
 
         return true;
     }

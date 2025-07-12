@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Humanizer;
 using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Models;

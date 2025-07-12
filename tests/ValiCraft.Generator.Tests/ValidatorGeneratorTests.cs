@@ -240,7 +240,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                      .HasLength(10);
 
                                                                                  orderBuilder.Ensure(o => o.ShippingReference, OnFailureMode.Halt)
-                                                                                     .IsNotNull().WithMessage("'{TargetName}' needs to be assigned before proceeding").WithTargetName("Reference")
+                                                                                     .IsNotNull().WithMessage("'{TargetName}' needs to be assigned before proceeding").WithTargetName("ReferenceNo")
                                                                                      .IsNotEmpty().WithMessage(ShippingReferenceEmptyMessage);
 
                                                                                  orderBuilder.Ensure(o => o.OrderTotal)
@@ -524,9 +524,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<string>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotNullRule<string>),
-                                                                                           Message = $"'OrderNumber' must not be null.",
+                                                                                           Message = $"'Order number' must not be null.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "OrderNumber",
+                                                                                           TargetName = "Order number",
                                                                                            AttemptedValue = request.OrderNumber,
                                                                                            Cause = null,
                                                                                        });
@@ -537,9 +537,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<string>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotEmptyRule),
-                                                                                           Message = $"'OrderNumber' must not be empty.",
+                                                                                           Message = $"'Order number' must not be empty.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "OrderNumber",
+                                                                                           TargetName = "Order number",
                                                                                            AttemptedValue = request.OrderNumber,
                                                                                            Cause = null,
                                                                                        });
@@ -551,9 +551,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<string>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.LengthRule),
-                                                                                           Message = $"'OrderNumber' must have a length of 10.",
+                                                                                           Message = $"'Order number' must have a length of 10.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "OrderNumber",
+                                                                                           TargetName = "Order number",
                                                                                            AttemptedValue = request.OrderNumber,
                                                                                            Cause = null,
                                                                                        });
@@ -565,9 +565,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<string?>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotNullRule<string?>),
-                                                                                           Message = $"'Reference' needs to be assigned before proceeding",
+                                                                                           Message = $"'ReferenceNo' needs to be assigned before proceeding",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "Reference",
+                                                                                           TargetName = "ReferenceNo",
                                                                                            AttemptedValue = request.ShippingReference,
                                                                                            Cause = null,
                                                                                        });
@@ -578,9 +578,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<string?>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotEmptyRule),
-                                                                                           Message = ShippingReferenceEmptyMessage.Replace("{TargetName}", "ShippingReference").Replace("{TargetValue}", request.ShippingReference),
+                                                                                           Message = ShippingReferenceEmptyMessage.Replace("{TargetName}", "Shipping reference").Replace("{TargetValue}", request.ShippingReference),
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "ShippingReference",
+                                                                                           TargetName = "Shipping reference",
                                                                                            AttemptedValue = request.ShippingReference,
                                                                                            Cause = null,
                                                                                        });
@@ -592,9 +592,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<decimal>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.GreaterThanRule<decimal>),
-                                                                                           Message = $"'OrderTotal' must be greater than 0, but received {request.OrderTotal}.",
+                                                                                           Message = $"'Order total' must be greater than 0, but received {request.OrderTotal}.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "OrderTotal",
+                                                                                           TargetName = "Order total",
                                                                                            AttemptedValue = request.OrderTotal,
                                                                                            Cause = null,
                                                                                        });
@@ -605,9 +605,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<decimal>
                                                                                        {
                                                                                            Code = "TotalReached",
-                                                                                           Message = $"'OrderTotal' must be less than {OrderTotalLimit}, but received {request.OrderTotal}.",
+                                                                                           Message = $"'Order total' must be less than {OrderTotalLimit}, but received {request.OrderTotal}.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "OrderTotal",
+                                                                                           TargetName = "Order total",
                                                                                            AttemptedValue = request.OrderTotal,
                                                                                            Cause = null,
                                                                                        });
