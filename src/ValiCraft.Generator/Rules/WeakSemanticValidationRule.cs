@@ -13,6 +13,7 @@ public record WeakSemanticValidationRule(
     MapToValidationRuleData? ValidationRuleData,
     EquatableArray<ArgumentInfo> Arguments,
     MessageInfo? DefaultMessage,
+    MessageInfo? DefaultErrorCode,
     RuleOverrideData RuleOverrides,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location) : InvokedValidationRule(
@@ -20,6 +21,7 @@ public record WeakSemanticValidationRule(
     ValidationRuleData,
     Arguments,
     DefaultMessage,
+    DefaultErrorCode,
     RuleOverrides,
     Placeholders,
     Location)
@@ -83,6 +85,7 @@ public record WeakSemanticValidationRule(
             Arguments = EnrichArguments(matchedRule).ToEquatableImmutableArray(),
             ValidationRuleData = matchedRule.GetMapToValidationRuleData(),
             DefaultMessage = matchedRule.DefaultMessage,
+            DefaultErrorCode = matchedRule.DefaultErrorCode,
             Placeholders = matchedRule.RulePlaceholders
         };
     }

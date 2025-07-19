@@ -12,11 +12,13 @@ public abstract record InvokedValidationRule(
     MapToValidationRuleData? ValidationRuleData,
     EquatableArray<ArgumentInfo> Arguments,
     MessageInfo? DefaultMessage,
+    MessageInfo? DefaultErrorCode,
     RuleOverrideData RuleOverrides,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location) : Rule(
     Arguments,
     DefaultMessage,
+    DefaultErrorCode,
     RuleOverrides,
     Placeholders,
     Location)

@@ -10,8 +10,6 @@ namespace ValiCraft.Generator.Rules.Builders;
 public class WeakSemanticValidationRuleBuilder(
     string methodName,
     EquatableArray<ArgumentInfo> arguments,
-    MapToValidationRuleData? mapData,
-    MessageInfo? defaultMessage,
     EquatableArray<RulePlaceholder> rulePlaceholders,
     LocationInfo location) : RuleBuilder
 {
@@ -26,8 +24,6 @@ public class WeakSemanticValidationRuleBuilder(
         return new WeakSemanticValidationRuleBuilder(
             methodName,
             invocation.GetArguments(null, semanticModel).ToEquatableImmutableArray(),
-            null,
-            null,
             EquatableArray<RulePlaceholder>.Empty,
             LocationInfo.CreateFrom(invocation)!);
     }
@@ -36,9 +32,10 @@ public class WeakSemanticValidationRuleBuilder(
     {
         return new WeakSemanticValidationRule(
             methodName,
-            mapData,
+            null,
             arguments,
-            defaultMessage,
+            null,
+            null,
             GetRuleOverrideData(),
             rulePlaceholders,
             location);

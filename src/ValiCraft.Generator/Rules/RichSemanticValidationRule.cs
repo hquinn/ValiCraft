@@ -10,6 +10,7 @@ public record RichSemanticValidationRule(
     MapToValidationRuleData? ValidationRuleData,
     EquatableArray<ArgumentInfo> Arguments,
     MessageInfo? DefaultMessage,
+    MessageInfo? DefaultErrorCode,
     RuleOverrideData RuleOverrides,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location) : InvokedValidationRule(
@@ -17,6 +18,7 @@ public record RichSemanticValidationRule(
     ValidationRuleData,
     Arguments,
     DefaultMessage,
+    DefaultErrorCode,
     RuleOverrides,
     Placeholders,
     Location)

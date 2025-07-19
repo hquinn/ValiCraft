@@ -12,6 +12,7 @@ public class RichSemanticValidationRuleBuilder(
     EquatableArray<ArgumentInfo> arguments,
     MapToValidationRuleData? mapData,
     MessageInfo? defaultMessage,
+    MessageInfo? defaultErrorCode,
     EquatableArray<RulePlaceholder> rulePlaceholders,
     LocationInfo location) : RuleBuilder
 {
@@ -29,6 +30,7 @@ public class RichSemanticValidationRuleBuilder(
             MapToValidationRuleData.CreateFromMethodAndAttribute(
                 methodSymbol, KnownNames.Attributes.MapToValidationRuleAttribute),
             MessageInfo.CreateFromAttribute(containingType, KnownNames.Attributes.DefaultMessageAttribute),
+            MessageInfo.CreateFromAttribute(containingType, KnownNames.Attributes.DefaultErrorCodeAttribute),
             RulePlaceholder.CreateFromRulePlaceholderAttributes(containingType),
             LocationInfo.CreateFrom(invocation)!);
     }
@@ -40,6 +42,7 @@ public class RichSemanticValidationRuleBuilder(
             mapData,
             arguments,
             defaultMessage,
+            defaultErrorCode,
             GetRuleOverrideData(),
             rulePlaceholders,
             location);

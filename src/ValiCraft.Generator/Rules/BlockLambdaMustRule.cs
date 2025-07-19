@@ -10,11 +10,13 @@ public record BlockLambdaMustRule(
     string Body,
     string Parameter,
     MessageInfo? DefaultMessage,
+    MessageInfo? DefaultErrorCode,
     RuleOverrideData RuleOverrides,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location) : Rule(
     EquatableArray<ArgumentInfo>.Empty, 
     DefaultMessage,
+    DefaultErrorCode,
     RuleOverrides,
     Placeholders,
     Location)

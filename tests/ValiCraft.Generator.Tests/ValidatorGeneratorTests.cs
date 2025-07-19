@@ -91,6 +91,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
         
         [GenerateRuleExtension("IsPredicate")]
         [DefaultMessage("{TargetName} doesn't satisfy the condition")]
+        [DefaultErrorCode("CustomErrorCode")]
         public class Predicate<TTargetType> : IValidationRule<TTargetType?, Func<TTargetType?, bool>>
         {
             public static bool IsValid(TTargetType? property, Func<TTargetType?, bool> predicate)
@@ -320,6 +321,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                            namespace Test.Rules
                                                                            {
                                                                                [global::ValiCraft.Attributes.DefaultMessage("{TargetName} doesn't satisfy the condition")]
+                                                                               [global::ValiCraft.Attributes.DefaultErrorCode("CustomErrorCode")]
                                                                                public static class PredicateExtensions
                                                                                {
                                                                                    [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Predicate<>), "<{0}>")]
@@ -469,7 +471,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors ??= new(14);
                                                                                        errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
                                                                                        {
-                                                                                           Code = nameof(global::Test.Rules.Predicate<global::Test.Requests.Order>),
+                                                                                           Code = "CustomErrorCode",
                                                                                            Message = $"Order doesn't satisfy the condition",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
                                                                                            TargetName = "Order",

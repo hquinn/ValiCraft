@@ -27,6 +27,7 @@ public class IdentifierNameMustRuleBuilder(
         return new IdentifierNameMustRule(
             body,
             new MessageInfo("'{TargetName}' doesn't satisfy the condition", true),
+            new MessageInfo("Must", true),
             GetRuleOverrideData(),
             EquatableArray<RulePlaceholder>.Empty,
             location);

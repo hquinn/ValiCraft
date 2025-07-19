@@ -8,6 +8,7 @@ public record ValidationRule(
     ClassInfo Class,
     string NameForExtensionMethod,
     MessageInfo? DefaultMessage,
+    MessageInfo? DefaultErrorCode,
     MethodSignature IsValidSignature,
     EquatableArray<RulePlaceholder> RulePlaceholders)
 {

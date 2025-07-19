@@ -14,6 +14,7 @@ namespace ValiCraft.Generator.Rules;
 public abstract record Rule(
     EquatableArray<ArgumentInfo> Arguments,
     MessageInfo? DefaultMessage,
+    MessageInfo? DefaultErrorCode,
     RuleOverrideData RuleOverrides,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location)
@@ -97,17 +98,22 @@ public abstract record Rule(
 
     protected virtual string GetErrorCode(string validationRuleInvocation)
     {
-        if (RuleOverrides.OverrideErrorCode is null)
+        if (RuleOverrides.OverrideErrorCode is not null)
         {
-            return $"nameof({validationRuleInvocation})";
+            if (RuleOverrides.OverrideErrorCode.IsLiteral)
+            {
+                return $"\"{RuleOverrides.OverrideErrorCode.Value}\"";
+            }
+            
+            return RuleOverrides.OverrideErrorCode.Value;
         }
 
-        if (RuleOverrides.OverrideErrorCode.IsLiteral)
+        if (DefaultErrorCode is not null)
         {
-            return $"\"{RuleOverrides.OverrideErrorCode.Value}\"";
+            return $"\"{DefaultErrorCode.Value}\"";
         }
 
-        return RuleOverrides.OverrideErrorCode.Value;
+        return $"nameof({validationRuleInvocation})";
     }
 
     private string GetErrorMessage(string requestName, ValidationTarget target, MessageInfo targetNameInfo)

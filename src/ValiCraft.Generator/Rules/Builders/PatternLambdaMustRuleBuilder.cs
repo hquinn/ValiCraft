@@ -33,6 +33,7 @@ public class PatternLambdaMustRuleBuilder(
         return new PatternLambdaMustRule(
             expressionFormat,
             new MessageInfo("'{TargetName}' doesn't satisfy the condition", true),
+            new MessageInfo("Must", true),
             GetRuleOverrideData(),
             EquatableArray<RulePlaceholder>.Empty,
             location);

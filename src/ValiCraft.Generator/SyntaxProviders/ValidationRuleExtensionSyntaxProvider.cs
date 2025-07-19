@@ -46,7 +46,7 @@ public static class ValidationRuleExtensionSyntaxProvider
 
         succeeded &= RulePlaceholder.TryCreateFromRulePlaceholderAttributes(
             classSymbol!,
-            isValidMethodSignature,
+            isValidMethodSignature!,
             diagnostics,
             out var rulePlaceholders);
 
@@ -63,10 +63,14 @@ public static class ValidationRuleExtensionSyntaxProvider
         var defaultMessage = MessageInfo.CreateFromAttribute(
             classSymbol, KnownNames.Attributes.DefaultMessageAttribute);
 
+        var defaultErrorCode = MessageInfo.CreateFromAttribute(
+            classSymbol, KnownNames.Attributes.DefaultErrorCodeAttribute);
+
         var validationRule = new ValidationRule(
             classInfo,
             nameForExtensionMethod!,
             defaultMessage,
+            defaultErrorCode,
             isValidMethodSignature!,
             rulePlaceholders);
 

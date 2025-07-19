@@ -6,6 +6,8 @@ public static class KnownNames
     {
         public const string DefaultMessageAttribute = "ValiCraft.Attributes.DefaultMessageAttribute";
         public const string DefaultMessage = "ValiCraft.Attributes.DefaultMessage";
+        public const string DefaultErrorCodeAttribute = "ValiCraft.Attributes.DefaultErrorCodeAttribute";
+        public const string DefaultErrorCode = "ValiCraft.Attributes.DefaultErrorCode";
         public const string GenerateRuleExtensionAttribute = "ValiCraft.Attributes.GenerateRuleExtensionAttribute";
         public const string GenerateValidatorAttribute = "ValiCraft.Attributes.GenerateValidatorAttribute";
         public const string MapToValidationRuleAttribute = "ValiCraft.Attributes.MapToValidationRuleAttribute";

@@ -40,6 +40,14 @@ public static class ValidationRuleExtensionSourceProvider
                                           """);
             }
 
+            if (validationRule.DefaultErrorCode is not null)
+            {
+                attributesBuilder.Append($"""
+                                          [global::{KnownNames.Attributes.DefaultErrorCode}({validationRule.DefaultErrorCode})]
+                                              
+                                          """);
+            }
+
             foreach (var rulePlaceholder in validationRule.RulePlaceholders)
             {
                 attributesBuilder.Append($"""
