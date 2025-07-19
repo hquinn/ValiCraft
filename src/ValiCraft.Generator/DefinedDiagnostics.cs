@@ -57,6 +57,34 @@ public static class DefinedDiagnostics
             location);
     }
 
+    public static DiagnosticInfo InvalidRulePlaceholderConstructorArgument(Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC103",
+                "Invalid Rule Placeholder Constructor Argument",
+                $"Placeholder constructor argument must be a string literal.",
+                "ValiCraft",
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
+    public static DiagnosticInfo InvalidRulePlaceholderParameterName(
+        string parameterName,
+        Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC104",
+                "Invalid Rule Placeholder Parameter Name",
+                $"Parameter name '{parameterName}' is invalid. It must match a parameter name from the IsValid method.",
+                "ValiCraft",
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
     public static DiagnosticInfo MissingPartialKeyword(Location location)
     {
         return new DiagnosticInfo(
