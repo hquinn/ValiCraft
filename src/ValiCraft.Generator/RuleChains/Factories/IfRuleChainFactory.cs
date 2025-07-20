@@ -4,35 +4,40 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
+using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
 
 namespace ValiCraft.Generator.RuleChains.Factories;
 
-public class CompositeRuleChainFactory : IRuleChainFactory
+public class IfRuleChainFactory : IRuleChainFactory
 {
     public RuleChain? Create(
+        ValidationTarget @object,
         ValidationTarget? target,
         InvocationExpressionSyntax invocation,
         List<InvocationExpressionSyntax> invocationChain,
         int depth,
+        IndentModel indent,
         List<DiagnosticInfo> diagnostics,
         GeneratorAttributeSyntaxContext context)
     {
-        var onFailureArgument = invocation?.GetOnFailureModeFromSyntax();
+        var ifConditionArgument = IfConditionFactory.Create(invocation, true);
 
-        if (onFailureArgument is null)
+        // No need for diagnostics, as having a null condition in this case isn't legal C#
+        if (ifConditionArgument is null)
         {
             return null;
         }
         
-        var lambdaInfo = invocation!.GetLambdaInfoFromLastArgument();
+        var lambdaInfo = invocation.GetLambdaInfoFromLastArgument();
 
-        if (!LambdaInfo.IsValid(lambdaInfo, invocation!, KnownNames.Methods.EnsureEach, diagnostics))
+        if (!LambdaInfo.IsValid(lambdaInfo, invocation, KnownNames.Methods.If, diagnostics))
         {
             return null;
         }
         
         var ruleChains = new List<RuleChain>();
+        var childIndent = IndentModel.CreateChild(indent);
 
         foreach (var statement in lambdaInfo!.Statements)
         {
@@ -40,6 +45,7 @@ public class CompositeRuleChainFactory : IRuleChainFactory
                 statement,
                 lambdaInfo.ParameterName!,
                 depth,
+                childIndent,
                 diagnostics,
                 context);
 
@@ -55,10 +61,12 @@ public class CompositeRuleChainFactory : IRuleChainFactory
             return null;
         }
         
-        return new CompositeRuleChain(
+        return new IfRuleChain(
+            @object,
             depth,
+            indent,
             ruleChains.Sum(x => x.NumberOfRules),
-            onFailureArgument,
+            ifConditionArgument,
             ruleChains.ToEquatableImmutableArray());
     }
 }

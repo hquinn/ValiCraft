@@ -1,14 +1,12 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
-using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.Types;
-using ValiCraft.Generator.Utils;
 
 namespace ValiCraft.Generator.Rules.Builders;
 
 public class IdentifierNameMustRuleBuilder(
-    string body,
+    string expressionFormat,
     LocationInfo location) : RuleBuilder
 {
     public static IdentifierNameMustRuleBuilder Create(
@@ -25,10 +23,11 @@ public class IdentifierNameMustRuleBuilder(
     public override Rule Build()
     {
         return new IdentifierNameMustRule(
-            body,
+            expressionFormat,
             new MessageInfo("'{TargetName}' doesn't satisfy the condition", true),
             new MessageInfo("Must", true),
             GetRuleOverrideData(),
+            IfCondition,
             EquatableArray<RulePlaceholder>.Empty,
             location);
     }

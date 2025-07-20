@@ -8,11 +8,13 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.RuleChains;
 
 public record CollectionRuleChain(
+    ValidationTarget Object,
     ValidationTarget Target,
     int Depth,
+    IndentModel Indent,
     int NumberOfRules,
     OnFailureMode? FailureMode,
-    EquatableArray<RuleChain> ItemRuleChains) : RuleChain(Target, Depth, NumberOfRules, FailureMode)
+    EquatableArray<RuleChain> ItemRuleChains) : RuleChain(Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
     protected override bool TryLinkRuleChain(
         ValidationRule[] validRules,
@@ -59,7 +61,6 @@ public record CollectionRuleChain(
             itemRuleChainCodes.Add(itemRuleChain.GenerateCode(context));
         }
 
-        var indent = GetIndent();
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
         
@@ -68,12 +69,12 @@ public record CollectionRuleChain(
         var ruleChainCodes = string.Join("\r\n", itemRuleChainCodes);
         
         return $$"""
-               {{indent}}var {{index}} = 0;
-               {{indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
-               {{indent}}{
+               {{Indent}}var {{index}} = 0;
+               {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
+               {{Indent}}{
                {{ruleChainCodes}}
-               {{indent}}    {{index}}++;
-               {{indent}}}
+               {{Indent}}    {{index}}++;
+               {{Indent}}}
                """;
     }
 

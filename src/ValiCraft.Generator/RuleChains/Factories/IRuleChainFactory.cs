@@ -9,10 +9,12 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 public interface IRuleChainFactory
 {
     RuleChain? Create(
+        ValidationTarget @object,
         ValidationTarget? target,
         InvocationExpressionSyntax invocation,
         List<InvocationExpressionSyntax> invocationChain,
         int depth,
+        IndentModel indent,
         List<DiagnosticInfo> diagnostics,
         GeneratorAttributeSyntaxContext context);
 }

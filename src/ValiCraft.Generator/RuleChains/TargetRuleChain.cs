@@ -9,11 +9,13 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.RuleChains;
 
 public record TargetRuleChain(
+    ValidationTarget Object,
     ValidationTarget Target,
     int Depth,
+    IndentModel Indent,
     int NumberOfRules,
     OnFailureMode? FailureMode,
-    EquatableArray<Rule> Rules) : RuleChain(Target, Depth, NumberOfRules, FailureMode)
+    EquatableArray<Rule> Rules) : RuleChain(Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
     protected override bool TryLinkRuleChain(
         ValidationRule[] validRules,
@@ -55,7 +57,8 @@ public record TargetRuleChain(
         {
             ruleCodes.Add(rule.GenerateCodeForRule(
                 GetRequestParameterName(),
-                GetIndent(),
+                Indent,
+                Object,
                 Target!,
                 context));
             context.DecrementCountdown();

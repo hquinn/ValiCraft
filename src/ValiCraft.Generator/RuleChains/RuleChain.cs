@@ -7,14 +7,13 @@ using ValiCraft.Generator.RuleChains.Context;
 namespace ValiCraft.Generator.RuleChains;
 
 public abstract record RuleChain(
+    ValidationTarget Object,
     ValidationTarget? Target,
     int Depth,
+    IndentModel Indent,
     int NumberOfRules,
     OnFailureMode? FailureMode)
 {
-    private const int TabIndexSize = 4;
-    private const int BaseLineIndent = TabIndexSize * 3;
-
     public bool TryLinkRuleChain(
         List<RuleChain> ruleChains,
         ValidationRule[] validRules,
@@ -77,11 +76,6 @@ public abstract record RuleChain(
         };
     }
 
-    protected string GetIndent()
-    {
-        return new string(' ', BaseLineIndent + Depth * TabIndexSize);
-    }
-
     private RuleChainContext DetermineRuleChainContext(RuleChainContext context)
     {
         return context.ParentFailureMode is null
@@ -127,8 +121,7 @@ public abstract record RuleChain(
     {
         if (parentContext.HaltLabel is null && contextToUse.HaltLabel is not null)
         {
-            var indent = GetIndent();
-            code.Append($"\r\n\r\n{indent}{contextToUse.HaltLabel}:");
+            code.Append($"\r\n\r\n{Indent}{contextToUse.HaltLabel}:");
         }
     }
 }

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Humanizer;
 using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
@@ -16,6 +16,7 @@ public abstract record Rule(
     MessageInfo? DefaultMessage,
     MessageInfo? DefaultErrorCode,
     RuleOverrideData RuleOverrides,
+    IfConditionModel IfCondition,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location)
 {
@@ -27,14 +28,15 @@ public abstract record Rule(
 
     public abstract string GenerateCodeForRule(
         string requestName,
-        string indent,
+        IndentModel indent,
+        ValidationTarget @object,
         ValidationTarget target,
         RuleChainContext context);
 
     protected string GetErrorCreation(
         string requestName,
         string validationRuleInvocation,
-        string indent,
+        IndentModel indent,
         ValidationTarget target,
         RuleChainContext context)
     {
@@ -73,17 +75,8 @@ public abstract record Rule(
                  {{GetGotoLabelIfNeeded(indent, context)}}{{indent}}}
                  """;
     }
-    
-    protected static string GetIfElseIfKeyword(RuleChainContext context)
-    {
-        return context.IfElseMode switch
-        {
-            IfElseMode.ElseIf => "else if",
-            _ => "if"
-        };
-    }
 
-    private static string GetGotoLabelIfNeeded(string indent, RuleChainContext context)
+    private static string GetGotoLabelIfNeeded(IndentModel indent, RuleChainContext context)
     {
         if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })
         {

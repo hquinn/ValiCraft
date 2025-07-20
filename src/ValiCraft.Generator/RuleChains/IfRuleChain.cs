@@ -2,17 +2,20 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Extensions;
+using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.RuleChains;
 
-public record CompositeRuleChain(
+public record IfRuleChain(
+    ValidationTarget Object,
     int Depth,
+    IndentModel Indent,
     int NumberOfRules,
-    OnFailureMode? FailureMode,
-    EquatableArray<RuleChain> ChildRuleChains) : RuleChain(null, Depth, NumberOfRules, FailureMode)
+    IfConditionModel IfCondition,
+    EquatableArray<RuleChain> ChildRuleChains) : RuleChain(Object, null, Depth, Indent, NumberOfRules, null)
 {
     protected override bool TryLinkRuleChain(
         ValidationRule[] validRules,
@@ -45,7 +48,18 @@ public record CompositeRuleChain(
 
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
-        var code = string.Join("\r\n", ChildRuleChains.Select(x => x.GenerateCode(context)));
+        if (ChildRuleChains.Count == 0)
+        {
+            return string.Empty;
+        }
+        
+        var code = $$"""
+                   {{IfCondition.GenerateIfBlock(Object, GetRequestParameterName(), Indent, context)}}
+                   {{Indent}}{
+                   {{string.Join("\r\n", ChildRuleChains.Select(x => x.GenerateCode(context)))}}
+                   {{Indent}}}
+                   """;
+
         context.ResetIfElseMode();
         
         return code;

@@ -16,7 +16,8 @@ public enum RuleChainKind
     TargetValidateWith,
     Collection,
     CollectionValidateWith,
-    Composite
+    WithOnFailure,
+    If
 }
 
 public static class RuleChainFactory
@@ -31,7 +32,8 @@ public static class RuleChainFactory
             [RuleChainKind.TargetValidateWith] = new TargetValidateWithRuleChainFactory(),
             [RuleChainKind.Collection] = new CollectionRuleChainFactory(),
             [RuleChainKind.CollectionValidateWith] = new CollectionValidateWithRuleChainFactory(),
-            [RuleChainKind.Composite] = new CompositeRuleChainFactory()
+            [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
+            [RuleChainKind.If] = new IfRuleChainFactory()
         };
     }
     
@@ -39,6 +41,7 @@ public static class RuleChainFactory
         ExpressionStatementSyntax statement,
         string builderArgument,
         int depth,
+        IndentModel indent,
         List<DiagnosticInfo> diagnostics,
         GeneratorAttributeSyntaxContext context)
     {
@@ -56,15 +59,19 @@ public static class RuleChainFactory
             return null;
         }
 
-        if (!TryGetValidationTargetFromStartingChain(startingInvocation!, context, out var validationTarget) &&
-            ruleChainKind != RuleChainKind.Composite)
+        if (!TryGetValidationTargetsFromStartingChain(
+                startingInvocation!,
+                context,
+                ruleChainKind.Value,
+                out var validationObject,
+                out var validationTarget))
         {
             return null;
         }
 
         var factory = GetRuleChainFactory(ruleChainKind.Value);
 
-        return factory.Create(validationTarget, startingInvocation!, invocationChain, depth, diagnostics, context);
+        return factory.Create(validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context);
     }
 
     public static IRuleChainFactory GetRuleChainFactory(RuleChainKind ruleChainKind)
@@ -164,17 +171,31 @@ public static class RuleChainFactory
             KnownNames.Methods.EnsureEach => invocationChain.Count > 1
                 ? secondInvocationIsValidateWith ? RuleChainKind.CollectionValidateWith : null
                 : RuleChainKind.Collection,
-            KnownNames.Methods.WithOnFailure => RuleChainKind.Composite,
+            KnownNames.Methods.WithOnFailure => RuleChainKind.WithOnFailure,
+            KnownNames.Methods.If => RuleChainKind.If,
             _ => null
         };
     }
 
-    private static bool TryGetValidationTargetFromStartingChain(
+    private static bool TryGetValidationTargetsFromStartingChain(
         InvocationExpressionSyntax startingChainInvocation,
         GeneratorAttributeSyntaxContext context,
+        RuleChainKind ruleChainKind,
+        out ValidationTarget? validationObject,
         out ValidationTarget? validationTarget)
     {
+        validationObject = null;
         validationTarget = null;
+
+        if (ruleChainKind is RuleChainKind.WithOnFailure or RuleChainKind.If)
+        {
+            return GetValidationTargetFromBuilder(
+                startingChainInvocation,
+                context,
+                out validationObject,
+                out validationTarget);
+        }
+        
         var validationTargetArgument = startingChainInvocation.ArgumentList.Arguments.FirstOrDefault()?.Expression;
 
         // We expect a lambda for selecting the validation target
@@ -186,13 +207,19 @@ public static class RuleChainFactory
         // We need to handle the case where we're trying to do property validation (e.g., x => x.Property)
         if (lambda.Body is MemberAccessExpressionSyntax propertyAccess)
         {
-            return HandlePropertyAccessValidationTarget(ref validationTarget, propertyAccess, context);
+            return HandlePropertyAccessValidationTarget(
+                ref validationObject,
+                ref validationTarget,
+                startingChainInvocation,
+                propertyAccess,
+                context);
         }
 
         // We also need to handle the case where we're trying to do object validation (e.g., x => x)
         if (lambda.Body is IdentifierNameSyntax identifierAccess)
         {
             return HandleObjectAccessValidationTarget(
+                ref validationObject,
                 ref validationTarget,
                 lambda,
                 identifierAccess, 
@@ -204,11 +231,22 @@ public static class RuleChainFactory
     }
 
     private static bool HandlePropertyAccessValidationTarget(
+        ref ValidationTarget? validationObject,
         ref ValidationTarget? validationTarget,
+        InvocationExpressionSyntax startingChainInvocation,
         MemberAccessExpressionSyntax propertyAccess,
         GeneratorAttributeSyntaxContext context)
     {
         if (context.SemanticModel.GetSymbolInfo(propertyAccess).Symbol is not IPropertySymbol propertySymbol)
+        {
+            return false;
+        }
+
+        if (!GetValidationTargetFromBuilder(
+                startingChainInvocation,
+                context,
+                out validationObject,
+                out validationTarget))
         {
             return false;
         }
@@ -229,6 +267,7 @@ public static class RuleChainFactory
     }
 
     private static bool HandleObjectAccessValidationTarget(
+        ref ValidationTarget? validationObject,
         ref ValidationTarget? validationTarget,
         LambdaExpressionSyntax lambda,
         IdentifierNameSyntax identifierAccess,
@@ -239,22 +278,39 @@ public static class RuleChainFactory
         {
             return false;
         }
-            
+
+        return GetValidationTargetFromBuilder(
+            startingChainInvocation,
+            context,
+            out validationObject,
+            out validationTarget);
+    }
+
+    private static bool GetValidationTargetFromBuilder(
+        InvocationExpressionSyntax startingChainInvocation,
+        GeneratorAttributeSyntaxContext context,
+        out ValidationTarget? validationObject,
+        out ValidationTarget? validationTarget)
+    {
         // Get the TRequest type from the builder that the starting invocation chain is called on.
         if (startingChainInvocation.Expression is not MemberAccessExpressionSyntax startingChainMemberAccess)
         {
+            validationObject = null;
+            validationTarget = null;
             return false;
         }
             
         var builderTypeInfo = context.SemanticModel.GetTypeInfo(startingChainMemberAccess.Expression);
         if (builderTypeInfo.Type is not INamedTypeSymbol { TypeArguments.Length: > 0 } builderTypeSymbol)
         {
+            validationObject = null;
+            validationTarget = null;
             return false;
         }
             
         var requestTypeSymbol = builderTypeSymbol.TypeArguments[0];
 
-        validationTarget = new ValidationTarget(
+        var target = new ValidationTarget(
             AccessorType: AccessorType.Object,
             AccessorExpressionFormat: "{0}",
             Type: new TypeInfo(
@@ -264,6 +320,9 @@ public static class RuleChainFactory
             DefaultTargetName: new MessageInfo(requestTypeSymbol.Name.Humanize(), true),
             TargetPath: new MessageInfo(requestTypeSymbol.Name, true));
 
+        validationObject = target;
+        validationTarget = target;
+        
         return true;
     }
 }

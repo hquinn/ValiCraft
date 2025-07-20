@@ -1,5 +1,3 @@
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
@@ -35,6 +33,7 @@ public class PatternLambdaMustRuleBuilder(
             new MessageInfo("'{TargetName}' doesn't satisfy the condition", true),
             new MessageInfo("Must", true),
             GetRuleOverrideData(),
+            IfCondition,
             EquatableArray<RulePlaceholder>.Empty,
             location);
     }

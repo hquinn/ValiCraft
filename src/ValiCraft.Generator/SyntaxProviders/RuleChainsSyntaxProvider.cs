@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
+using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains;
 using ValiCraft.Generator.RuleChains.Factories;
 using ValiCraft.Generator.Types;
@@ -29,7 +30,7 @@ public static class RuleChainsSyntaxProvider
 
         var ruleChains = defineRulesMethodSyntax.Body!.Statements
             .OfType<ExpressionStatementSyntax>()
-            .Select(statement => RuleChainFactory.CreateFromStatement(statement, builderArgument, 0, diagnostics, context))
+            .Select(statement => RuleChainFactory.CreateFromStatement(statement, builderArgument, 0, IndentModel.CreateNew(), diagnostics, context))
             .OfType<RuleChain>()
             .ToEquatableImmutableArray();
 

@@ -13,13 +13,8 @@ public static class StatementsParserExtensions
         {
             return null;
         }
-        
-        var parameterName = lambda switch
-        {
-            SimpleLambdaExpressionSyntax simpleLambda => simpleLambda.Parameter.Identifier.ValueText,
-            ParenthesizedLambdaExpressionSyntax parenLambda => parenLambda.ParameterList.Parameters.FirstOrDefault()?.Identifier.ValueText,
-            _ => null
-        };
+
+        var parameterName = lambda.GetParameterName();
 
         var statements = lambda.Body switch
         {

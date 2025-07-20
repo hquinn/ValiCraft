@@ -13,10 +13,12 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 public class TargetRuleChainFactory : IRuleChainFactory
 {
     public RuleChain? Create(
+        ValidationTarget @object,
         ValidationTarget? target,
         InvocationExpressionSyntax invocation,
         List<InvocationExpressionSyntax> invocationChain,
         int depth,
+        IndentModel indent,
         List<DiagnosticInfo> diagnostics,
         GeneratorAttributeSyntaxContext context)
     {
@@ -37,8 +39,10 @@ public class TargetRuleChainFactory : IRuleChainFactory
         
         // Now that we have all the rules in the chain, we can now create the rule chain
         return new TargetRuleChain(
+            @object,
             target!,
             depth,
+            indent,
             rules.Count,
             invocation?.GetOnFailureModeFromSyntax(),
             rules.ToEquatableImmutableArray());
@@ -54,7 +58,7 @@ public class TargetRuleChainFactory : IRuleChainFactory
         var memberName = ruleMemberAccess.Name.Identifier.ValueText;
         var argumentExpression = invocation.ArgumentList.Arguments.FirstOrDefault()?.Expression;
     
-        if (InvocationIsRuleOverride(ruleBuilder, memberName, argumentExpression))
+        if (InvocationIsRuleOverride(ruleBuilder, memberName, argumentExpression, invocation))
         {
             return ruleBuilder;
         }
@@ -72,7 +76,7 @@ public class TargetRuleChainFactory : IRuleChainFactory
         {
             switch (argumentExpression)
             {
-                case LambdaExpressionSyntax { Body: IsPatternExpressionSyntax } patternLambda:
+                case LambdaExpressionSyntax { Body: IsPatternExpressionSyntax or BinaryExpressionSyntax } patternLambda:
                     return PatternLambdaMustRuleBuilder.Create(invocation, patternLambda);
                 case LambdaExpressionSyntax { Body: BlockSyntax } blockLambda:
                     return BlockLambdaMustRuleBuilder.Create(invocation, blockLambda);
@@ -99,7 +103,8 @@ public class TargetRuleChainFactory : IRuleChainFactory
     private static bool InvocationIsRuleOverride(
         RuleBuilder? ruleBuilder,
         string memberName,
-        ExpressionSyntax? argumentExpression)
+        ExpressionSyntax? argumentExpression,
+        InvocationExpressionSyntax invocation)
     {
         switch (memberName)
         {
@@ -123,6 +128,13 @@ public class TargetRuleChainFactory : IRuleChainFactory
                     ruleBuilder?.WithTargetName(MessageInfo.CreateFromExpression(argumentExpression));
                 }
     
+                return true;
+            case "If":
+                if (argumentExpression is not null)
+                {
+                    ruleBuilder?.WithCondition(invocation);
+                }
+                
                 return true;
         }
     

@@ -187,9 +187,25 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                              {
                                                                                  return order.OrderNumber is not null;
                                                                              }
-                                                                             
+
                                                                              protected override void DefineRules(IValidationRuleBuilder<Order> orderBuilder)
                                                                              {
+                                                                                 orderBuilder.Ensure(o => o.Customer)
+                                                                                     .IsNotNull().If(o => { return o.OrderTotal != 0; });
+                                                                                 
+                                                                                 orderBuilder.Ensure(o => o.Customer)
+                                                                                     .IsNotNull().If(o => o.OrderTotal != 0);
+
+                                                                                 orderBuilder.If(order => { return order.OrderTotal != 0; }, b =>
+                                                                                 {
+                                                                                     b.Ensure(o => o.Customer).IsNotNull();            
+                                                                                 });
+
+                                                                                 orderBuilder.If(order => order.OrderTotal != 0, b =>
+                                                                                 {
+                                                                                     b.Ensure(o => o.Customer).IsNotNull();            
+                                                                                 });
+                                                                                 
                                                                                  orderBuilder.EnsureEach(o => o.Discounts, OnFailureMode.Halt, discountBuilder =>
                                                                                  {
                                                                                      discountBuilder.Ensure(d => d.Code)
@@ -371,6 +387,72 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                private global::System.Collections.Generic.List<global::ValiCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ValiCraft.IValidationError>? errors = null;
+                                                                       
+                                                                                   bool __ifRule_24(global::Test.Requests.Order o)
+                                                                                   { return o.OrderTotal != 0; }
+                                                                                   if (__ifRule_24(request) && !global::Test.Rules.NotNullRule<global::Test.Requests.Customer>.IsValid(request.Customer))
+                                                                                   {
+                                                                                       errors ??= new(24);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Customer>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
+                                                                                           Message = $"'Customer' must not be null.",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "Customer",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer",
+                                                                                           AttemptedValue = request.Customer,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (request.OrderTotal != 0 && !global::Test.Rules.NotNullRule<global::Test.Requests.Customer>.IsValid(request.Customer))
+                                                                                   {
+                                                                                       errors ??= new(23);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Customer>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
+                                                                                           Message = $"'Customer' must not be null.",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "Customer",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer",
+                                                                                           AttemptedValue = request.Customer,
+                                                                                       });
+                                                                                   }
+
+                                                                                   bool __ifRuleChain_22(global::Test.Requests.Order order)
+                                                                                   { return order.OrderTotal != 0; }
+                                                                                   if (__ifRuleChain_22(request))
+                                                                                   {
+                                                                                       if (!global::Test.Rules.NotNullRule<global::Test.Requests.Customer>.IsValid(request.Customer))
+                                                                                       {
+                                                                                           errors ??= new(22);
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Customer>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
+                                                                                               Message = $"'Customer' must not be null.",
+                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               TargetName = "Customer",
+                                                                                               TargetPath = $"{inheritedTargetPath}Customer",
+                                                                                               AttemptedValue = request.Customer,
+                                                                                           });
+                                                                                       }
+                                                                                   }
+
+                                                                                   if (request.OrderTotal != 0)
+                                                                                   {
+                                                                                       if (!global::Test.Rules.NotNullRule<global::Test.Requests.Customer>.IsValid(request.Customer))
+                                                                                       {
+                                                                                           errors ??= new(21);
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Customer>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
+                                                                                               Message = $"'Customer' must not be null.",
+                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               TargetName = "Customer",
+                                                                                               TargetPath = $"{inheritedTargetPath}Customer",
+                                                                                               AttemptedValue = request.Customer,
+                                                                                           });
+                                                                                       }
+                                                                                   }
 
                                                                                    var index20 = 0;
                                                                                    foreach (var element in request.Discounts)

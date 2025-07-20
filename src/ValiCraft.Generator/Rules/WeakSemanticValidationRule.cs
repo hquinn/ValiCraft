@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
+using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.Types;
 
@@ -15,6 +16,7 @@ public record WeakSemanticValidationRule(
     MessageInfo? DefaultMessage,
     MessageInfo? DefaultErrorCode,
     RuleOverrideData RuleOverrides,
+    IfConditionModel  IfCondition,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location) : InvokedValidationRule(
     MethodName,
@@ -23,6 +25,7 @@ public record WeakSemanticValidationRule(
     DefaultMessage,
     DefaultErrorCode,
     RuleOverrides,
+    IfCondition,
     Placeholders,
     Location)
 {

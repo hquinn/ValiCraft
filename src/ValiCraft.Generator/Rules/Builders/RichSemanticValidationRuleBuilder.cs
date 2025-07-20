@@ -44,6 +44,7 @@ public class RichSemanticValidationRuleBuilder(
             defaultMessage,
             defaultErrorCode,
             GetRuleOverrideData(),
+            IfCondition,
             rulePlaceholders,
             location);
     }

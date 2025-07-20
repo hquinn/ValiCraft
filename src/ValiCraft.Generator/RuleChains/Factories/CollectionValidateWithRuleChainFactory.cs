@@ -11,10 +11,12 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 public class CollectionValidateWithRuleChainFactory : IRuleChainFactory
 {
     public RuleChain? Create(
+        ValidationTarget @object,
         ValidationTarget? target,
         InvocationExpressionSyntax invocation,
         List<InvocationExpressionSyntax> invocationChain,
         int depth,
+        IndentModel indent,
         List<DiagnosticInfo> diagnostics,
         GeneratorAttributeSyntaxContext context)
     {
@@ -29,8 +31,10 @@ public class CollectionValidateWithRuleChainFactory : IRuleChainFactory
         var validatorExpression = argumentExpression.ToString();
 
         return new CollectionValidateWithRuleChain(
+            @object,
             target!,
             depth,
+            indent,
             invocation.GetOnFailureModeFromSyntax(),
             validatorExpression);
     }

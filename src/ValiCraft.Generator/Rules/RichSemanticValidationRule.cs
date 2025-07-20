@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.Types;
 
@@ -12,6 +13,7 @@ public record RichSemanticValidationRule(
     MessageInfo? DefaultMessage,
     MessageInfo? DefaultErrorCode,
     RuleOverrideData RuleOverrides,
+    IfConditionModel IfCondition,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location) : InvokedValidationRule(
     MethodName,
@@ -20,6 +22,7 @@ public record RichSemanticValidationRule(
     DefaultMessage,
     DefaultErrorCode,
     RuleOverrides,
+    IfCondition,
     Placeholders,
     Location)
 {

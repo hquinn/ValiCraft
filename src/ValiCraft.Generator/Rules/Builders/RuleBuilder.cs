@@ -1,4 +1,6 @@
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
 
 namespace ValiCraft.Generator.Rules.Builders;
@@ -8,6 +10,8 @@ public abstract class RuleBuilder
     private MessageInfo? _errorCode;
     private MessageInfo? _message;
     private MessageInfo? _targetName;
+    private IfConditionModel? _ifCondition;
+    protected IfConditionModel IfCondition => _ifCondition ?? new BlankIfConditionModel(false);
 
     public void WithMessage(MessageInfo? message)
     {
@@ -22,6 +26,16 @@ public abstract class RuleBuilder
     public void WithTargetName(MessageInfo? targetName)
     {
         _targetName = targetName;
+    }
+
+    public void WithCondition(InvocationExpressionSyntax invocation)
+    {
+        var ifConditionModel = IfConditionFactory.Create(invocation, false);
+
+        if (ifConditionModel is not null)
+        {
+            _ifCondition = ifConditionModel;
+        }
     }
 
     protected RuleOverrideData GetRuleOverrideData()

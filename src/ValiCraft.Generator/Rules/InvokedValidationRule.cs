@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
@@ -14,18 +15,21 @@ public abstract record InvokedValidationRule(
     MessageInfo? DefaultMessage,
     MessageInfo? DefaultErrorCode,
     RuleOverrideData RuleOverrides,
+    IfConditionModel IfCondition,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location) : Rule(
     Arguments,
     DefaultMessage,
     DefaultErrorCode,
     RuleOverrides,
+    IfCondition,
     Placeholders,
     Location)
 {
     public override string GenerateCodeForRule(
         string requestName,
-        string indent,
+        IndentModel indent,
+        ValidationTarget @object,
         ValidationTarget target,
         RuleChainContext context)
     {
@@ -38,7 +42,7 @@ public abstract record InvokedValidationRule(
         var isValidCallArgsString = string.Join(", ", isValidCallArgs);
 
         var code = $"""
-                     {indent}{GetIfElseIfKeyword(context)} (!{validationRuleInvocation}.IsValid({isValidCallArgsString}))
+                     {IfCondition.GenerateIfBlock(@object, requestName, indent, context)}!{validationRuleInvocation}.IsValid({isValidCallArgsString}))
                      {GetErrorCreation(requestName, validationRuleInvocation, indent, target, context)}
                      """;
         

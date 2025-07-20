@@ -37,6 +37,7 @@ public class WeakSemanticValidationRuleBuilder(
             null,
             null,
             GetRuleOverrideData(),
+            IfCondition,
             rulePlaceholders,
             location);
     }

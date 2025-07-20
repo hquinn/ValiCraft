@@ -19,4 +19,5 @@ public interface IValidationRuleBuilder<TRequest> where TRequest : class
         OnFailureMode failureMode,
         Action<IValidationRuleBuilder<TTarget>> rules) where TTarget : class;
     void WithOnFailure(OnFailureMode failureMode, Action<IValidationRuleBuilder<TRequest>> rules);
+    void If(Func<TRequest, bool> condition, Action<IValidationRuleBuilder<TRequest>> rules);
 }

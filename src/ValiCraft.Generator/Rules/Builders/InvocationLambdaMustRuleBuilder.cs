@@ -32,6 +32,7 @@ public class InvocationLambdaMustRuleBuilder(
             new MessageInfo("'{TargetName}' doesn't satisfy the condition", true),
             new MessageInfo("Must", true),
             GetRuleOverrideData(),
+            IfCondition,
             EquatableArray<RulePlaceholder>.Empty,
             location);
     }

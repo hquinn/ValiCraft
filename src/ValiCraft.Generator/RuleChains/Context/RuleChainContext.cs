@@ -63,4 +63,13 @@ public class RuleChainContext
     }
     
     public void DecrementCountdown() => Counter.Value--;
+
+    public string GetIfElseIfKeyword()
+    {
+        return IfElseMode switch
+        {
+            IfElseMode.ElseIf => "else if",
+            _ => "if"
+        };
+    }
 }

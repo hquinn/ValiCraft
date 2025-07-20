@@ -8,7 +8,7 @@ using ValiCraft.Generator.Models;
 
 namespace ValiCraft.Generator.RuleChains.Factories;
 
-public class CollectionRuleChainFactory : IRuleChainFactory
+public class WithOnFailureRuleChainFactory : IRuleChainFactory
 {
     public RuleChain? Create(
         ValidationTarget @object,
@@ -20,24 +20,29 @@ public class CollectionRuleChainFactory : IRuleChainFactory
         List<DiagnosticInfo> diagnostics,
         GeneratorAttributeSyntaxContext context)
     {
+        var onFailureArgument = invocation.GetOnFailureModeFromSyntax();
+
+        if (onFailureArgument is null)
+        {
+            return null;
+        }
+        
         var lambdaInfo = invocation.GetLambdaInfoFromLastArgument();
 
-        if (!LambdaInfo.IsValid(lambdaInfo, invocation, KnownNames.Methods.EnsureEach, diagnostics))
+        if (!LambdaInfo.IsValid(lambdaInfo, invocation, KnownNames.Methods.WithOnFailure, diagnostics))
         {
             return null;
         }
         
         var ruleChains = new List<RuleChain>();
-        var elementDepth = depth + 1;
-        var elementIndent = IndentModel.CreateChild(indent);
 
         foreach (var statement in lambdaInfo!.Statements)
         {
             var ruleChain = RuleChainFactory.CreateFromStatement(
                 statement,
                 lambdaInfo.ParameterName!,
-                elementDepth,
-                elementIndent,
+                depth,
+                indent,
                 diagnostics,
                 context);
 
@@ -47,19 +52,18 @@ public class CollectionRuleChainFactory : IRuleChainFactory
             }
         }
 
-        // If we don't have any rule chains in the collection, then don't bother
+        // If we don't have any rule chains, then don't bother
         if (ruleChains.Count == 0)
         {
             return null;
         }
         
-        return new CollectionRuleChain(
+        return new WithOnFailureRuleChain(
             @object,
-            target!,
             depth,
             indent,
             ruleChains.Sum(x => x.NumberOfRules),
-            invocation.GetOnFailureModeFromSyntax(),
+            onFailureArgument,
             ruleChains.ToEquatableImmutableArray());
     }
 }

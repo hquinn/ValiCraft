@@ -5,10 +5,12 @@ using ValiCraft.Generator.RuleChains.Context;
 namespace ValiCraft.Generator.RuleChains;
 
 public record CollectionValidateWithRuleChain(
+    ValidationTarget Object,
     ValidationTarget Target,
     int Depth,
+    IndentModel Indent,
     OnFailureMode? FailureMode,
-    string ValidatorExpression) : RuleChain(Target, Depth, 1, FailureMode)
+    string ValidatorExpression) : RuleChain(Object, Target, Depth, Indent, 1, FailureMode)
 {
     protected override bool TryLinkRuleChain(
         ValidationRule[] validRules,
@@ -27,30 +29,29 @@ public record CollectionValidateWithRuleChain(
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         var index = $"index{context.Counter}";
-        var indent = GetIndent();
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
         var itemRequestName = GetItemRequestParameterName();
         
         // A little hacky with the assigned errors, but it's a quick fix to get uniqueness.
         var code = $$"""
-                     {{indent}}var {{index}} = 0;
-                     {{indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
-                     {{indent}}{
-                     {{indent}}    var errors{{context.Counter}} = {{ValidatorExpression}}.ValidateToList({{itemRequestName}}, $"{inheritedTargetPath}{{Target.TargetPath.Value}}[{{{index}}}].");
-                     {{indent}}    if (errors{{context.Counter}}.Count != 0)
-                     {{indent}}    {
-                     {{indent}}        if (errors is null)
-                     {{indent}}        {
-                     {{indent}}            errors = new(errors{{context.Counter}});
-                     {{GetGotoLabelIfNeeded(indent, context)}}{{indent}}        }
-                     {{indent}}        else
-                     {{indent}}        {
-                     {{indent}}            errors.AddRange(errors{{context.Counter}});
-                     {{GetGotoLabelIfNeeded(indent, context)}}{{indent}}        }
-                     {{indent}}    }
-                     {{indent}}    {{index}}++;
-                     {{indent}}}
+                     {{Indent}}var {{index}} = 0;
+                     {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
+                     {{Indent}}{
+                     {{Indent}}    var errors{{context.Counter}} = {{ValidatorExpression}}.ValidateToList({{itemRequestName}}, $"{inheritedTargetPath}{{Target.TargetPath.Value}}[{{{index}}}].");
+                     {{Indent}}    if (errors{{context.Counter}}.Count != 0)
+                     {{Indent}}    {
+                     {{Indent}}        if (errors is null)
+                     {{Indent}}        {
+                     {{Indent}}            errors = new(errors{{context.Counter}});
+                     {{GetGotoLabelIfNeeded(context)}}{{Indent}}        }
+                     {{Indent}}        else
+                     {{Indent}}        {
+                     {{Indent}}            errors.AddRange(errors{{context.Counter}});
+                     {{GetGotoLabelIfNeeded(context)}}{{Indent}}        }
+                     {{Indent}}    }
+                     {{Indent}}    {{index}}++;
+                     {{Indent}}}
                      """;
 
         context.DecrementCountdown();
@@ -58,12 +59,12 @@ public record CollectionValidateWithRuleChain(
         return code;
     }
 
-    private string GetGotoLabelIfNeeded(string indent, RuleChainContext context)
+    private string GetGotoLabelIfNeeded(RuleChainContext context)
     {
         if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })
         {
             return $"""
-                    {indent}            goto {context.HaltLabel};
+                    {Indent}            goto {context.HaltLabel};
 
                     """;
         }

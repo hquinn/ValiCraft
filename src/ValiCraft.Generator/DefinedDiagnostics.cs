@@ -124,7 +124,6 @@ public static class DefinedDiagnostics
             location);
     }
 
-    // Not sure how to test this scenario, but is there as a fallback
     public static DiagnosticInfo InvalidLambdaDefined(string ruleChainName, Location location)
     {
         return new DiagnosticInfo(
