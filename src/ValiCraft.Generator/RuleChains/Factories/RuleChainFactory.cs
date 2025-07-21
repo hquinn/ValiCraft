@@ -252,16 +252,17 @@ public static class RuleChainFactory
         }
             
         var targetName = propertyAccess.Name.Identifier.ValueText;
+        var fullPropertyPath = propertyAccess.GetFullPropertyPath();
             
         validationTarget = new ValidationTarget(
             AccessorType: AccessorType.Property,
-            AccessorExpressionFormat: $"{{0}}.{targetName}",
+            AccessorExpressionFormat: $"{{0}}.{fullPropertyPath}",
             Type: new TypeInfo(
                 propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 propertySymbol.Type.TypeKind == TypeKind.TypeParameter,
                 propertySymbol.NullableAnnotation == NullableAnnotation.Annotated),
             DefaultTargetName: new MessageInfo(targetName.Humanize(), true),
-            TargetPath: new MessageInfo(targetName, true));
+            TargetPath: new MessageInfo(fullPropertyPath, true));
 
         return true;
     }

@@ -190,6 +190,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
 
                                                                              protected override void DefineRules(IValidationRuleBuilder<Order> orderBuilder)
                                                                              {
+                                                                                 orderBuilder.Ensure(o => o.Customer.MiddleName)
+                                                                                     .IsNotNull();
+
                                                                                  orderBuilder.Ensure(o => o.Customer)
                                                                                      .IsNotNull().If(o => { return o.OrderTotal != 0; });
                                                                                  
@@ -387,6 +390,20 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                private global::System.Collections.Generic.List<global::ValiCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ValiCraft.IValidationError>? errors = null;
+                                                                       
+                                                                                   if (!global::Test.Rules.NotNullRule<string?>.IsValid(request.Customer.MiddleName))
+                                                                                   {
+                                                                                       errors ??= new(25);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string?>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<string?>),
+                                                                                           Message = $"'Middle name' must not be null.",
+                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           TargetName = "Middle name",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer.MiddleName",
+                                                                                           AttemptedValue = request.Customer.MiddleName,
+                                                                                       });
+                                                                                   }
                                                                        
                                                                                    bool __ifRule_24(global::Test.Requests.Order o)
                                                                                    { return o.OrderTotal != 0; }
