@@ -1,25 +1,35 @@
 # ValiCraft
 
-A powerful, compile-time validation framework for .NET that crafts fast and boilerplate-free validation logic.
+A powerful, compile-time validation framework for .NET that crafts fast and boilerplate-free validation logic using source generators.
+
+## Why ValiCraft?
+
+ValiCraft uses C# source generators to transform your validation rules into highly optimized, allocation-free code at compile time. This approach delivers:
+
+- **🚀 Extreme Performance**: ~5-6ns per validation with minimal allocations
+- **✨ Clean, Fluent API**: Expressive and intuitive syntax for defining validation rules
+- **🔧 Compile-Time Safety**: Validation logic is generated and checked at build time
+- **📦 Zero Runtime Overhead**: No reflection, no runtime code generation
+- **🎯 Type-Safe**: Full IntelliSense support and compile-time type checking
 
 ## Installation
 
-```
+```bash
 dotnet add package ValiCraft
 ```
 
-This will also add a dependency to `MonadCraft`, a library containing the `IError` and `Result<TError, TValue` types.
+This will also add a dependency to `MonadCraft`, a library containing the `IError` and `Result<TError, TValue>` types.
 
-## Simple Example
+## Quick Start
 
-Define your class you want to validate:
+### 1. Define Your Model
 
 ```csharp
 public class User
 {
     public required string Username { get; set; }
     public string? EmailAddress { get; set; }
-    public int NumberOfFollowers { get; set; }
+    public int Age { get; set; }
     public required List<Post> Posts { get; set; }
 }
 
@@ -30,55 +40,220 @@ public class Post
 }
 ```
 
-Next, define your validator:
+### 2. Create a Validator
 
 ```csharp
 using ValiCraft;
 using ValiCraft.Attributes;
-using ValiCraft.BuilderTypes;
 using ValiCraft.Rules;
 
-namespace Test;
-
-[GenerateValidator] // Required for the source-generator to work
+[GenerateValidator] // Source generator will create the validation logic
 public partial class UserValidator : Validator<User>
 {
-    protected override void DefineRules(IValidationRuleBuilder<User> userBuilder)
+    protected override void DefineRules(IValidationRuleBuilder<User> builder)
     {
-        userBuilder.Ensure(user => user.Username)
-            .IsNotNullOrWhiteSpace();
+        builder.Ensure(x => x.Username)
+            .IsNotNullOrWhiteSpace()
+            .HasMinLength(3)
+            .HasMaxLength(50);
 
-        userBuilder.Ensure(user => user.EmailAddress)
-            .IsNotNullOrWhiteSpace().WithErrorCode("EmailError").WithMessage("'{TargetName}' field must be a valid email.");
+        builder.Ensure(x => x.EmailAddress)
+            .IsNotNullOrWhiteSpace()
+            .IsEmailAddress()
+            .WithErrorCode("INVALID_EMAIL")
+            .WithMessage("'{TargetName}' must be a valid email address");
 
-        userBuilder.Ensure(user => user.NumberOfFollowers, OnFailureMode.Halt)
-            .IsGreaterOrEqualThan(0).WithMessage("'{TargetName}' must be positive. Attempted value {TargetValue}")
-            .IsLessThan(1000000).WithMessage("Too many followers. Max {TargetName} is {ValueToCompare}");
+        builder.Ensure(x => x.Age, OnFailureMode.Halt)
+            .IsGreaterOrEqualThan(18)
+            .IsLessThan(120);
 
-        userBuilder.EnsureEach(user => user.Posts, postBuilder =>
+        builder.EnsureEach(x => x.Posts, postBuilder =>
         {
             postBuilder.Ensure(post => post.Title)
-                .Must(title => title.Length > 5).WithMessage("{TargetName} is too short.");
+                .IsNotNullOrWhiteSpace()
+                .HasMinLength(5);
 
             postBuilder.Ensure(post => post.Message)
-               .IsNotNullOrEmpty().If(post => !string.IsNullOrEmpty(post.Title));
+                .IsNotNullOrEmpty()
+                .If(post => !string.IsNullOrEmpty(post.Title));
         });
     }
 }
 ```
 
-This will produce efficient validation logic which can be used to validate your class.
-
-You can validate using two different methods, either using the Result type or a list of Validation errors.
+### 3. Validate Your Objects
 
 ```csharp
-// Using Result type
-IValidator<User> userValidator = new UserValidator();
-Result<IReadonlyList<IValidationError>, User> validationResult = userValidator.Validate(user);
+var validator = new UserValidator();
+
+// Using Result type (recommended)
+Result<IReadOnlyList<IValidationError>, User> result = validator.Validate(user);
+
+string outcome = result
+    .Match(
+        success: user => $"${user.Username} is valid!",
+        failure: errors => GetErrorString(errors));
+
+// Or get errors directly
+IReadOnlyList<IValidationError> errors = validator.ValidateToList(user);
 ```
 
+## Performance
+
+ValiCraft's source generator approach delivers exceptional performance compared to traditional validation libraries:
+
+| Method                              | Mean     | Allocated |
+|-------------------------------------|----------|-----------|
+| ValiCraft (Valid Model)             | ~6 ns    | 0 B       |
+| FluentValidation (Valid Model)      | ~200 ns  | 120 B     |
+| ValiCraft (Invalid Model)           | ~15 ns   | 32 B      |
+| FluentValidation (Invalid Model)    | ~450 ns  | 600 B     |
+| ValiCraft (Validator Instantiation) | ~1 ns    | 0 B       |
+| FluentValidation (Instantiation)    | ~800 ns  | 400 B     |
+
+**Note**: Benchmarks run on Apple M1 Pro, .NET 9.0. Your results may vary.
+
+## Features
+
+### Built-in Validation Rules
+
+ValiCraft includes 50+ built-in validation rules:
+
+**String Validation**
+- `IsNotNull()`, `IsNotNullOrEmpty()`, `IsNotNullOrWhiteSpace()`
+- `HasMinLength()`, `HasMaxLength()`, `HasLength()`, `HasLengthBetween()`
+- `IsEmailAddress()`, `IsUrl()`, `IsAlphaNumeric()`
+- `StartsWith()`, `EndsWith()`, `Contains()`, `Matches()` (regex)
+
+**Numeric Validation**
+- `IsGreaterThan()`, `IsGreaterOrEqualThan()`, `IsLessThan()`, `IsLessOrEqualThan()`
+- `IsBetween()`, `IsBetweenExclusive()`
+- `IsPositive()`, `IsPositiveOrZero()`, `IsNegative()`, `IsNegativeOrZero()`
+
+**Collection Validation**
+- `HasMinCount()`, `HasMaxCount()`, `HasCount()`, `HasCountBetween()`
+- `IsEmpty()`, `HasItems()`
+- `IsUnique()`, `IsUniqueWithComparer()`
+- `CollectionContains()`, `CollectionNotContains()`
+
+**Date/Time Validation**
+- `IsInFuture()`, `IsInFutureOrPresent()`, `IsInPast()`, `IsInPastOrPresent()`
+- `IsDateBetween()`, `HasMinAge()`, `HasMaxAge()`
+
+**Comparison Validation**
+- `IsEqual()`, `IsNotEqual()`, `IsEqualWithComparer()`, `IsNotEqualWithComparer()`
+- `IsIn()`, `IsNotIn()`
+- `IsNotDefault()`
+
+**Custom Validation**
+- `Must()` - Define custom predicates with lambda expressions
+
+### Advanced Features
+
+#### Conditional Validation
 ```csharp
-// Using list of Validation errors
-IValidator<User> userValidator = new UserValidator();
-IReadOnlyList<IValidationError> validationErrorList = userValidator.ValidateToList(user);
+builder.Ensure(x => x.PhoneNumber)
+    .IsNotNullOrWhiteSpace()
+    .If(x => x.ContactPreference == "phone");
 ```
+
+#### Custom Error Messages with Placeholders
+```csharp
+builder.Ensure(x => x.Age)
+    .IsGreaterOrEqualThan(18)
+    .WithMessage("'{TargetName}' must be at least {ValueToCompare}, but was {TargetValue}");
+```
+
+Available placeholders:
+- `{TargetName}` - Property name (humanized: "firstName" → "First Name")
+- `{TargetValue}` - Actual value being validated
+- `{ValueToCompare}` - Expected value (for comparison rules)
+- Custom placeholders defined by specific rules
+
+#### Error Codes
+```csharp
+builder.Ensure(x => x.Email)
+    .IsEmailAddress()
+    .WithErrorCode("EMAIL_INVALID");
+```
+
+#### Failure Modes
+```csharp
+// Stop validating this property on first failure
+builder.Ensure(x => x.Age, OnFailureMode.Halt)
+    .IsGreaterThan(0)
+    .IsLessThan(150);
+
+// Continue validating all rules (default)
+builder.Ensure(x => x.Name, OnFailureMode.Continue)
+    .IsNotNullOrWhiteSpace()
+    .HasMinLength(2);
+```
+
+#### Collection Validation
+```csharp
+// Validate each item in a collection
+builder.EnsureEach(x => x.Tags, tagBuilder =>
+{
+    tagBuilder.Ensure(tag => tag.Name)
+        .IsNotNullOrWhiteSpace()
+        .HasMaxLength(50);
+});
+```
+
+#### Nested Object Validation
+```csharp
+// Validate with another validator
+builder.EnsureValidateWith(x => x.Address, new AddressValidator());
+```
+
+## Creating Custom Validation Rules
+
+You can create your own reusable validation rules:
+
+```csharp
+using ValiCraft;
+using ValiCraft.Attributes;
+
+[GenerateRuleExtension("IsValidPostalCode")]
+[DefaultMessage("'{TargetName}' must be a valid postal code")]
+public class PostalCodeRule : IValidationRule<string?>
+{
+    public static bool IsValid(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return false;
+        return Regex.IsMatch(value, @"^\d{5}(-\d{4})?$");
+    }
+}
+```
+
+Use it in your validators:
+
+```csharp
+builder.Ensure(x => x.PostalCode)
+    .IsValidPostalCode();
+```
+
+## How It Works
+
+ValiCraft uses C# Source Generators to analyze your validator definitions at compile time and generate optimized validation code. This means:
+
+1. **Zero Runtime Overhead**: No reflection or runtime code generation
+2. **Full IntelliSense**: All generated code is available in your IDE
+3. **Debuggable**: Step through the generated validation logic
+4. **Type-Safe**: Compilation errors if validation rules don't match your types
+
+The generated code is pure C#, highly optimized, and produces minimal allocations.
+
+## Requirements
+
+- .NET 8.0 or higher
+- C# 12 or higher
+
+## License
+
+MIT
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
