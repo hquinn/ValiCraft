@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Generator.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Tests", "tests\ValiCraft.Tests\ValiCraft.Tests.csproj", "{1B1B2DB9-5850-4736-8935-15E293F12199}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{7CE68C45-E56F-4B64-AB1A-B826BA5255DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValiCraft.Benchmarks", "benchmarks\ValiCraft.Benchmarks\ValiCraft.Benchmarks.csproj", "{3DE4B612-1032-4F0E-8E6E-798780608C98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +40,10 @@ Global
 		{1B1B2DB9-5850-4736-8935-15E293F12199}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B1B2DB9-5850-4736-8935-15E293F12199}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B1B2DB9-5850-4736-8935-15E293F12199}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DE4B612-1032-4F0E-8E6E-798780608C98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DE4B612-1032-4F0E-8E6E-798780608C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DE4B612-1032-4F0E-8E6E-798780608C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DE4B612-1032-4F0E-8E6E-798780608C98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,6 +53,7 @@ Global
 		{367DDF48-618C-4636-B21A-A9A57CCC6EAF} = {7ACFDFDA-A67A-499B-A062-7C416E3BEAFF}
 		{68FDB4A2-A7F9-4BAE-B465-B2258D7AF827} = {5FD7965E-4840-4EE2-A6B9-7A75431A2FF1}
 		{1B1B2DB9-5850-4736-8935-15E293F12199} = {5FD7965E-4840-4EE2-A6B9-7A75431A2FF1}
+		{3DE4B612-1032-4F0E-8E6E-798780608C98} = {7CE68C45-E56F-4B64-AB1A-B826BA5255DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9067EB3C-FC28-40ED-B943-6720270A63E3}

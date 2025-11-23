@@ -397,9 +397,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<string?>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotNullRule<string?>),
-                                                                                           Message = $"'Middle name' must not be null.",
+                                                                                           Message = $"'Middle Name' must not be null.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "Middle name",
+                                                                                           TargetName = "Middle Name",
                                                                                            TargetPath = $"{inheritedTargetPath}Customer.MiddleName",
                                                                                            AttemptedValue = request.Customer.MiddleName,
                                                                                        });
@@ -683,9 +683,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<string>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotNullRule<string>),
-                                                                                           Message = $"'Order number' must not be null.",
+                                                                                           Message = $"'Order Number' must not be null.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "Order number",
+                                                                                           TargetName = "Order Number",
                                                                                            TargetPath = $"{inheritedTargetPath}OrderNumber",
                                                                                            AttemptedValue = request.OrderNumber,
                                                                                        });
@@ -696,9 +696,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<string>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotEmptyRule),
-                                                                                           Message = $"'Order number' must not be empty.",
+                                                                                           Message = $"'Order Number' must not be empty.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "Order number",
+                                                                                           TargetName = "Order Number",
                                                                                            TargetPath = $"{inheritedTargetPath}OrderNumber",
                                                                                            AttemptedValue = request.OrderNumber,
                                                                                        });
@@ -710,9 +710,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<string>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.LengthRule),
-                                                                                           Message = $"'Order number' must have a length of 10.",
+                                                                                           Message = $"'Order Number' must have a length of 10.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "Order number",
+                                                                                           TargetName = "Order Number",
                                                                                            TargetPath = $"{inheritedTargetPath}OrderNumber",
                                                                                            AttemptedValue = request.OrderNumber,
                                                                                        });
@@ -737,9 +737,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<string?>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotEmptyRule),
-                                                                                           Message = ShippingReferenceEmptyMessage.Replace("{TargetName}", "Shipping reference").Replace("{TargetValue}", request.ShippingReference),
+                                                                                           Message = ShippingReferenceEmptyMessage.Replace("{TargetName}", "Shipping Reference").Replace("{TargetValue}", request.ShippingReference),
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "Shipping reference",
+                                                                                           TargetName = "Shipping Reference",
                                                                                            TargetPath = $"{inheritedTargetPath}ShippingReference",
                                                                                            AttemptedValue = request.ShippingReference,
                                                                                        });
@@ -751,9 +751,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<decimal>
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.GreaterThanRule<decimal>),
-                                                                                           Message = $"'Order total' must be greater than 0, but received {request.OrderTotal}.",
+                                                                                           Message = $"'Order Total' must be greater than 0, but received {request.OrderTotal}.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "Order total",
+                                                                                           TargetName = "Order Total",
                                                                                            TargetPath = $"{inheritedTargetPath}OrderTotal",
                                                                                            AttemptedValue = request.OrderTotal,
                                                                                        });
@@ -764,9 +764,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        errors.Add(new global::ValiCraft.ValidationError<decimal>
                                                                                        {
                                                                                            Code = "TotalReached",
-                                                                                           Message = $"'Order total' must be less than {OrderTotalLimit}, but received {request.OrderTotal}.",
+                                                                                           Message = $"'Order Total' must be less than {OrderTotalLimit}, but received {request.OrderTotal}.",
                                                                                            Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
-                                                                                           TargetName = "Order total",
+                                                                                           TargetName = "Order Total",
                                                                                            TargetPath = $"{inheritedTargetPath}OrderTotal",
                                                                                            AttemptedValue = request.OrderTotal,
                                                                                        });

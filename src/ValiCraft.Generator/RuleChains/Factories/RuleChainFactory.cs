@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Humanizer;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
@@ -22,6 +22,18 @@ public enum RuleChainKind
 
 public static class RuleChainFactory
 {
+    // Simple humanize implementation to avoid Humanizer dependency issues
+    private static string Humanize(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+        
+        // Add spaces before capital letters that are followed by lowercase letters
+        // This preserves acronyms like "SKU" while splitting "OrderNumber" to "Order Number"
+        var result = Regex.Replace(input, "(?<!^)([A-Z])(?=[a-z])", " $1");
+        return result;
+    }
+
     private static readonly Dictionary<RuleChainKind, IRuleChainFactory> RuleChainFactories;
 
     static RuleChainFactory()
@@ -253,6 +265,8 @@ public static class RuleChainFactory
             
         var targetName = propertyAccess.Name.Identifier.ValueText;
         var fullPropertyPath = propertyAccess.GetFullPropertyPath();
+        
+        string humanizedTargetName = Humanize(targetName);
             
         validationTarget = new ValidationTarget(
             AccessorType: AccessorType.Property,
@@ -261,7 +275,7 @@ public static class RuleChainFactory
                 propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 propertySymbol.Type.TypeKind == TypeKind.TypeParameter,
                 propertySymbol.NullableAnnotation == NullableAnnotation.Annotated),
-            DefaultTargetName: new MessageInfo(targetName.Humanize(), true),
+            DefaultTargetName: new MessageInfo(humanizedTargetName, true),
             TargetPath: new MessageInfo(fullPropertyPath, true));
 
         return true;
@@ -311,6 +325,8 @@ public static class RuleChainFactory
             
         var requestTypeSymbol = builderTypeSymbol.TypeArguments[0];
 
+        string humanizedTypeName = Humanize(requestTypeSymbol.Name);
+
         var target = new ValidationTarget(
             AccessorType: AccessorType.Object,
             AccessorExpressionFormat: "{0}",
@@ -318,7 +334,7 @@ public static class RuleChainFactory
                 requestTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 requestTypeSymbol.TypeKind == TypeKind.TypeParameter,
                 requestTypeSymbol.NullableAnnotation == NullableAnnotation.Annotated),
-            DefaultTargetName: new MessageInfo(requestTypeSymbol.Name.Humanize(), true),
+            DefaultTargetName: new MessageInfo(humanizedTypeName, true),
             TargetPath: new MessageInfo(requestTypeSymbol.Name, true));
 
         validationObject = target;

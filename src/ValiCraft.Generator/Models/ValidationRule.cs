@@ -95,7 +95,10 @@ public record ValidationRule(
 
             if (!found)
             {
-                mappingIndexes[genericIndex] = -1;
+                // Generic parameter is not directly in the method signature.
+                // This likely means it's nested within a generic type (e.g., IEnumerable<T>).
+                // We'll use a special marker that will be handled during code generation.
+                mappingIndexes[genericIndex] = -1000 - genericIndex;  // Use large negative to avoid conflict
             }
         }
 
