@@ -8,9 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Humanizer.Core" Version="3.0.0-beta.96" PrivateAssets="all" GeneratePathProperty="true" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all"/>
+        <PackageReference Include="Humanizer.Core" Version="3.0.1" PrivateAssets="all" GeneratePathProperty="true" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" />
     </ItemGroup>
     
     <ItemGroup>
