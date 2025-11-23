@@ -2,6 +2,10 @@ using ValiCraft.Attributes;
 
 namespace ValiCraft.Rules;
 
+/// <summary>
+/// Validates that a value is between a minimum and maximum value (exclusive).
+/// </summary>
+/// <typeparam name="TTargetType">The type of value being compared. Must implement IComparable.</typeparam>
 [GenerateRuleExtension("IsBetweenExclusive")]
 [DefaultMessage("{TargetName} must be between {Min} and {Max} (exclusive). Value received is {TargetValue}")]
 [RulePlaceholder("{Min}", "min")]

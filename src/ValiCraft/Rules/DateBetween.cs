@@ -2,6 +2,9 @@ using ValiCraft.Attributes;
 
 namespace ValiCraft.Rules;
 
+/// <summary>
+/// Validates that a DateTime value is between a start date and end date (inclusive).
+/// </summary>
 [GenerateRuleExtension("IsDateBetween")]
 [DefaultMessage("{TargetName} must be between {StartDate} and {EndDate}")]
 [RulePlaceholder("{StartDate}", "startDate")]

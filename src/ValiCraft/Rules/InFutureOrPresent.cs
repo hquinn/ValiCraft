@@ -2,6 +2,9 @@ using ValiCraft.Attributes;
 
 namespace ValiCraft.Rules;
 
+/// <summary>
+/// Validates that a DateTime value is in the future or present (at or after the current UTC time).
+/// </summary>
 [GenerateRuleExtension("IsInFutureOrPresent")]
 [DefaultMessage("{TargetName} must be in the future or present")]
 public class InFutureOrPresent : IValidationRule<DateTime>

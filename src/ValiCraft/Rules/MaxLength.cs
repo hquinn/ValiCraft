@@ -2,13 +2,18 @@ using ValiCraft.Attributes;
 
 namespace ValiCraft.Rules;
 
+/// <summary>
+/// Validates that a string does not exceed a maximum length.
+/// Null strings are considered valid (length 0).
+/// </summary>
 [GenerateRuleExtension("HasMaxLength")]
-[DefaultMessage("{TargetName} must have a maximum length of {MaxLength}. Current length is {CurrentLength}")]
+[DefaultMessage("{TargetName} must have a maximum length of {MaxLength}")]
 [RulePlaceholder("{MaxLength}", "parameter")]
 public class MaxLength : IValidationRule<string?, int>
 {
     public static bool IsValid(string? targetValue, int parameter)
     {
-        return targetValue?.Length <= parameter;
+        // Null or empty strings have length 0, which should pass MaxLength validation
+        return (targetValue?.Length ?? 0) <= parameter;
     }
 }

@@ -2,6 +2,10 @@ using ValiCraft.Attributes;
 
 namespace ValiCraft.Rules;
 
+/// <summary>
+/// Validates that a collection contains a specified item using a custom equality comparer.
+/// </summary>
+/// <typeparam name="TTargetType">The type of items in the collection.</typeparam>
 [GenerateRuleExtension("CollectionContains")]
 [DefaultMessage("{TargetName} must contain the specified item")]
 [RulePlaceholder("{Item}", "item")]
@@ -10,7 +14,11 @@ public class CollectionContainsWithComparer<TTargetType> : IValidationRule<IEnum
 {
     public static bool IsValid(IEnumerable<TTargetType>? targetValue, TTargetType item, IEqualityComparer<TTargetType> comparer)
     {
-        if (targetValue == null) return false;
+        if (targetValue == null)
+        {
+            return false;
+        }
+
         return targetValue.Contains(item, comparer);
     }
 }

@@ -2,6 +2,10 @@ using ValiCraft.Attributes;
 
 namespace ValiCraft.Rules;
 
+/// <summary>
+/// Validates that a value is less than another specified value.
+/// </summary>
+/// <typeparam name="TTargetType">The type of value being compared</typeparam>
 [GenerateRuleExtension("IsLessThan")]
 [DefaultMessage("{TargetName} must be less than {ValueToCompare}. Value received is {TargetValue}")]
 [RulePlaceholder("{ValueToCompare}", "parameter")]

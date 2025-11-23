@@ -27,10 +27,11 @@ public class MaxLengthTests
     }
 
     [Fact]
-    public void IsValid_WhenStringIsNull_ReturnsFalse()
+    public void IsValid_WhenStringIsNull_ReturnsTrue()
     {
+        // Null is treated as length 0, which passes MaxLength validation
         var result = MaxLength.IsValid(null, 10);
-        result.Should().BeFalse();
+        result.Should().BeTrue();
     }
 
     [Fact]

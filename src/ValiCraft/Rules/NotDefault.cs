@@ -2,6 +2,10 @@ using ValiCraft.Attributes;
 
 namespace ValiCraft.Rules;
 
+/// <summary>
+/// Validates that a value is not the default value for its type.
+/// </summary>
+/// <typeparam name="TTargetType">The type of value being validated.</typeparam>
 [GenerateRuleExtension("IsNotDefault")]
 [DefaultMessage("{TargetName} cannot be the default value.")]
 public class NotDefault<TTargetType> : IValidationRule<TTargetType?>

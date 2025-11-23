@@ -9,12 +9,12 @@
     <PropertyGroup>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         
-        <PacakgeId>ValiCraft</PacakgeId>
+        <PackageId>ValiCraft</PackageId>
         <Version>0.10.0</Version>
         <Authors>Hayden Quinn</Authors>
         <Company>hquinn</Company>
         <Description>A powerful, compile-time validation framework for .NET that crafts fast and boilerplate-free validation logic.</Description>
-        <Description>validation;source-generator;fluent;fsat;roslyn;valicraft</Description>
+        <PackageTags>validation;source-generator;fluent;fast;roslyn;valicraft</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/hquinn/ValiCraft</PackageProjectUrl>
         <RepositoryUrl>https://github.com/hquinn/ValiCraft</RepositoryUrl>

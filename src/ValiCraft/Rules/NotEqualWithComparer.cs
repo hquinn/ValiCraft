@@ -2,6 +2,10 @@ using ValiCraft.Attributes;
 
 namespace ValiCraft.Rules;
 
+/// <summary>
+/// Validates that a value is not equal to another specified value using a custom equality comparer.
+/// </summary>
+/// <typeparam name="TTargetType">The type of value being compared.</typeparam>
 [GenerateRuleExtension("IsNotEqualTo")]
 [DefaultMessage("{TargetName} must not be equal to {ValueToCompare}. Value received is {TargetValue}")]
 [RulePlaceholder("{ValueToCompare}", "value")]

@@ -2,6 +2,9 @@ using ValiCraft.Attributes;
 
 namespace ValiCraft.Rules;
 
+/// <summary>
+/// Validates that a birth date represents a person who is at most a specified maximum age in years.
+/// </summary>
 [GenerateRuleExtension("HasMaxAge")]
 [DefaultMessage("{TargetName} must represent an age of at most {MaxAge} years")]
 [RulePlaceholder("{MaxAge}", "parameter")]
