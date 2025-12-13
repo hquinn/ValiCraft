@@ -81,19 +81,25 @@ public static class ValidationRuleExtensionSourceProvider
     {
         var clauses = new List<string> { "where TRequest : class" };
 
-        // Get all the constraint clauses we discovered from the rule's generic parameters.
-        var additionalClauses = validationRule.Class.GenericParameters
-            .Select(p => (p.InheritedPositions, p.Constraints))
-            .Where(c => c.Constraints is not null)
-            .Select(x =>
+        // Get constraint clauses only for type parameters that are included in the extension method
+        var additionalClauses = validationRule.GetExtensionMethodGenericParameters()
+            .Where(p => p.Constraints is not null)
+            .Select(p =>
             {
-                // If it's the first parameter, then we know that it's TTargetType
-                if (x.InheritedPositions.Contains(0))
+                // If it's TTargetType, we need to substitute the original parameter name
+                if (p.IsTargetType)
                 {
-                    return (x.Constraints! with { Type = "TTargetType" }).ToString();
+                    // Find the original name by looking for a parameter that maps to TTargetType
+                    var originalName = validationRule.Class.GenericParameters
+                        .FirstOrDefault(gp => gp.InheritedPositions.Contains(0))?.Type.FormattedTypeName;
+                    
+                    if (originalName is not null)
+                    {
+                        return p.Constraints!.WithSubstitutedTypeName(originalName, "TTargetType").ToString();
+                    }
                 }
 
-                return x.Constraints!.ToString();
+                return p.Constraints!.ToString();
             });
 
         clauses.AddRange(additionalClauses);

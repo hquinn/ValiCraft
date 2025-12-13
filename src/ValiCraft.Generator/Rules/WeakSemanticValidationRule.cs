@@ -74,8 +74,14 @@ public record WeakSemanticValidationRule(
         foreach (var validRule in matchingNameRules)
         {
             var argumentTypes = Arguments.Select(x => x.Type).Prepend(target.Type).ToEquatableImmutableArray();
-            // We skip the first parameter as this will always be the property type
-            var matchesResult = validRule.IsValidSignature.MatchesTypes(argumentTypes);
+            
+            // Get the type parameter names from the rule class to support matching
+            // generic types like IEnumerable<T> where T is a type parameter
+            var typeParameterNames = validRule.Class.GenericParameters
+                .Select(p => p.Type.FormattedTypeName)
+                .ToList();
+            
+            var matchesResult = validRule.IsValidSignature.MatchesTypes(argumentTypes, typeParameterNames);
 
             // Check if we have a direct match with signature types
             // If so, we can return early

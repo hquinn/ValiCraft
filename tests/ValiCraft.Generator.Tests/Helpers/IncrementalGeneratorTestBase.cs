@@ -10,7 +10,7 @@ public abstract class IncrementalGeneratorTestBase<TGenerator> where TGenerator 
         Type[] additionalMetadataReferences,
         string[] trackingSteps,
         string[] inputs,
-        string[] outputs,
+        string[]? outputs,
         string[] diagnostics,
         bool assertInitialCompilation = false,
         bool assertTrackingSteps = true)
@@ -21,14 +21,19 @@ public abstract class IncrementalGeneratorTestBase<TGenerator> where TGenerator 
 
         var options = IncrementalGeneratorTestOptions.CreateDefault(additionalMetadataReferences);
 
-        new IncrementalGeneratorAdapter(options)
+        var result = new IncrementalGeneratorAdapter(options)
             .GetGeneratedTrees<TGenerator>(
                 inputs,
                 trackingSteps,
                 errorCodePrefix,
                 assertInitialCompilation,
                 assertTrackingSteps)
-            .AssertDiagnostics(diagnostics)
-            .AssertOutputs(outputs);
+            .AssertDiagnostics(diagnostics);
+        
+        // Only assert outputs if explicitly provided
+        if (outputs is not null)
+        {
+            result.AssertOutputs(outputs);
+        }
     }
 }
