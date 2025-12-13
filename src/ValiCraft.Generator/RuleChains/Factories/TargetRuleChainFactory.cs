@@ -24,11 +24,12 @@ public class TargetRuleChainFactory : IRuleChainFactory
     {
         RuleBuilder? ruleBuilder = null;
         var rules = new List<Rule>();
+        var whenNotNull = false;
     
         // Skip the Ensure method as that's not a rule.
         foreach (var ruleInvocation in invocationChain.Skip(1))
         {
-            ruleBuilder = ProcessNextInChain(ruleBuilder, ruleInvocation, rules, context);
+            ruleBuilder = ProcessNextInChain(ruleBuilder, ruleInvocation, rules, context, ref whenNotNull);
         }
     
         // Add the last rule into the rule list
@@ -45,20 +46,22 @@ public class TargetRuleChainFactory : IRuleChainFactory
             indent,
             rules.Count,
             invocation?.GetOnFailureModeFromSyntax(),
-            rules.ToEquatableImmutableArray());
+            rules.ToEquatableImmutableArray(),
+            whenNotNull);
     }
     
     private static RuleBuilder? ProcessNextInChain(
         RuleBuilder? ruleBuilder,
         InvocationExpressionSyntax invocation,
         List<Rule> rules,
-        GeneratorAttributeSyntaxContext context)
+        GeneratorAttributeSyntaxContext context,
+        ref bool whenNotNull)
     {
         var ruleMemberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
         var memberName = ruleMemberAccess.Name.Identifier.ValueText;
         var argumentExpression = invocation.ArgumentList.Arguments.FirstOrDefault()?.Expression;
     
-        if (InvocationIsRuleOverride(ruleBuilder, memberName, argumentExpression, invocation))
+        if (InvocationIsRuleOverride(ruleBuilder, memberName, argumentExpression, invocation, ref whenNotNull))
         {
             return ruleBuilder;
         }
@@ -104,7 +107,8 @@ public class TargetRuleChainFactory : IRuleChainFactory
         RuleBuilder? ruleBuilder,
         string memberName,
         ExpressionSyntax? argumentExpression,
-        InvocationExpressionSyntax invocation)
+        InvocationExpressionSyntax invocation,
+        ref bool whenNotNull)
     {
         switch (memberName)
         {
@@ -135,6 +139,9 @@ public class TargetRuleChainFactory : IRuleChainFactory
                     ruleBuilder?.WithCondition(invocation);
                 }
                 
+                return true;
+            case "WhenNotNull":
+                whenNotNull = true;
                 return true;
         }
     

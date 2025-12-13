@@ -45,6 +45,8 @@ public static class KnownNames
         public const string ValidateWith = "ValidateWith";
         public const string WithOnFailure = "WithOnFailure";
         public const string If = "If";
+        public const string WhenNotNull = "WhenNotNull";
+        public const string Either = "Either";
     }
 
     public static class Enums
