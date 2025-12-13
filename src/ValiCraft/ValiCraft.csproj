@@ -4,6 +4,7 @@
         <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
     
     <PropertyGroup>
@@ -13,6 +14,7 @@
         <Version>0.11.0</Version>
         <Authors>Hayden Quinn</Authors>
         <Company>hquinn</Company>
+        <Copyright>Copyright © 2024-2025 Hayden Quinn</Copyright>
         <Description>A powerful, compile-time validation framework for .NET that crafts fast and boilerplate-free validation logic.</Description>
         <PackageTags>validation;source-generator;fluent;fast;roslyn;valicraft</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -20,10 +22,22 @@
         <RepositoryUrl>https://github.com/hquinn/ValiCraft</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageReleaseNotes>See https://github.com/hquinn/ValiCraft/blob/main/CHANGELOG.md for release notes.</PackageReleaseNotes>
+        
+        <!-- SourceLink settings for debugging into source -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>
         <None Include="../../README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <!-- SourceLink for GitHub -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>

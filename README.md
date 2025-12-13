@@ -1,5 +1,9 @@
 # ValiCraft
 
+[![NuGet](https://img.shields.io/nuget/v/ValiCraft.svg)](https://www.nuget.org/packages/ValiCraft/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/ValiCraft.svg)](https://www.nuget.org/packages/ValiCraft/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A powerful, compile-time validation framework for .NET that crafts fast and boilerplate-free validation logic using source generators.
 
 ## Why ValiCraft?
