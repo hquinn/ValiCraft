@@ -17,7 +17,8 @@ public enum RuleChainKind
     Collection,
     CollectionValidateWith,
     WithOnFailure,
-    If
+    If,
+    Either
 }
 
 public static class RuleChainFactory
@@ -45,7 +46,8 @@ public static class RuleChainFactory
             [RuleChainKind.Collection] = new CollectionRuleChainFactory(),
             [RuleChainKind.CollectionValidateWith] = new CollectionValidateWithRuleChainFactory(),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
-            [RuleChainKind.If] = new IfRuleChainFactory()
+            [RuleChainKind.If] = new IfRuleChainFactory(),
+            [RuleChainKind.Either] = new EitherRuleChainFactory()
         };
     }
     
@@ -185,6 +187,7 @@ public static class RuleChainFactory
                 : RuleChainKind.Collection,
             KnownNames.Methods.WithOnFailure => RuleChainKind.WithOnFailure,
             KnownNames.Methods.If => RuleChainKind.If,
+            KnownNames.Methods.Either => RuleChainKind.Either,
             _ => null
         };
     }
@@ -199,7 +202,7 @@ public static class RuleChainFactory
         validationObject = null;
         validationTarget = null;
 
-        if (ruleChainKind is RuleChainKind.WithOnFailure or RuleChainKind.If)
+        if (ruleChainKind is RuleChainKind.WithOnFailure or RuleChainKind.If or RuleChainKind.Either)
         {
             return GetValidationTargetFromBuilder(
                 startingChainInvocation,
