@@ -204,7 +204,62 @@ builder.EnsureEach(x => x.Tags, tagBuilder =>
 #### Nested Object Validation
 ```csharp
 // Validate with another validator
-builder.EnsureValidateWith(x => x.Address, new AddressValidator());
+builder.Ensure(x => x.Address)
+    .ValidateWith(new AddressValidator());
+```
+
+#### WhenNotNull - Optional Property Validation
+```csharp
+// Only validate if the value is not null
+builder.Ensure(x => x.OptionalEmail)
+    .WhenNotNull()
+    .IsEmailAddress()
+    .HasMaxLength(255);
+```
+
+#### Either - OR-Based Validation
+```csharp
+// At least one of these validation groups must pass
+builder.Either(
+    b => b.Ensure(x => x.Email).IsNotNullOrEmpty(),
+    b => b.Ensure(x => x.Phone).IsNotNullOrEmpty()
+);
+```
+
+#### Date/Time Validation with Testability
+```csharp
+// Use parameterized date checks for testable validation
+builder.Ensure(x => x.ExpiryDate)
+    .IsAfter(DateTime.UtcNow);
+
+// Or use reference dates for testing
+var referenceDate = new DateTime(2024, 1, 1);
+builder.Ensure(x => x.StartDate)
+    .IsAfter(referenceDate);
+```
+
+#### Regex Validation
+```csharp
+// Using string pattern
+builder.Ensure(x => x.PostalCode)
+    .Matches(@"^\d{5}(-\d{4})?$");
+
+// Using pre-compiled Regex for better performance
+private static readonly Regex PostalCodeRegex = new(@"^\d{5}(-\d{4})?$", RegexOptions.Compiled);
+
+builder.Ensure(x => x.PostalCode)
+    .MatchesRegex(PostalCodeRegex);
+```
+
+#### Convenient IsIn/IsNotIn with Multiple Values
+```csharp
+// Check if value is one of allowed values
+builder.Ensure(x => x.Status)
+    .IsInValues("Active", "Pending", "Closed");
+
+// Check if value is not one of forbidden values
+builder.Ensure(x => x.Role)
+    .IsNotInValues("Admin", "SuperUser");
 ```
 
 ## Creating Custom Validation Rules
