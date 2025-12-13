@@ -1,14 +1,21 @@
 namespace ValiCraft.BuilderTypes;
 
 /// <summary>
-/// Async builder type returned after setting a message with <c>WithMessage()</c>.
-/// Allows further configuration of target names and error codes.
+/// Async builder type returned after setting a severity with <c>WithSeverity()</c>.
+/// Allows further configuration of messages, target names, and error codes.
 /// </summary>
 /// <typeparam name="TRequest">The type of the object being validated.</typeparam>
 /// <typeparam name="TTarget">The type of the property being validated.</typeparam>
-public interface IAsyncWithMessageBuilderType<TRequest, TTarget> : IAsyncBuilderType<TRequest, TTarget>
+public interface IAsyncWithSeverityBuilderType<TRequest, TTarget> : IAsyncBuilderType<TRequest, TTarget>
     where TRequest : class
 {
+    /// <summary>
+    /// Sets a custom error message for the validation rule.
+    /// </summary>
+    /// <param name="message">The error message, optionally containing placeholders.</param>
+    /// <returns>A builder for further configuration.</returns>
+    IAsyncWithMessageBuilderType<TRequest, TTarget> WithMessage(string message);
+
     /// <summary>
     /// Sets a custom display name for the validated property in error messages.
     /// </summary>
@@ -22,11 +29,4 @@ public interface IAsyncWithMessageBuilderType<TRequest, TTarget> : IAsyncBuilder
     /// <param name="errorCode">The error code identifier.</param>
     /// <returns>A builder for further configuration.</returns>
     IAsyncWithErrorCodeBuilderType<TRequest, TTarget> WithErrorCode(string errorCode);
-
-    /// <summary>
-    /// Sets the severity level for the validation error.
-    /// </summary>
-    /// <param name="severity">The severity level (Info, Warning, or Error).</param>
-    /// <returns>A builder for further configuration.</returns>
-    IAsyncWithSeverityBuilderType<TRequest, TTarget> WithSeverity(ErrorSeverity severity);
 }

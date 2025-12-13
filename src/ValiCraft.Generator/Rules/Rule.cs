@@ -67,13 +67,43 @@ public abstract record Rule(
                  {{indent}}    {
                  {{indent}}        Code = {{GetErrorCode(validationRuleInvocation)}},
                  {{indent}}        Message = {{GetErrorMessage(requestName, target, targetNameInfo)}},
-                 {{indent}}        Severity = {{errorSeverity}}.Error,
+                 {{indent}}        Severity = {{GetSeverity(errorSeverity)}},
                  {{indent}}        TargetName = "{{targetNameInfo.Value}}",
                  {{indent}}        TargetPath = {{targetPath}},
                  {{indent}}        AttemptedValue = {{targetAccess}},
                  {{indent}}    });
                  {{GetGotoLabelIfNeeded(indent, context)}}{{indent}}}
                  """;
+    }
+
+    private string GetSeverity(string errorSeverityType)
+    {
+        if (RuleOverrides.OverrideSeverity is not null)
+        {
+            var severityInfo = RuleOverrides.OverrideSeverity;
+            
+            // If it's a literal value (e.g., directly written enum), extract the enum member name
+            if (severityInfo.IsLiteral)
+            {
+                // For literals like "Warning", prepend the type
+                return $"{errorSeverityType}.{severityInfo.Value}";
+            }
+            
+            // It's an expression (e.g., ErrorSeverity.Warning, config.Severity, SomeClass.DefaultSeverity)
+            var severity = severityInfo.Value;
+            
+            // If it contains "ErrorSeverity.", replace with the global type for consistency
+            if (severity.Contains("ErrorSeverity."))
+            {
+                var value = severity.Substring(severity.LastIndexOf('.') + 1);
+                return $"{errorSeverityType}.{value}";
+            }
+            
+            // Otherwise, use the expression as-is (for config properties, constants, etc.)
+            return severity;
+        }
+        
+        return $"{errorSeverityType}.Error";
     }
 
     private static string GetGotoLabelIfNeeded(IndentModel indent, RuleChainContext context)

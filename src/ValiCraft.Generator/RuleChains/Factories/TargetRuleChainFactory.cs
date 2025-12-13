@@ -149,6 +149,13 @@ public class TargetRuleChainFactory : IRuleChainFactory
                 }
     
                 return true;
+            case "WithSeverity":
+                if (argumentExpression is not null)
+                {
+                    ruleBuilder?.WithSeverity(MessageInfo.CreateFromExpression(argumentExpression));
+                }
+    
+                return true;
             case "If":
                 if (argumentExpression is not null)
                 {

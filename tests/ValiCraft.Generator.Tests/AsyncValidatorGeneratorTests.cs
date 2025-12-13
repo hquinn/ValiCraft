@@ -1088,4 +1088,95 @@ public class AsyncValidatorGeneratorTests : IncrementalGeneratorTestBase<ValiCra
     }
 
     #endregion
+
+    #region WithSeverity
+
+    /// <summary>
+    /// Tests WithSeverity configuration with async validators.
+    /// </summary>
+    [Fact]
+    public void ShouldGenerateAsyncValidator_WithSeverity()
+    {
+        const string inputValidator = """
+                                      using System;
+                                      using System.Threading;
+                                      using System.Threading.Tasks;
+                                      using Test.Requests;
+                                      using ValiCraft;
+                                      using ValiCraft.Attributes;
+                                      using ValiCraft.BuilderTypes;
+                                      
+                                      namespace Test.Validators;
+                                      
+                                      [GenerateAsyncValidator]
+                                      public partial class UserValidator : AsyncValidator<User>
+                                      {
+                                          protected override void DefineRules(IAsyncValidationRuleBuilder<User> builder)
+                                          {
+                                              builder.Ensure(x => x.Email)
+                                                  .Must(email => !string.IsNullOrEmpty(email))
+                                                  .WithSeverity(ErrorSeverity.Warning);
+                                                  
+                                              builder.Ensure(x => x.Name)
+                                                  .Must(name => !string.IsNullOrWhiteSpace(name))
+                                                  .WithSeverity(ErrorSeverity.Info)
+                                                  .WithMessage("Name is recommended");
+                                          }
+                                      }
+                                      """;
+
+        AssertGenerator(
+            errorCodePrefix: "VALC",
+            additionalMetadataReferences: [typeof(AsyncValidator<>), typeof(Result<,>)],
+            trackingSteps: [TrackingSteps.AsyncValidatorResultTrackingName],
+            inputs: [InputRequests, inputValidator],
+            outputs: null,
+            diagnostics: [],
+            assertTrackingSteps: true);
+    }
+
+    /// <summary>
+    /// Tests WithSeverity combined with MustAsync.
+    /// </summary>
+    [Fact]
+    public void ShouldGenerateAsyncValidator_WithSeverityOnMustAsync()
+    {
+        const string inputValidator = """
+                                      using System;
+                                      using System.Threading;
+                                      using System.Threading.Tasks;
+                                      using Test.Requests;
+                                      using ValiCraft;
+                                      using ValiCraft.Attributes;
+                                      using ValiCraft.BuilderTypes;
+                                      
+                                      namespace Test.Validators;
+                                      
+                                      [GenerateAsyncValidator]
+                                      public partial class UserValidator : AsyncValidator<User>
+                                      {
+                                          protected override void DefineRules(IAsyncValidationRuleBuilder<User> builder)
+                                          {
+                                              builder.Ensure(x => x.Email)
+                                                  .MustAsync(async (email, ct) => await CheckEmailAsync(email, ct))
+                                                  .WithMessage("Email should be unique")
+                                                  .WithSeverity(ErrorSeverity.Warning);
+                                          }
+                                          
+                                          private static Task<bool> CheckEmailAsync(string? email, CancellationToken ct)
+                                              => Task.FromResult(!string.IsNullOrEmpty(email));
+                                      }
+                                      """;
+
+        AssertGenerator(
+            errorCodePrefix: "VALC",
+            additionalMetadataReferences: [typeof(AsyncValidator<>), typeof(Result<,>)],
+            trackingSteps: [TrackingSteps.AsyncValidatorResultTrackingName],
+            inputs: [InputRequests, inputValidator],
+            outputs: null,
+            diagnostics: [],
+            assertTrackingSteps: true);
+    }
+
+    #endregion
 }

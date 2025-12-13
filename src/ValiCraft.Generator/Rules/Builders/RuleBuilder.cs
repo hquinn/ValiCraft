@@ -10,6 +10,7 @@ public abstract class RuleBuilder
     private MessageInfo? _errorCode;
     private MessageInfo? _message;
     private MessageInfo? _targetName;
+    private MessageInfo? _severity;
     private IfConditionModel? _ifCondition;
     protected IfConditionModel IfCondition => _ifCondition ?? new BlankIfConditionModel(false);
 
@@ -28,6 +29,11 @@ public abstract class RuleBuilder
         _targetName = targetName;
     }
 
+    public void WithSeverity(MessageInfo? severity)
+    {
+        _severity = severity;
+    }
+
     public void WithCondition(InvocationExpressionSyntax invocation)
     {
         var ifConditionModel = IfConditionFactory.Create(invocation, false);
@@ -40,7 +46,7 @@ public abstract class RuleBuilder
 
     protected RuleOverrideData GetRuleOverrideData()
     {
-        return new RuleOverrideData(_message, _targetName, _errorCode);
+        return new RuleOverrideData(_message, _targetName, _errorCode, _severity);
     }
 
     public abstract Rule Build();

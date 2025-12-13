@@ -1,12 +1,12 @@
 namespace ValiCraft.BuilderTypes;
 
 /// <summary>
-/// Builder type returned after setting an error code with <c>WithErrorCode()</c>.
-/// Allows further configuration of messages and target names.
+/// Builder type returned after setting a severity with <c>WithSeverity()</c>.
+/// Allows further configuration of messages, target names, and error codes.
 /// </summary>
 /// <typeparam name="TRequest">The type of the object being validated.</typeparam>
 /// <typeparam name="TTarget">The type of the property being validated.</typeparam>
-public interface IWithErrorCodeBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
+public interface IWithSeverityBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
     where TRequest : class
 {
     /// <summary>
@@ -24,9 +24,9 @@ public interface IWithErrorCodeBuilderType<TRequest, TTarget> : IBuilderType<TRe
     IWithTargetNameBuilderType<TRequest, TTarget> WithTargetName(string targetName);
 
     /// <summary>
-    /// Sets the severity level for the validation error.
+    /// Sets a custom error code for programmatic error handling.
     /// </summary>
-    /// <param name="severity">The severity level (Info, Warning, or Error).</param>
+    /// <param name="errorCode">The error code identifier.</param>
     /// <returns>A builder for further configuration.</returns>
-    IWithSeverityBuilderType<TRequest, TTarget> WithSeverity(ErrorSeverity severity);
+    IWithErrorCodeBuilderType<TRequest, TTarget> WithErrorCode(string errorCode);
 }

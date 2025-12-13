@@ -198,6 +198,22 @@ builder.Ensure(x => x.Email)
     .WithErrorCode("EMAIL_INVALID");
 ```
 
+#### Error Severity
+Set the severity level of validation errors:
+```csharp
+builder.Ensure(x => x.Email)
+    .IsEmailAddress()
+    .WithSeverity(ErrorSeverity.Error);      // Default severity
+
+builder.Ensure(x => x.Nickname)
+    .HasMaxLength(20)
+    .WithSeverity(ErrorSeverity.Warning);    // Non-blocking warning
+
+builder.Ensure(x => x.ProfilePicture)
+    .IsNotNull()
+    .WithSeverity(ErrorSeverity.Info);       // Informational message
+```
+
 #### Failure Modes
 ```csharp
 // Stop validating this property on first failure

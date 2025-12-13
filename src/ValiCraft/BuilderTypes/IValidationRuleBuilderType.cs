@@ -41,6 +41,13 @@ public interface IValidationRuleBuilderType<TRequest, TTarget> : IBuilderType<TR
     IWithErrorCodeBuilderType<TRequest, TTarget> WithErrorCode(string errorCode);
 
     /// <summary>
+    /// Sets the severity level for the validation error.
+    /// </summary>
+    /// <param name="severity">The severity level (Info, Warning, or Error).</param>
+    /// <returns>A builder for further configuration.</returns>
+    IWithSeverityBuilderType<TRequest, TTarget> WithSeverity(ErrorSeverity severity);
+
+    /// <summary>
     /// Applies a condition that must be met for the validation rule to execute.
     /// </summary>
     /// <param name="condition">A predicate that returns <c>true</c> if the rule should be applied.</param>

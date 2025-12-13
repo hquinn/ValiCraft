@@ -22,4 +22,11 @@ public interface IWithTargetNameBuilderType<TRequest, TTarget> : IBuilderType<TR
     /// <param name="errorCode">The error code identifier.</param>
     /// <returns>A builder for further configuration.</returns>
     IWithErrorCodeBuilderType<TRequest, TTarget> WithErrorCode(string errorCode);
+
+    /// <summary>
+    /// Sets the severity level for the validation error.
+    /// </summary>
+    /// <param name="severity">The severity level (Info, Warning, or Error).</param>
+    /// <returns>A builder for further configuration.</returns>
+    IWithSeverityBuilderType<TRequest, TTarget> WithSeverity(ErrorSeverity severity);
 }

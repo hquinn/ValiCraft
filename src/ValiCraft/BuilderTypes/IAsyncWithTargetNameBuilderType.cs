@@ -22,4 +22,11 @@ public interface IAsyncWithTargetNameBuilderType<TRequest, TTarget> : IAsyncBuil
     /// <param name="errorCode">The error code identifier.</param>
     /// <returns>A builder for further configuration.</returns>
     IAsyncWithErrorCodeBuilderType<TRequest, TTarget> WithErrorCode(string errorCode);
+
+    /// <summary>
+    /// Sets the severity level for the validation error.
+    /// </summary>
+    /// <param name="severity">The severity level (Info, Warning, or Error).</param>
+    /// <returns>A builder for further configuration.</returns>
+    IAsyncWithSeverityBuilderType<TRequest, TTarget> WithSeverity(ErrorSeverity severity);
 }
