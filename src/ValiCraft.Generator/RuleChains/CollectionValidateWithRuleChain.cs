@@ -33,7 +33,7 @@ public record CollectionValidateWithRuleChain(
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
         var itemRequestName = GetItemRequestParameterName();
         
-        // A little hacky with the assigned errors, but it's a quick fix to get uniqueness.
+        // Use a unique variable name suffix (counter) to avoid conflicts when multiple ValidateWith calls exist
         var code = $$"""
                      {{Indent}}var {{index}} = 0;
                      {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})

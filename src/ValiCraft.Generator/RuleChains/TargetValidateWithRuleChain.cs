@@ -32,7 +32,7 @@ public record TargetValidateWithRuleChain(
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
         
-        // A little hacky with the assigned errors, but it's a quick fix to get uniqueness.
+        // Use a unique variable name suffix (counter) to avoid conflicts when multiple ValidateWith calls exist
         var code = $$"""
                      {{Indent}}var errors{{context.Counter}} = {{ValidatorExpression}}.ValidateToList({{requestAccessor}}, $"{inheritedTargetPath}{{Target.TargetPath.Value}}.");
                      {{Indent}}{{context.GetIfElseIfKeyword()}} (errors{{context.Counter}}.Count != 0)
