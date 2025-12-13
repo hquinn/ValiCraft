@@ -34,13 +34,27 @@ public record WeakSemanticValidationRule(
         ValidationRule[] validRules,
         SourceProductionContext context)
     {
-        var matchedValidationRule = MapToValidationRule(target, validRules);
+        var (matchedValidationRule, typeMismatchInfo) = MapToValidationRule(target, validRules);
 
         if (matchedValidationRule is null)
         {
-            var diagnostics =
-                DefinedDiagnostics.UnrecognizableRuleInvocation(Location.ToLocation());
-            context.ReportDiagnostic(diagnostics.CreateDiagnostic());
+            // If we found rules with the same name but types didn't match, provide a better error
+            if (typeMismatchInfo is not null)
+            {
+                var diagnostics = DefinedDiagnostics.TypeMismatchForValidationRule(
+                    MethodName,
+                    typeMismatchInfo.Value.ExpectedType,
+                    typeMismatchInfo.Value.ActualType,
+                    typeMismatchInfo.Value.Suggestion,
+                    Location.ToLocation());
+                context.ReportDiagnostic(diagnostics.CreateDiagnostic());
+            }
+            else
+            {
+                var diagnostics =
+                    DefinedDiagnostics.UnrecognizableRuleInvocation(Location.ToLocation());
+                context.ReportDiagnostic(diagnostics.CreateDiagnostic());
+            }
 
             return null;
         }
@@ -48,11 +62,16 @@ public record WeakSemanticValidationRule(
         return EnrichRuleFromValidationRule(matchedValidationRule);
     }
     
-    private ValidationRule? MapToValidationRule(ValidationTarget target, ValidationRule[] validRules)
+    private record struct TypeMismatchInfo(string ExpectedType, string ActualType, string? Suggestion);
+    
+    private (ValidationRule? Rule, TypeMismatchInfo? TypeMismatch) MapToValidationRule(ValidationTarget target, ValidationRule[] validRules)
     {
         ValidationRule? bestMatchedRule = null;
+        TypeMismatchInfo? typeMismatchInfo = null;
 
-        foreach (var validRule in validRules.Where(x => x.NameForExtensionMethod == MethodName))
+        var matchingNameRules = validRules.Where(x => x.NameForExtensionMethod == MethodName).ToList();
+        
+        foreach (var validRule in matchingNameRules)
         {
             var argumentTypes = Arguments.Select(x => x.Type).Prepend(target.Type).ToEquatableImmutableArray();
             // We skip the first parameter as this will always be the property type
@@ -62,7 +81,7 @@ public record WeakSemanticValidationRule(
             // If so, we can return early
             if (matchesResult == SignatureMatching.Full)
             {
-                return validRule;
+                return (validRule, null);
             }
 
             // We may want to do some rankings in the future
@@ -73,7 +92,52 @@ public record WeakSemanticValidationRule(
             }
         }
 
-        return bestMatchedRule;
+        // If we found rules with the same name but didn't find a match, it's likely a type mismatch
+        if (bestMatchedRule is null && matchingNameRules.Count > 0)
+        {
+            var firstRule = matchingNameRules[0];
+            var expectedType = firstRule.IsValidSignature.Parameters.Count > 0 
+                ? firstRule.IsValidSignature.Parameters[0].Type.FormattedTypeName 
+                : "unknown";
+            
+            // Try to provide a helpful suggestion based on the types
+            string? suggestion = GetTypeMismatchSuggestion(target.Type.FormattedTypeName, expectedType);
+            
+            typeMismatchInfo = new TypeMismatchInfo(expectedType, target.Type.FormattedTypeName, suggestion);
+        }
+
+        return (bestMatchedRule, typeMismatchInfo);
+    }
+    
+    private static string? GetTypeMismatchSuggestion(string actualType, string expectedType)
+    {
+        // String rules applied to non-strings
+        if (expectedType.Contains("string") && !actualType.Contains("string"))
+        {
+            return "Consider using a numeric or comparison validation rule instead.";
+        }
+        
+        // Numeric rules applied to strings
+        if ((expectedType.Contains("int") || expectedType.Contains("decimal") || expectedType.Contains("double") || 
+             expectedType.Contains("float") || expectedType.Contains("long")) && actualType.Contains("string"))
+        {
+            return "Consider using a string validation rule like HasMinLength or HasMaxLength instead.";
+        }
+        
+        // DateTime rules applied to non-DateTime
+        if (expectedType.Contains("DateTime") && !actualType.Contains("DateTime"))
+        {
+            return "This rule is only valid for DateTime properties.";
+        }
+        
+        // Collection rules applied to non-collections
+        if (expectedType.Contains("IEnumerable") && !actualType.Contains("IEnumerable") && 
+            !actualType.Contains("List") && !actualType.Contains("[]"))
+        {
+            return "This rule is only valid for collection properties.";
+        }
+        
+        return null;
     }
 
     private WeakSemanticValidationRule EnrichRuleFromValidationRule(ValidationRule? matchedRule)

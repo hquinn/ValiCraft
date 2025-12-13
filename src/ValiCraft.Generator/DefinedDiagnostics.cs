@@ -166,4 +166,28 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
+
+    public static DiagnosticInfo TypeMismatchForValidationRule(
+        string ruleName,
+        string expectedType,
+        string actualType,
+        string? suggestion,
+        Location location)
+    {
+        var message = $"'{ruleName}' expects '{expectedType}' but property is of type '{actualType}'.";
+        if (!string.IsNullOrEmpty(suggestion))
+        {
+            message += $" {suggestion}";
+        }
+
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC207",
+                "Type mismatch for validation rule",
+                message,
+                "ValiCraft",
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
 }
