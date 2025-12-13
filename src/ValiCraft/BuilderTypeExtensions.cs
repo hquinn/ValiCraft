@@ -11,7 +11,7 @@ public static class BuilderTypeExtensions
         where TTarget : class
         where TValidator : IValidator<TTarget>
         => throw new NotImplementedException("Never gets called");
-    
+
     public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget, TValidator>(
         this IEnsureBuilderType<TRequest, TTarget> builder, TValidator validator)
         where TRequest : class
