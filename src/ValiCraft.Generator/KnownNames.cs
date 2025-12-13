@@ -50,7 +50,7 @@ public static class KnownNames
     public static class Enums
     {
         public const string OnFailureMode = "OnFailureMode";
-        public const string ErrorSeverity = "MonadCraft.Errors.ErrorSeverity";
+        public const string ErrorSeverity = "ValiCraft.ErrorSeverity";
     }
 
     public static class Targets

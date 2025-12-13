@@ -398,7 +398,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotNullRule<string?>),
                                                                                            Message = $"'Middle Name' must not be null.",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Middle Name",
                                                                                            TargetPath = $"{inheritedTargetPath}Customer.MiddleName",
                                                                                            AttemptedValue = request.Customer.MiddleName,
@@ -414,7 +414,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
                                                                                            Message = $"'Customer' must not be null.",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Customer",
                                                                                            TargetPath = $"{inheritedTargetPath}Customer",
                                                                                            AttemptedValue = request.Customer,
@@ -428,7 +428,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
                                                                                            Message = $"'Customer' must not be null.",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Customer",
                                                                                            TargetPath = $"{inheritedTargetPath}Customer",
                                                                                            AttemptedValue = request.Customer,
@@ -446,7 +446,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                            {
                                                                                                Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
                                                                                                Message = $"'Customer' must not be null.",
-                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                TargetName = "Customer",
                                                                                                TargetPath = $"{inheritedTargetPath}Customer",
                                                                                                AttemptedValue = request.Customer,
@@ -463,7 +463,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                            {
                                                                                                Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
                                                                                                Message = $"'Customer' must not be null.",
-                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                TargetName = "Customer",
                                                                                                TargetPath = $"{inheritedTargetPath}Customer",
                                                                                                AttemptedValue = request.Customer,
@@ -481,7 +481,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                            {
                                                                                                Code = nameof(global::Test.Rules.NotEmptyRule),
                                                                                                Message = $"'Code' must not be empty.",
-                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                TargetName = "Code",
                                                                                                TargetPath = $"{inheritedTargetPath}Discounts[{index20}].Code",
                                                                                                AttemptedValue = element.Code,
@@ -495,7 +495,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                            {
                                                                                                Code = nameof(global::Test.Rules.GreaterThanRule<decimal>),
                                                                                                Message = $"'Amount' must be greater than 5, but received {element.Amount}.",
-                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                TargetName = "Amount",
                                                                                                TargetPath = $"{inheritedTargetPath}Discounts[{index20}].Amount",
                                                                                                AttemptedValue = element.Amount,
@@ -514,7 +514,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = "Must",
                                                                                            Message = $"'Order' doesn't satisfy the condition",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Order",
                                                                                            TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
                                                                                            AttemptedValue = request,
@@ -528,7 +528,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = "Must",
                                                                                            Message = $"'Order' doesn't satisfy the condition",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Order",
                                                                                            TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
                                                                                            AttemptedValue = request,
@@ -544,7 +544,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = "Must",
                                                                                            Message = $"'Order' doesn't satisfy the condition",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Order",
                                                                                            TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
                                                                                            AttemptedValue = request,
@@ -558,7 +558,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = "Must",
                                                                                            Message = $"'Order' doesn't satisfy the condition",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Order",
                                                                                            TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
                                                                                            AttemptedValue = request,
@@ -572,7 +572,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = "CustomErrorCode",
                                                                                            Message = $"Order doesn't satisfy the condition",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Order",
                                                                                            TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
                                                                                            AttemptedValue = request,
@@ -621,7 +621,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                            {
                                                                                                Code = nameof(global::Test.Rules.NotNullRule<string>),
                                                                                                Message = $"'SKU' must not be null.",
-                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                TargetName = "SKU",
                                                                                                TargetPath = $"{inheritedTargetPath}LineItems[{index11}].SKU",
                                                                                                AttemptedValue = element.SKU,
@@ -634,7 +634,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                            {
                                                                                                Code = nameof(global::Test.Rules.NotEmptyRule),
                                                                                                Message = $"'SKU' must not be empty.",
-                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                TargetName = "SKU",
                                                                                                TargetPath = $"{inheritedTargetPath}LineItems[{index11}].SKU",
                                                                                                AttemptedValue = element.SKU,
@@ -647,7 +647,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                            {
                                                                                                Code = nameof(global::Test.Rules.GreaterThanRule<int>),
                                                                                                Message = $"'Quantity' must be greater than 0, but received {element.Quantity}.",
-                                                                                               Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                TargetName = "Quantity",
                                                                                                TargetPath = $"{inheritedTargetPath}LineItems[{index11}].Quantity",
                                                                                                AttemptedValue = element.Quantity,
@@ -663,7 +663,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                                {
                                                                                                    Code = nameof(global::Test.Rules.GreaterThanRule<decimal>),
                                                                                                    Message = $"'Amount' must be greater than 10, but received {subElement.Amount}.",
-                                                                                                   Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                                   Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                    TargetName = "Amount",
                                                                                                    TargetPath = $"{inheritedTargetPath}LineItems[{index11}].Discounts[{index8}].Amount",
                                                                                                    AttemptedValue = subElement.Amount,
@@ -684,7 +684,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotNullRule<string>),
                                                                                            Message = $"'Order Number' must not be null.",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Order Number",
                                                                                            TargetPath = $"{inheritedTargetPath}OrderNumber",
                                                                                            AttemptedValue = request.OrderNumber,
@@ -697,7 +697,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotEmptyRule),
                                                                                            Message = $"'Order Number' must not be empty.",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Order Number",
                                                                                            TargetPath = $"{inheritedTargetPath}OrderNumber",
                                                                                            AttemptedValue = request.OrderNumber,
@@ -711,7 +711,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.LengthRule),
                                                                                            Message = $"'Order Number' must have a length of 10.",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Order Number",
                                                                                            TargetPath = $"{inheritedTargetPath}OrderNumber",
                                                                                            AttemptedValue = request.OrderNumber,
@@ -725,7 +725,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotNullRule<string?>),
                                                                                            Message = $"'ReferenceNo' needs to be assigned before proceeding",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "ReferenceNo",
                                                                                            TargetPath = $"{inheritedTargetPath}ShippingReference",
                                                                                            AttemptedValue = request.ShippingReference,
@@ -738,7 +738,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.NotEmptyRule),
                                                                                            Message = ShippingReferenceEmptyMessage.Replace("{TargetName}", "Shipping Reference").Replace("{TargetValue}", request.ShippingReference),
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Shipping Reference",
                                                                                            TargetPath = $"{inheritedTargetPath}ShippingReference",
                                                                                            AttemptedValue = request.ShippingReference,
@@ -752,7 +752,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = nameof(global::Test.Rules.GreaterThanRule<decimal>),
                                                                                            Message = $"'Order Total' must be greater than 0, but received {request.OrderTotal}.",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Order Total",
                                                                                            TargetPath = $"{inheritedTargetPath}OrderTotal",
                                                                                            AttemptedValue = request.OrderTotal,
@@ -765,7 +765,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        {
                                                                                            Code = "TotalReached",
                                                                                            Message = $"'Order Total' must be less than {OrderTotalLimit}, but received {request.OrderTotal}.",
-                                                                                           Severity = global::MonadCraft.Errors.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Order Total",
                                                                                            TargetPath = $"{inheritedTargetPath}OrderTotal",
                                                                                            AttemptedValue = request.OrderTotal,

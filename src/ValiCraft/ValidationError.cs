@@ -1,5 +1,3 @@
-using MonadCraft.Errors;
-
 namespace ValiCraft;
 
 /// <summary>
@@ -10,7 +8,6 @@ public readonly record struct ValidationError<TTarget> : IValidationError
 {
     public required string Code { get; init; }
     public required string Message { get; init; }
-    public IError? Cause { get; init; }
     public ErrorSeverity Severity { get; init; }
     public required string TargetName { get; init; }
     public required string TargetPath { get; init; }

@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using MonadCraft.Errors;
 
 namespace ValiCraft.Tests;
 
@@ -25,15 +24,11 @@ public class ValidationErrorTests
         error.TargetPath.Should().Be("Root.TestProperty");
         error.AttemptedValue.Should().Be("invalid value");
         error.Severity.Should().Be(ErrorSeverity.Info);
-        error.Cause.Should().BeNull();
     }
 
     [Fact]
     public void ValidationError_CanBeCreated_WithOptionalProperties()
     {
-        // Arrange
-        var cause = new TestError();
-
         // Act
         var error = new ValidationError<int>
         {
@@ -42,13 +37,11 @@ public class ValidationErrorTests
             TargetName = "TestProperty",
             TargetPath = "Root.TestProperty",
             AttemptedValue = 42,
-            Severity = ErrorSeverity.Warning,
-            Cause = cause
+            Severity = ErrorSeverity.Warning
         };
 
         // Assert
         error.Severity.Should().Be(ErrorSeverity.Warning);
-        error.Cause.Should().Be(cause);
     }
 
     [Fact]
@@ -188,15 +181,6 @@ public class ValidationErrorTests
         };
 
         // Assert
-        error.Should().BeAssignableTo<IError>();
-    }
-
-    private class TestError : IError
-    {
-        public string Code => "TEST_CAUSE";
-        public string Message => "Test cause";
-        public IError? Cause => null;
-        public ErrorSeverity Severity => ErrorSeverity.Error;
-        public string TargetPath => "test";
+        error.Should().BeAssignableTo<IValidationError>();
     }
 }
