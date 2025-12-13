@@ -28,6 +28,23 @@ public abstract record RuleChain(
         return true;
     }
 
+    public bool TryLinkAsyncRuleChain(
+        List<RuleChain> ruleChains,
+        AsyncValidationRule[] asyncValidRules,
+        ValidationRule[] syncValidRules,
+        SourceProductionContext context)
+    {
+        // For async validators, we can use sync rules directly
+        // Async rule support will be added incrementally
+        if (!TryLinkRuleChain(syncValidRules, context, out var ruleChain))
+        {
+            return false;
+        }
+        
+        ruleChains.Add(ruleChain);
+        return true;
+    }
+
     protected abstract bool TryLinkRuleChain(
         ValidationRule[] validRules,
         SourceProductionContext context,

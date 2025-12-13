@@ -20,8 +20,10 @@ public class LambdaParameterRewriter : CSharpSyntaxRewriter
         // If this identifier's text matches the lambda parameter's name...
         if (node.Identifier.ValueText == _parameterNameToReplace)
         {
-            // ...replace it with our placeholder syntax node.
-            return PlaceholderNode;
+            // ...replace it with our placeholder syntax node, preserving trivia (whitespace).
+            return PlaceholderNode
+                .WithLeadingTrivia(node.GetLeadingTrivia())
+                .WithTrailingTrivia(node.GetTrailingTrivia());
         }
 
         // Otherwise, continue traversing the tree without changing anything.

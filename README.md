@@ -22,7 +22,7 @@ ValiCraft uses C# source generators to transform your validation rules into high
 dotnet add package ValiCraft
 ```
 
-This will also add a dependency to `MonadCraft`, a library containing the `IError` and `Result<TError, TValue>` types.
+This will also add a dependency to `MonadCraft`, a library containing the Result<TError, TValue>` type.
 
 ## Quick Start
 
@@ -106,16 +106,33 @@ IReadOnlyList<IValidationError> errors = validator.ValidateToList(user);
 
 ValiCraft's source generator approach delivers exceptional performance compared to traditional validation libraries:
 
-| Method                              | Mean     | Allocated |
-|-------------------------------------|----------|-----------|
-| ValiCraft (Valid Model)             | ~6 ns    | 0 B       |
-| FluentValidation (Valid Model)      | ~200 ns  | 120 B     |
-| ValiCraft (Invalid Model)           | ~15 ns   | 32 B      |
-| FluentValidation (Invalid Model)    | ~450 ns  | 600 B     |
-| ValiCraft (Validator Instantiation) | ~1 ns    | 0 B       |
-| FluentValidation (Instantiation)    | ~800 ns  | 400 B     |
+| Method                           | Mean      | Error     | StdDev    | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
+|--------------------------------- |----------:|----------:|----------:|------:|--------:|-------:|----------:|------------:|
+| ValiCraft_SmallCollection        |  25.07 ns |  0.852 ns |  0.564 ns |  1.00 |    0.03 | 0.0204 |     128 B |        1.00 |
+| FluentValidation_SmallCollection | 428.81 ns | 42.833 ns | 25.489 ns | 17.11 |    1.03 | 0.1006 |     632 B |        4.94 |
+| ValiCraft_LargeCollection        |  25.46 ns |  1.263 ns |  0.835 ns |  1.02 |    0.04 | 0.0204 |     128 B |        1.00 |
+| FluentValidation_LargeCollection | 422.70 ns |  5.528 ns |  3.289 ns | 16.87 |    0.37 | 0.1006 |     632 B |        4.94 |
 
-**Note**: Benchmarks run on Apple M1 Pro, .NET 9.0. Your results may vary.
+| Method                        | Mean         | Error     | StdDev    | Ratio  | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
+|------------------------------ |-------------:|----------:|----------:|-------:|--------:|-------:|-------:|----------:|------------:|
+| ValiCraft_ValidModel          |     16.36 ns |  0.105 ns |  0.055 ns |   1.00 |    0.00 |      - |      - |         - |          NA |
+| FluentValidation_ValidModel   |  1,189.68 ns |  7.684 ns |  4.573 ns |  72.73 |    0.35 | 0.1354 |      - |     856 B |          NA |
+| ValiCraft_InvalidModel        |    282.32 ns |  4.598 ns |  2.736 ns |  17.26 |    0.17 | 0.1988 |      - |    1248 B |          NA |
+| FluentValidation_InvalidModel | 10,219.38 ns | 45.458 ns | 23.775 ns | 624.73 |    2.41 | 4.2267 | 0.1068 |   26552 B |          NA |
+
+| Method                        | Mean         | Error      | StdDev    | Ratio  | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
+|------------------------------ |-------------:|-----------:|----------:|-------:|--------:|-------:|-------:|----------:|------------:|
+| ValiCraft_ValidModel          |     5.975 ns |  0.3761 ns | 0.2488 ns |   1.00 |    0.06 |      - |      - |         - |          NA |
+| FluentValidation_ValidModel   |   382.958 ns |  1.9151 ns | 1.0017 ns |  64.19 |    2.47 | 0.1054 |      - |     664 B |          NA |
+| ValiCraft_InvalidModel        |    74.609 ns |  0.5920 ns | 0.3916 ns |  12.50 |    0.48 | 0.0650 |      - |     408 B |          NA |
+| FluentValidation_InvalidModel | 2,527.574 ns | 11.1362 ns | 5.8244 ns | 423.63 |   16.29 | 1.0948 | 0.0076 |    6880 B |          NA |
+
+| Method                                          | Mean          | Error       | StdDev      | Ratio | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
+|------------------------------------------------ |--------------:|------------:|------------:|------:|--------:|-------:|-------:|----------:|------------:|
+| ValiCraft_SimpleValidator_Instantiation         |     0.0000 ns |   0.0000 ns |   0.0000 ns |     ? |       ? |      - |      - |         - |           ? |
+| FluentValidation_SimpleValidator_Instantiation  | 1,823.0625 ns |  44.1707 ns |  23.1021 ns |     ? |       ? | 1.1063 | 0.0076 |    6952 B |           ? |
+| ValiCraft_ComplexValidator_Instantiation        |     0.0000 ns |   0.0000 ns |   0.0000 ns |     ? |       ? |      - |      - |         - |           ? |
+| FluentValidation_ComplexValidator_Instantiation | 8,001.6715 ns | 786.1477 ns | 411.1705 ns |     ? |       ? | 4.0894 | 0.1221 |   26024 B |           ? |
 
 ## Features
 
@@ -291,6 +308,118 @@ Use it in your validators:
 ```csharp
 builder.Ensure(x => x.PostalCode)
     .IsValidPostalCode();
+```
+
+## Async Validators
+
+ValiCraft supports asynchronous validation for scenarios that require I/O operations like database lookups or API calls.
+
+### Creating an Async Validator
+
+```csharp
+using ValiCraft;
+using ValiCraft.Attributes;
+
+[GenerateAsyncValidator]
+public partial class UserValidator : AsyncValidator<User>
+{
+    protected override void DefineRules(IAsyncValidationRuleBuilder<User> builder)
+    {
+        // Sync rules work in async validators
+        builder.Ensure(x => x.Email)
+            .IsNotNullOrEmpty()
+            .IsEmailAddress();
+
+        // Async validation with MustAsync
+        builder.Ensure(x => x.Email)
+            .MustAsync(async (email, ct) => await IsEmailUniqueAsync(email, ct))
+            .WithMessage("Email is already in use");
+
+        builder.Ensure(x => x.Username)
+            .MustAsync(async (username, ct) => await IsUsernameAvailableAsync(username, ct))
+            .WithMessage("Username is not available")
+            .WithErrorCode("USERNAME_TAKEN");
+    }
+
+    private async Task<bool> IsEmailUniqueAsync(string? email, CancellationToken ct)
+    {
+        // Check against database, external API, etc.
+        return await _dbContext.Users.AllAsync(u => u.Email != email, ct);
+    }
+
+    private async Task<bool> IsUsernameAvailableAsync(string? username, CancellationToken ct)
+    {
+        return await _userService.IsUsernameAvailableAsync(username, ct);
+    }
+}
+```
+
+### Using Async Validators
+
+```csharp
+var validator = new UserValidator();
+
+// Async validation
+Result<IReadOnlyList<IValidationError>, User> result = 
+    await validator.ValidateAsync(user, cancellationToken);
+
+// Or get errors directly
+IReadOnlyList<IValidationError> errors = 
+    await validator.ValidateToListAsync(user, cancellationToken);
+```
+
+### MustAsync Features
+
+`MustAsync` supports all the same features as sync `Must`:
+
+```csharp
+// With custom messages and error codes
+builder.Ensure(x => x.Email)
+    .MustAsync(async (email, ct) => await CheckEmailAsync(email, ct))
+    .WithMessage("The email '{TargetValue}' is already registered")
+    .WithErrorCode("DUPLICATE_EMAIL");
+
+// Chaining multiple async rules
+builder.Ensure(x => x.Email)
+    .MustAsync(async (email, ct) => await IsValidDomainAsync(email, ct))
+    .WithMessage("Email domain is not allowed")
+    .MustAsync(async (email, ct) => await IsNotBlacklistedAsync(email, ct))
+    .WithMessage("Email is blacklisted");
+
+// Mix sync and async rules
+builder.Ensure(x => x.Email)
+    .IsNotNullOrEmpty()                    // Sync rule
+    .IsEmailAddress()                       // Sync rule  
+    .MustAsync(async (e, ct) => await IsUniqueAsync(e, ct))  // Async rule
+    .WithMessage("Email must be unique");
+```
+
+### Creating Reusable Async Validation Rules
+
+For frequently used async validations, create reusable rules:
+
+```csharp
+using ValiCraft;
+using ValiCraft.Attributes;
+
+[GenerateAsyncRuleExtension("IsUniqueEmail")]
+[DefaultMessage("'{TargetName}' is already in use")]
+[DefaultErrorCode("DUPLICATE_EMAIL")]
+public class UniqueEmailRule : IAsyncValidationRule<string?>
+{
+    public static async Task<bool> IsValidAsync(string? email, CancellationToken ct)
+    {
+        // Your async validation logic
+        return await EmailService.IsUniqueAsync(email, ct);
+    }
+}
+```
+
+Use it in your async validators:
+
+```csharp
+builder.Ensure(x => x.Email)
+    .IsUniqueEmail();  // Generated extension method
 ```
 
 ## How It Works

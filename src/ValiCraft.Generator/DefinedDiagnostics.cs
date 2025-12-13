@@ -190,4 +190,43 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
+
+    public static DiagnosticInfo MissingAsyncValidatorBaseClass(Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC301",
+                "Missing AsyncValidator base class",
+                "Missing AsyncValidator base class on validator marked with [GenerateAsyncValidator]",
+                "ValiCraft",
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
+    public static DiagnosticInfo AsyncRuleInSyncValidator(string ruleName, Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC302",
+                "Async rule in sync validator",
+                $"'{ruleName}' is an async rule and cannot be used in a sync validator. Use [GenerateAsyncValidator] instead.",
+                "ValiCraft",
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
+    public static DiagnosticInfo MissingIAsyncValidationRuleInterface(Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC303",
+                "Missing IAsyncValidationRule interface",
+                "Missing ValiCraft.IAsyncValidationRule interface on Async Validation Rule marked with [GenerateAsyncRuleExtension]",
+                "ValiCraft",
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
 }

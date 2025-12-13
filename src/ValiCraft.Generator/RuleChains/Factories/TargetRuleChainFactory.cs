@@ -81,12 +81,28 @@ public class TargetRuleChainFactory : IRuleChainFactory
             {
                 case LambdaExpressionSyntax { Body: IsPatternExpressionSyntax or BinaryExpressionSyntax } patternLambda:
                     return PatternLambdaMustRuleBuilder.Create(invocation, patternLambda);
+                case LambdaExpressionSyntax { Body: PrefixUnaryExpressionSyntax } prefixUnaryLambda:
+                    return PatternLambdaMustRuleBuilder.Create(invocation, prefixUnaryLambda);
                 case LambdaExpressionSyntax { Body: BlockSyntax } blockLambda:
                     return BlockLambdaMustRuleBuilder.Create(invocation, blockLambda);
                 case LambdaExpressionSyntax { Body: InvocationExpressionSyntax } invocationLambda:
                     return InvocationLambdaMustRuleBuilder.Create(invocation, invocationLambda);
                 case IdentifierNameSyntax identifierNameSyntax:
                     return IdentifierNameMustRuleBuilder.Create(invocation, identifierNameSyntax);
+            }
+        }
+
+        // Handle MustAsync for async validators - similar to Must but with async lambda handling
+        if (memberName == "MustAsync" &&
+            invocation.ArgumentList.Arguments.Count == 1 &&
+            argumentExpression is LambdaExpressionSyntax asyncLambda)
+        {
+            // MustAsync expects lambdas like: async (value, ct) => await SomeAsyncMethod(value, ct)
+            // The lambda body can be an await expression or a direct invocation returning Task<bool>
+            var builder = AsyncInvocationLambdaMustAsyncRuleBuilder.Create(invocation, asyncLambda);
+            if (builder is not null)
+            {
+                return builder;
             }
         }
     
