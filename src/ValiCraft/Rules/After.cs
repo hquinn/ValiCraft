@@ -1,0 +1,18 @@
+using ValiCraft.Attributes;
+
+namespace ValiCraft.Rules;
+
+/// <summary>
+/// Validates that a DateTime value is in the future (after the specified reference time).
+/// This allows for testable date validation by providing a reference point.
+/// </summary>
+[GenerateRuleExtension("IsAfter")]
+[DefaultMessage("{TargetName} must be after {ReferenceDate}")]
+[RulePlaceholder("{ReferenceDate}", "referenceDate")]
+public class After : IValidationRule<DateTime, DateTime>
+{
+    public static bool IsValid(DateTime targetValue, DateTime referenceDate)
+    {
+        return targetValue > referenceDate;
+    }
+}
