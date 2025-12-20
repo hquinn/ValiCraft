@@ -22,14 +22,23 @@ public class ValiCraftGenerator : IIncrementalGenerator
             .ForAttributeWithMetadataName(
                 KnownNames.Attributes.GenerateValidatorAttribute,
                 ValidatorSyntaxProvider.Predicate,
-                ValidatorSyntaxProvider.Transform)
+                ValidatorSyntaxProvider.TransformSync)
+            .WithTrackingName(TrackingSteps.ValidatorResultTrackingName);
+
+        // Async validators
+        var asyncValidatorsValuesProvider = context.SyntaxProvider
+            .ForAttributeWithMetadataName(
+                KnownNames.Attributes.AsyncGenerateValidatorAttribute,
+                ValidatorSyntaxProvider.Predicate,
+                ValidatorSyntaxProvider.TransformAsync)
             .WithTrackingName(TrackingSteps.ValidatorResultTrackingName);
 
         var allSyncValidationRulesProvider = syncValidationRulesValuesProvider.Collect();
-        
         var allSyncValidatorProvider = syncValidatorsValuesProvider.Collect();
+        var allAsyncValidatorProvider = asyncValidatorsValuesProvider.Collect();
         
         var syncCombinedProvider = allSyncValidationRulesProvider.Combine(allSyncValidatorProvider);
+        var asyncCombinedProvider = allSyncValidationRulesProvider.Combine(allAsyncValidatorProvider);
 
         // Emit sync validation rule extensions
         context.RegisterSourceOutput(
@@ -42,7 +51,16 @@ public class ValiCraftGenerator : IIncrementalGenerator
             static (spc, source) =>
             {
                 var (allValidationRules, allValidators) = source;
-                ValidatorSourceProvider.EmitSourceCode(allValidationRules, allValidators, spc);
+                ValidatorSourceProvider.EmitSourceCode(false, allValidationRules, allValidators, spc);
+            });
+        
+        // Emit async validators
+        context.RegisterSourceOutput(
+            asyncCombinedProvider,
+            static (spc, source) =>
+            {
+                var (allValidationRules, allValidators) = source;
+                ValidatorSourceProvider.EmitSourceCode(true, allValidationRules, allValidators, spc);
             });
     }
 }

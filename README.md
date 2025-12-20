@@ -171,6 +171,40 @@ ValiCraft includes 50+ built-in validation rules:
 
 ### Advanced Features
 
+#### Async Validation
+ValiCraft supports fully asynchronous validators and rules.
+
+```csharp
+using ValiCraft;
+using ValiCraft.Attributes;
+
+[AsyncGenerateValidator]
+public partial class AsyncUserValidator : AsyncValidator<User>
+{
+    protected override void DefineRules(IAsyncValidationRuleBuilder<User> builder)
+    {
+        builder.Ensure(x => x.Username)
+            .IsNotNullOrWhiteSpace()
+            .HasMinLength(3)
+            // Custom async predicate
+            .MustAsync(async (value, ct) => await IsUserNameAvailable(value, ct))
+            .WithMessage("Username is already taken");
+
+        builder.EnsureEach(x => x.Posts, post =>
+            post.Ensure(p => p.Title).IsNotNullOrWhiteSpace());
+    }
+}
+
+// Usage
+var validator = new AsyncUserValidator();
+IReadOnlyList<IValidationError> errors = await validator.ValidateToListAsync(user, cancellationToken);
+```
+
+Notes:
+- Use `[AsyncGenerateValidator]` + `AsyncValidator<T>` + `IAsyncValidationRuleBuilder<T>` for async.
+- Async counterparts are provided where applicable (e.g., `MustAsync(...)`, `ValidateToListAsync(...)`).
+- You can mix sync and async rules inside async validators.
+
 #### Conditional Validation
 ```csharp
 builder.Ensure(x => x.PhoneNumber)
@@ -239,10 +273,16 @@ builder.EnsureEach(x => x.Tags, tagBuilder =>
 ```
 
 #### Nested Object Validation
+Delegate to other validators for rich composition.
+
 ```csharp
-// Validate with another validator
+// Single object
 builder.Ensure(x => x.Address)
     .ValidateWith(new AddressValidator());
+
+// For collections (per-item)
+builder.EnsureEach(x => x.Orders, order =>
+    order.ValidateWith(new OrderValidator()));
 ```
 
 #### WhenNotNull - Optional Property Validation
@@ -286,6 +326,16 @@ private static readonly Regex PostalCodeRegex = new(@"^\d{5}(-\d{4})?$", RegexOp
 
 builder.Ensure(x => x.PostalCode)
     .MatchesRegex(PostalCodeRegex);
+```
+
+#### Custom Comparers
+Pass custom comparers for equality/uniqueness checks.
+```csharp
+builder.Ensure(x => x.Items)
+    .IsUniqueWithComparer(new MyItemComparer());
+
+builder.Ensure(x => x.Code)
+    .IsEqualWithComparer(otherCode, StringComparer.OrdinalIgnoreCase);
 ```
 
 #### Convenient IsIn/IsNotIn with Multiple Values
@@ -335,6 +385,13 @@ ValiCraft uses C# Source Generators to analyze your validator definitions at com
 4. **Type-Safe**: Compilation errors if validation rules don't match your types
 
 The generated code is pure C#, highly optimized, and produces minimal allocations.
+
+### Generator Diagnostics
+ValiCraft emits clear diagnostics at compile time when rules are misused or ambiguous. Examples include:
+- `VALC203`: issues around `Must/MustAsync` lambda forms
+- `VALC204`: invalid rule chain usage for a target type
+
+These diagnostics help you catch issues early with exact source locations and suggested fixes in messages.
 
 ## Requirements
 

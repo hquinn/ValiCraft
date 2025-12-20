@@ -10,12 +10,13 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.RuleChains;
 
 public record IfRuleChain(
+    bool IsAsync,
     ValidationTarget Object,
     int Depth,
     IndentModel Indent,
     int NumberOfRules,
     IfConditionModel IfCondition,
-    EquatableArray<RuleChain> ChildRuleChains) : RuleChain(Object, null, Depth, Indent, NumberOfRules, null)
+    EquatableArray<RuleChain> ChildRuleChains) : RuleChain(IsAsync, Object, null, Depth, Indent, NumberOfRules, null)
 {
     protected override bool TryLinkRuleChain(
         ValidationRule[] validRules,

@@ -14,4 +14,14 @@ public static class LambdaExpressionSyntaxExtensions
             _ => "_"
         };
     }
+
+    public static string? GetSecondParameterName(this LambdaExpressionSyntax lambda)
+    {
+        return lambda switch
+        {
+            ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters.Count: >= 2 } parenthesizedLambda =>
+                parenthesizedLambda.ParameterList.Parameters[1].Identifier.ValueText,
+            _ => null
+        };
+    }
 }

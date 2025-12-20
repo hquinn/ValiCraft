@@ -5,12 +5,13 @@ using ValiCraft.Generator.RuleChains.Context;
 namespace ValiCraft.Generator.RuleChains;
 
 public record CollectionValidateWithRuleChain(
+    bool IsAsync,
     ValidationTarget Object,
     ValidationTarget Target,
     int Depth,
     IndentModel Indent,
     OnFailureMode? FailureMode,
-    string ValidatorExpression) : RuleChain(Object, Target, Depth, Indent, 1, FailureMode)
+    string ValidatorExpression) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
     protected override bool TryLinkRuleChain(
         ValidationRule[] validRules,

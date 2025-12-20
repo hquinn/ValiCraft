@@ -2,38 +2,74 @@ namespace ValiCraft.Generator;
 
 public static class KnownNames
 {
-    public static class Attributes
+    public static class Namespaces
     {
-        public const string DefaultMessageAttribute = "ValiCraft.Attributes.DefaultMessageAttribute";
-        public const string DefaultMessage = "ValiCraft.Attributes.DefaultMessage";
-        public const string DefaultErrorCodeAttribute = "ValiCraft.Attributes.DefaultErrorCodeAttribute";
-        public const string DefaultErrorCode = "ValiCraft.Attributes.DefaultErrorCode";
-        public const string GenerateRuleExtensionAttribute = "ValiCraft.Attributes.GenerateRuleExtensionAttribute";
-        public const string GenerateValidatorAttribute = "ValiCraft.Attributes.GenerateValidatorAttribute";
-        public const string MapToValidationRuleAttribute = "ValiCraft.Attributes.MapToValidationRuleAttribute";
-        public const string MapToValidationRule = "ValiCraft.Attributes.MapToValidationRule";
-        public const string RulePlaceholderAttribute = "ValiCraft.Attributes.RulePlaceholderAttribute";
-        public const string RulePlaceholder = "ValiCraft.Attributes.RulePlaceholder";
+        public const string Base = "ValiCraft";
+        public const string Attributes =  $"{Base}.Attributes";
+        public const string BuilderTypes =  $"{Base}.BuilderTypes";
+        public const string AsyncBuilderTypes =  $"{Base}.AsyncBuilderTypes";
+        public const string MonadCraft = "MonadCraft";
     }
 
+    public static class AttributeNames
+    {
+        public const string GenerateValidator = "GenerateValidator";
+        public const string AsyncGenerateValidator = "AsyncGenerateValidator";
+    }
+    
+    public static class Attributes
+    {
+        public const string DefaultMessageAttribute = $"{Namespaces.Attributes}.DefaultMessageAttribute";
+        public const string DefaultMessage = $"{Namespaces.Attributes}.DefaultMessage";
+        public const string DefaultErrorCodeAttribute = $"{Namespaces.Attributes}.DefaultErrorCodeAttribute";
+        public const string DefaultErrorCode = $"{Namespaces.Attributes}.DefaultErrorCode";
+        public const string GenerateRuleExtensionAttribute = $"{Namespaces.Attributes}.GenerateRuleExtensionAttribute";
+        public const string GenerateValidatorAttribute = $"{Namespaces.Attributes}.{AttributeNames.GenerateValidator}Attribute";
+        public const string AsyncGenerateValidatorAttribute = $"{Namespaces.Attributes}.{AttributeNames.AsyncGenerateValidator}Attribute";
+        public const string MapToValidationRuleAttribute = $"{Namespaces.Attributes}.MapToValidationRuleAttribute";
+        public const string MapToValidationRule = $"{Namespaces.Attributes}.MapToValidationRule";
+        public const string RulePlaceholderAttribute = $"{Namespaces.Attributes}.RulePlaceholderAttribute";
+        public const string RulePlaceholder = $"{Namespaces.Attributes}.RulePlaceholder";
+    }
+
+    public static class ClassNames
+    {
+        public const string Validator = "Validator";
+        public const string AsyncValidator = "AsyncValidator";
+    }
+    
     public static class Classes
     {
-        public const string Validator = "ValiCraft.Validator";
+        public const string Validator = $"{Namespaces.Base}.{ClassNames.Validator}";
+        public const string AsyncValidator = $"{Namespaces.Base}.{ClassNames.AsyncValidator}";
     }
 
     public static class Types
     {
-        public const string Result = "MonadCraft.Result";
-        public const string ValidationError = "ValiCraft.ValidationError";
+        public const string Result = $"{Namespaces.MonadCraft}.Result";
+        public const string ValidationError = $"{Namespaces.Base}.ValidationError";
     }
 
     public static class Interfaces
     {
-        public const string IValidator = "ValiCraft.IValidator";
-        public const string IValidationRule = "ValiCraft.IValidationRule";
-        public const string IValidationRuleBuilderType = "ValiCraft.BuilderTypes.IValidationRuleBuilderType";
-        public const string IBuilderType = "ValiCraft.BuilderTypes.IBuilderType";
-        public const string IValidationError = "ValiCraft.IValidationError";
+        public const string IValidator = $"{Namespaces.Base}.IValidator";
+        public const string IAsyncValidator = $"{Namespaces.Base}.IAsyncValidator";
+        public const string IValidationRule = $"{Namespaces.Base}.IValidationRule";
+        public const string IValidationRuleBuilderType = $"{Namespaces.BuilderTypes}.IValidationRuleBuilderType";
+        public const string IAsyncValidationRuleBuilderType = $"{Namespaces.AsyncBuilderTypes}.IAsyncValidationRuleBuilderType";
+        public const string IBuilderType = $"{Namespaces.BuilderTypes}.IBuilderType";
+        public const string IAsyncBuilderType = $"{Namespaces.AsyncBuilderTypes}.IAsyncBuilderType";
+        public const string IValidationError = $"{Namespaces.Base}.IValidationError";
+        
+        public static string GetValidatorInterface(bool isAsync)
+        {
+            if (isAsync)
+            {
+                return Interfaces.IAsyncValidator;
+            }
+            
+            return Interfaces.IValidator;
+        }
     }
 
     public static class Methods
@@ -46,16 +82,39 @@ public static class KnownNames
         public const string WithOnFailure = "WithOnFailure";
         public const string If = "If";
         public const string Either = "Either";
+        public const string Validate = "Validate";
+        public const string ValidateAsync = "ValidateAsync";
+
+        public static string GetValidateMethod(bool isAsync)
+        {
+            if (isAsync)
+            {
+                return ValidateAsync;
+            }
+            
+            return Validate;
+        }
     }
 
     public static class Enums
     {
         public const string OnFailureMode = "OnFailureMode";
-        public const string ErrorSeverity = "ValiCraft.ErrorSeverity";
+        public const string ErrorSeverity = $"{Namespaces.Base}.ErrorSeverity";
     }
 
     public static class Targets
     {
         public const string Must = "Must";
+        public const string MustAsync = "MustAsync";
+
+        public static string GetMustTarget(bool isAsync)
+        {
+            if (isAsync)
+            {
+                return MustAsync;
+            }
+            
+            return Must;
+        }
     }
 }

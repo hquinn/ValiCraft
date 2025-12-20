@@ -12,7 +12,7 @@ public static class DefinedDiagnostics
                 "VALC001",
                 "Internal Error",
                 "Could not get syntax node for class",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -25,7 +25,7 @@ public static class DefinedDiagnostics
                 "VALC002",
                 "Internal Error",
                 "Could not get symbol for class",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -38,7 +38,7 @@ public static class DefinedDiagnostics
                 "VALC101",
                 "Missing Validation Rule Extension Name",
                 "Missing Validation Rule Extension Name",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -51,7 +51,7 @@ public static class DefinedDiagnostics
                 "VALC102",
                 "Missing IValidationRule interface",
                 "Missing ValiCraft.IValidationRule interface on Validation Rule marked with [GenerateRuleExtension]",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -64,7 +64,7 @@ public static class DefinedDiagnostics
                 "VALC103",
                 "Invalid Rule Placeholder Constructor Argument",
                 $"Placeholder constructor argument must be a string literal.",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -79,7 +79,7 @@ public static class DefinedDiagnostics
                 "VALC104",
                 "Invalid Rule Placeholder Parameter Name",
                 $"Parameter name '{parameterName}' is invalid. It must match a parameter name from the IsValid method.",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -92,20 +92,22 @@ public static class DefinedDiagnostics
                 "VALC201",
                 "Missing partial keyword",
                 "Missing partial keyword on Validator marked with [GenerateValidator]",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
     }
 
-    public static DiagnosticInfo MissingValidatorBaseClass(Location location)
+    public static DiagnosticInfo MissingValidatorBaseClass(bool isAsync, Location location)
     {
+        var validatorBaseClass = isAsync ? KnownNames.ClassNames.AsyncValidator : KnownNames.ClassNames.Validator;
+        var generateValidator = isAsync ? KnownNames.AttributeNames.AsyncGenerateValidator : KnownNames.AttributeNames.GenerateValidator;
         return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC202",
-                "Missing Validator base class",
-                "Missing Validator base class on Validator marked with [GenerateValidator]",
-                "ValiCraft",
+                $"Missing {validatorBaseClass} base class",
+                $"Missing {validatorBaseClass} base class on Validator marked with [{generateValidator}]",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -118,7 +120,7 @@ public static class DefinedDiagnostics
                 "VALC203",
                 "Unrecognizable Rule Invocation",
                 "Rule cannot be mapped to a validation rule. Try moving the rule out of the invocation chain.",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -131,7 +133,7 @@ public static class DefinedDiagnostics
                 "VALC204",
                 "Invalid lambda defined",
                 $"{ruleChainName} expects a lambda as the last parameter.",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -145,7 +147,7 @@ public static class DefinedDiagnostics
                 "VALC205",
                 "Invalid lambda defined",
                 "Cannot retrieve the parameter name from lambda definition.",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -161,7 +163,7 @@ public static class DefinedDiagnostics
                 "VALC206",
                 "Invalid builder argument",
                 $"'{actualBuilderArgument}' cannot be used in this scope. Try using '{expectedBuilderArgument}'.",
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
@@ -185,7 +187,7 @@ public static class DefinedDiagnostics
                 "VALC207",
                 "Type mismatch for validation rule",
                 message,
-                "ValiCraft",
+                KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);

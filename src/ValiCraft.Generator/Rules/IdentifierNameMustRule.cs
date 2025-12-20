@@ -8,6 +8,7 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.Rules;
 
 public record IdentifierNameMustRule(
+    bool IsAsync,
     string ExpressionFormat,
     MessageInfo? DefaultMessage,
     MessageInfo? DefaultErrorCode,
@@ -42,11 +43,16 @@ public record IdentifierNameMustRule(
 
         var inlinedCondition = string.Format(ExpressionFormat, targetAccessor);
 
+        // if (IsAsync)
+        // {
+        //     inlinedCondition = $"await {inlinedCondition}";
+        // }
+
         var code = $$"""
                      {{IfCondition.GenerateIfBlock(@object, requestName, indent, context)}}!{{inlinedCondition}})
                      {{GetErrorCreation(requestName, KnownNames.Targets.Must, indent, target, context)}}
                      """;
-        
+
         context.UpdateIfElseMode();
 
         return code;
@@ -56,7 +62,7 @@ public record IdentifierNameMustRule(
     {
         if (RuleOverrides.OverrideErrorCode is null)
         {
-            return "\"Must\"";
+            return $"\"{KnownNames.Targets.GetMustTarget(IsAsync)}\"";
         }
         
         return base.GetErrorCode(validationRuleInvocation);

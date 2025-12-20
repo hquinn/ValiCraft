@@ -9,6 +9,7 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 public interface IRuleChainFactory
 {
     RuleChain? Create(
+        bool isAsync,
         ValidationTarget @object,
         ValidationTarget? target,
         InvocationExpressionSyntax invocation,

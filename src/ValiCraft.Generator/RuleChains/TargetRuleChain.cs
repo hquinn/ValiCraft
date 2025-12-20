@@ -9,6 +9,7 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.RuleChains;
 
 public record TargetRuleChain(
+    bool IsAsync,
     ValidationTarget Object,
     ValidationTarget Target,
     int Depth,
@@ -16,7 +17,7 @@ public record TargetRuleChain(
     int NumberOfRules,
     OnFailureMode? FailureMode,
     EquatableArray<Rule> Rules,
-    bool WhenNotNull = false) : RuleChain(Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    bool WhenNotNull = false) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
     protected override bool TryLinkRuleChain(
         ValidationRule[] validRules,

@@ -1,0 +1,89 @@
+using System.Linq.Expressions;
+using ValiCraft.AsyncBuilderTypes;
+
+namespace ValiCraft;
+
+/// <summary>
+/// Provides a fluent API for defining validation rules on properties of <typeparamref name="TRequest"/>.
+/// </summary>
+/// <typeparam name="TRequest">The type of object being validated.</typeparam>
+public interface IAsyncValidationRuleBuilder<TRequest> where TRequest : class
+{
+    /// <summary>
+    /// Starts a validation rule chain for a specific property.
+    /// </summary>
+    /// <typeparam name="TTarget">The type of the property to validate.</typeparam>
+    /// <param name="selector">An expression selecting the property to validate.</param>
+    /// <param name="failureMode">Optional. Specifies behavior when validation fails (Continue or Halt).</param>
+    /// <returns>A builder for chaining validation rules on the selected property.</returns>
+    IAsyncEnsureBuilderType<TRequest, TTarget> Ensure<TTarget>(
+        Expression<Func<TRequest, TTarget>> selector,
+        OnFailureMode? failureMode = null);
+    
+    /// <summary>
+    /// Starts a validation rule chain for each item in a collection property.
+    /// </summary>
+    /// <typeparam name="TTarget">The type of items in the collection.</typeparam>
+    /// <param name="selector">An expression selecting the collection property.</param>
+    /// <param name="failureMode">Optional. Specifies behavior when validation fails.</param>
+    /// <returns>A builder for chaining validation rules on each item.</returns>
+    IAsyncEnsureEachBuilderType<TRequest, TTarget> EnsureEach<TTarget>(
+        Expression<Func<TRequest, IEnumerable<TTarget>>> selector,
+        OnFailureMode? failureMode = null);
+    
+    /// <summary>
+    /// Validates each item in a collection using a nested validator configuration.
+    /// </summary>
+    /// <typeparam name="TTarget">The type of items in the collection.</typeparam>
+    /// <param name="selector">An expression selecting the collection property.</param>
+    /// <param name="rules">A delegate to configure validation rules for each item.</param>
+    void EnsureEach<TTarget>(
+        Expression<Func<TRequest, IEnumerable<TTarget>>> selector,
+        Action<IAsyncValidationRuleBuilder<TTarget>> rules) where TTarget : class;
+    
+    /// <summary>
+    /// Validates each item in a collection using a nested validator configuration with a failure mode.
+    /// </summary>
+    /// <typeparam name="TTarget">The type of items in the collection.</typeparam>
+    /// <param name="selector">An expression selecting the collection property.</param>
+    /// <param name="failureMode">Specifies behavior when validation fails.</param>
+    /// <param name="rules">A delegate to configure validation rules for each item.</param>
+    void EnsureEach<TTarget>(
+        Expression<Func<TRequest, IEnumerable<TTarget>>> selector,
+        OnFailureMode failureMode,
+        Action<IAsyncValidationRuleBuilder<TTarget>> rules) where TTarget : class;
+    
+    /// <summary>
+    /// Groups validation rules with a specific failure mode.
+    /// </summary>
+    /// <param name="failureMode">The failure mode to apply to the contained rules.</param>
+    /// <param name="rules">A delegate to configure the grouped rules.</param>
+    void WithOnFailure(OnFailureMode failureMode, Action<IAsyncValidationRuleBuilder<TRequest>> rules);
+    
+    /// <summary>
+    /// Conditionally applies validation rules based on a predicate.
+    /// </summary>
+    /// <param name="condition">The condition that must be true for rules to apply.</param>
+    /// <param name="rules">A delegate to configure rules that apply when the condition is true.</param>
+    void If(Func<TRequest, bool> condition, Action<IAsyncValidationRuleBuilder<TRequest>> rules);
+    
+    /// <summary>
+    /// Define validation rules that must satisfy at least one of the provided rule sets (OR logic).
+    /// </summary>
+    void Either(
+        Action<IAsyncValidationRuleBuilder<TRequest>> firstRules,
+        Action<IAsyncValidationRuleBuilder<TRequest>> secondRules);
+    
+    /// <summary>
+    /// Define validation rules that must satisfy at least one of the provided rule sets (OR logic).
+    /// </summary>
+    void Either(
+        Action<IAsyncValidationRuleBuilder<TRequest>> firstRules,
+        Action<IAsyncValidationRuleBuilder<TRequest>> secondRules,
+        Action<IAsyncValidationRuleBuilder<TRequest>> thirdRules);
+    
+    /// <summary>
+    /// Define validation rules that must satisfy at least one of the provided rule sets (OR logic).
+    /// </summary>
+    void Either(params Action<IAsyncValidationRuleBuilder<TRequest>>[] ruleSets);
+}

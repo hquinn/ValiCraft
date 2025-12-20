@@ -8,6 +8,7 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.Models;
 
 public record Validator(
+    bool IsAsync,
     ClassInfo Class,
     string RequestTypeName,
     EquatableArray<RuleChain> RuleChains,

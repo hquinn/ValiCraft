@@ -19,6 +19,7 @@ public class VALC203Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                           using ValiCraft;
                                                           using ValiCraft.Attributes;
                                                           using ValiCraft.BuilderTypes;
+                                                          using ValiCraft.AsyncBuilderTypes;
                                                           
                                                           namespace Test.Rules;
                                                           
@@ -41,6 +42,11 @@ public class VALC203Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                               [MapToValidationRule(typeof(NotEmptyRule), "")]
                                                               public static IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
                                                                   this IBuilderType<TRequest, TTargetType> builder) where TRequest : class
+                                                                  => throw new NotImplementedException("Never gets called");
+
+                                                              [MapToValidationRule(typeof(NotEmptyRule), "")]
+                                                              public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
+                                                                  this IAsyncBuilderType<TRequest, TTargetType> builder) where TRequest : class
                                                                   => throw new NotImplementedException("Never gets called");
                                                           }
                                                           """;
@@ -79,6 +85,11 @@ public class VALC203Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                                                       [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotNullRule<>), "<{0}>")]
                                                                                       public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
                                                                                           this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder) where TRequest : class
+                                                                                          => throw new global::System.NotImplementedException("Never gets called");
+
+                                                                                      [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotNullRule<>), "<{0}>")]
+                                                                                      public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
+                                                                                          this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder) where TRequest : class
                                                                                           => throw new global::System.NotImplementedException("Never gets called");
                                                                                   }
                                                                               }

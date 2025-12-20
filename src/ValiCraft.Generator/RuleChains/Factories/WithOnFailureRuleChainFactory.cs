@@ -11,6 +11,7 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 public class WithOnFailureRuleChainFactory : IRuleChainFactory
 {
     public RuleChain? Create(
+        bool isAsync,
         ValidationTarget @object,
         ValidationTarget? target,
         InvocationExpressionSyntax invocation,
@@ -39,6 +40,7 @@ public class WithOnFailureRuleChainFactory : IRuleChainFactory
         foreach (var statement in lambdaInfo!.Statements)
         {
             var ruleChain = RuleChainFactory.CreateFromStatement(
+                isAsync,
                 statement,
                 lambdaInfo.ParameterName!,
                 depth,
@@ -59,6 +61,7 @@ public class WithOnFailureRuleChainFactory : IRuleChainFactory
         }
         
         return new WithOnFailureRuleChain(
+            isAsync,
             @object,
             depth,
             indent,

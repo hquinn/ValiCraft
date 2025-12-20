@@ -15,13 +15,14 @@ namespace ValiCraft.Generator.RuleChains;
 /// At least one of the child rule sets must pass for the validation to succeed.
 /// </summary>
 public record EitherRuleChain(
+    bool IsAsync,
     ValidationTarget Object,
     int Depth,
     IndentModel Indent,
     int NumberOfRules,
     EquatableArray<EquatableArray<RuleChain>> RuleSets,
     MessageInfo? OverrideMessage,
-    MessageInfo? OverrideErrorCode) : RuleChain(Object, null, Depth, Indent, NumberOfRules, null)
+    MessageInfo? OverrideErrorCode) : RuleChain(IsAsync, Object, null, Depth, Indent, NumberOfRules, null)
 {
     protected override bool TryLinkRuleChain(
         ValidationRule[] validRules,

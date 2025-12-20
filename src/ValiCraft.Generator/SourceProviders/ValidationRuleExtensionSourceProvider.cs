@@ -66,7 +66,12 @@ public static class ValidationRuleExtensionSourceProvider
                                    {
                                        [global::{{KnownNames.Attributes.MapToValidationRule}}(typeof({{mapToValidationRuleData.FullyQualifiedUnboundedName}}), "{{mapToValidationRuleData.ValidationRuleGenericFormat}}")]
                                        {{validationRule.Class.Accessibility}} static global::{{KnownNames.Interfaces.IValidationRuleBuilderType}}<TRequest, TTargetType> {{validationRule.NameForExtensionMethod}}<{{validationRule.GetGenericArgumentsForExtensionMethod()}}>(
-                                           {{GetMethodParameters(validationRule)}}) {{GetFullWhereClause(validationRule)}}
+                                           {{GetMethodParameters(validationRule, false)}}) {{GetFullWhereClause(validationRule)}}
+                                           => throw new global::System.NotImplementedException("Never gets called");
+
+                                       [global::{{KnownNames.Attributes.MapToValidationRule}}(typeof({{mapToValidationRuleData.FullyQualifiedUnboundedName}}), "{{mapToValidationRuleData.ValidationRuleGenericFormat}}")]
+                                       {{validationRule.Class.Accessibility}} static global::{{KnownNames.Interfaces.IAsyncValidationRuleBuilderType}}<TRequest, TTargetType> {{validationRule.NameForExtensionMethod}}<{{validationRule.GetGenericArgumentsForExtensionMethod()}}>(
+                                           {{GetMethodParameters(validationRule, true)}}) {{GetFullWhereClause(validationRule)}}
                                            => throw new global::System.NotImplementedException("Never gets called");
                                    }
                                }
@@ -107,9 +112,10 @@ public static class ValidationRuleExtensionSourceProvider
         return string.Join(" ", clauses);
     }
 
-    private static string GetMethodParameters(ValidationRule validationRule)
+    private static string GetMethodParameters(ValidationRule validationRule, bool isAsync)
     {
+        var builderType = isAsync ? KnownNames.Interfaces.IAsyncBuilderType : KnownNames.Interfaces.IBuilderType;
         return validationRule.GetParametersForExtensionMethod(
-            $"this global::{KnownNames.Interfaces.IBuilderType}<TRequest, TTargetType> builder");
+            $"this global::{builderType}<TRequest, TTargetType> builder");
     }
 }

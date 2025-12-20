@@ -16,7 +16,22 @@ public static class ValidatorSyntaxProvider
         return node is ClassDeclarationSyntax;
     }
 
+    public static ProviderResult<Validator> TransformSync(
+        GeneratorAttributeSyntaxContext context,
+        CancellationToken cancellationToken)
+    {
+        return Transform(false, context, cancellationToken);
+    }
+
+    public static ProviderResult<Validator> TransformAsync(
+        GeneratorAttributeSyntaxContext context,
+        CancellationToken cancellationToken)
+    {
+        return Transform(true, context, cancellationToken);
+    }
+
     public static ProviderResult<Validator> Transform(
+        bool isAsync,
         GeneratorAttributeSyntaxContext context,
         CancellationToken cancellationToken)
     {
@@ -28,7 +43,7 @@ public static class ValidatorSyntaxProvider
         }
 
         var succeeded = TryCheckPartialKeyword(classDeclarationSyntax!, diagnostics);
-        succeeded &= TryGetRequestTypeName(classDeclarationSyntax!, classSymbol!, diagnostics, out var requestTypeName);
+        succeeded &= TryGetRequestTypeName(isAsync, classDeclarationSyntax!, classSymbol!, diagnostics, out var requestTypeName);
 
         if (!succeeded)
         {
@@ -39,12 +54,14 @@ public static class ValidatorSyntaxProvider
         
         var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(classDeclarationSyntax!, classSymbol!, null);
         var ruleChains = RuleChainsSyntaxProvider.DiscoverRuleChains(
+            isAsync,
             diagnostics,
             classDeclarationSyntax!,
             classSymbol!,
             context);
 
         var validator = new Validator(
+            isAsync,
             classInfo,
             requestTypeName!,
             ruleChains,
@@ -54,15 +71,21 @@ public static class ValidatorSyntaxProvider
     }
 
     private static bool TryGetRequestTypeName(
+        bool isAsync,
         ClassDeclarationSyntax classDeclarationSyntax,
         INamedTypeSymbol classSymbol,
         List<DiagnosticInfo> diagnostics,
         out string? requestTypeName)
     {
         requestTypeName = null;
-        if (!classSymbol.Inherits(KnownNames.Classes.Validator, 1))
+        if (!isAsync && !classSymbol.Inherits(KnownNames.Classes.Validator, 1))
         {
-            diagnostics.Add(DefinedDiagnostics.MissingValidatorBaseClass(classDeclarationSyntax.Identifier.GetLocation()));
+            diagnostics.Add(DefinedDiagnostics.MissingValidatorBaseClass(isAsync, classDeclarationSyntax.Identifier.GetLocation()));
+            return false;
+        }
+        if (isAsync && !classSymbol.Inherits(KnownNames.Classes.AsyncValidator, 1))
+        {
+            diagnostics.Add(DefinedDiagnostics.MissingValidatorBaseClass(isAsync, classDeclarationSyntax.Identifier.GetLocation()));
             return false;
         }
 

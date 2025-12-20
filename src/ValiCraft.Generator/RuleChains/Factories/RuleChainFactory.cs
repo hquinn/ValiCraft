@@ -52,6 +52,7 @@ public static class RuleChainFactory
     }
     
     public static RuleChain? CreateFromStatement(
+        bool isAsync,
         ExpressionStatementSyntax statement,
         string builderArgument,
         int depth,
@@ -74,18 +75,18 @@ public static class RuleChainFactory
         }
 
         if (!TryGetValidationTargetsFromStartingChain(
-                startingInvocation!,
-                context,
-                ruleChainKind.Value,
-                out var validationObject,
-                out var validationTarget))
+            startingInvocation!,
+            context,
+            ruleChainKind.Value,
+            out var validationObject,
+            out var validationTarget))
         {
             return null;
         }
 
         var factory = GetRuleChainFactory(ruleChainKind.Value);
 
-        return factory.Create(validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context);
+        return factory.Create(isAsync, validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context);
     }
 
     public static IRuleChainFactory GetRuleChainFactory(RuleChainKind ruleChainKind)

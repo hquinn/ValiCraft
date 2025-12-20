@@ -8,6 +8,7 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.Rules;
 
 public record PatternLambdaMustRule(
+    bool IsAsync,
     string ExpressionFormat,
     MessageInfo? DefaultMessage,
     MessageInfo? DefaultErrorCode,
@@ -15,7 +16,7 @@ public record PatternLambdaMustRule(
     IfConditionModel IfCondition,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location) : Rule(
-    EquatableArray<ArgumentInfo>.Empty, 
+    EquatableArray<ArgumentInfo>.Empty,
     DefaultMessage,
     DefaultErrorCode,
     RuleOverrides,
@@ -41,6 +42,11 @@ public record PatternLambdaMustRule(
         var targetAccessor = string.Format(target.AccessorExpressionFormat, requestName);
         var inlinedCondition = string.Format(ExpressionFormat, targetAccessor);
 
+        // if (IsAsync)
+        // {
+        //     inlinedCondition = $"await {inlinedCondition}";
+        // }
+
         var code = $$"""
                    {{IfCondition.GenerateIfBlock(@object, requestName, indent, context)}}!({{inlinedCondition}}))
                    {{GetErrorCreation(requestName, KnownNames.Targets.Must, indent, target, context)}}
@@ -55,9 +61,9 @@ public record PatternLambdaMustRule(
     {
         if (RuleOverrides.OverrideErrorCode is null)
         {
-            return "\"Must\"";
+            return $"\"{KnownNames.Targets.GetMustTarget(IsAsync)}\"";
         }
-        
+
         return base.GetErrorCode(validationRuleInvocation);
     }
 }

@@ -7,6 +7,7 @@ using ValiCraft.Generator.RuleChains.Context;
 namespace ValiCraft.Generator.RuleChains;
 
 public abstract record RuleChain(
+    bool IsAsync,
     ValidationTarget Object,
     ValidationTarget? Target,
     int Depth,

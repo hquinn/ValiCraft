@@ -13,6 +13,7 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 public class TargetRuleChainFactory : IRuleChainFactory
 {
     public RuleChain? Create(
+        bool isAsync,
         ValidationTarget @object,
         ValidationTarget? target,
         InvocationExpressionSyntax invocation,
@@ -29,7 +30,7 @@ public class TargetRuleChainFactory : IRuleChainFactory
         // Skip the Ensure method as that's not a rule.
         foreach (var ruleInvocation in invocationChain.Skip(1))
         {
-            ruleBuilder = ProcessNextInChain(ruleBuilder, ruleInvocation, rules, context, ref whenNotNull);
+            ruleBuilder = ProcessNextInChain(isAsync, ruleBuilder, ruleInvocation, rules, context, ref whenNotNull);
         }
     
         // Add the last rule into the rule list
@@ -40,6 +41,7 @@ public class TargetRuleChainFactory : IRuleChainFactory
         
         // Now that we have all the rules in the chain, we can now create the rule chain
         return new TargetRuleChain(
+            isAsync,
             @object,
             target!,
             depth,
@@ -51,6 +53,7 @@ public class TargetRuleChainFactory : IRuleChainFactory
     }
     
     private static RuleBuilder? ProcessNextInChain(
+        bool isAsync,
         RuleBuilder? ruleBuilder,
         InvocationExpressionSyntax invocation,
         List<Rule> rules,
@@ -74,21 +77,26 @@ public class TargetRuleChainFactory : IRuleChainFactory
     
         // We are specifically handling Must differently, as we want to generate specific logic for handling
         // the inlining of Must.
-        if (memberName == "Must" &&
-            invocation.ArgumentList.Arguments.Count == 1)
+        var isMustMethod = (memberName is KnownNames.Targets.Must or KnownNames.Targets.MustAsync) &&
+                invocation.ArgumentList.Arguments.Count == 1;
+        
+        if (isMustMethod && argumentExpression is not null)
         {
+            var isMustAsync = isAsync && memberName is KnownNames.Targets.MustAsync;
             switch (argumentExpression)
             {
                 case LambdaExpressionSyntax { Body: IsPatternExpressionSyntax or BinaryExpressionSyntax } patternLambda:
-                    return PatternLambdaMustRuleBuilder.Create(invocation, patternLambda);
+                    return PatternLambdaMustRuleBuilder.Create(isMustAsync, invocation, patternLambda);
                 case LambdaExpressionSyntax { Body: PrefixUnaryExpressionSyntax } prefixUnaryLambda:
-                    return PatternLambdaMustRuleBuilder.Create(invocation, prefixUnaryLambda);
+                    return PatternLambdaMustRuleBuilder.Create(isMustAsync, invocation, prefixUnaryLambda);
                 case LambdaExpressionSyntax { Body: BlockSyntax } blockLambda:
-                    return BlockLambdaMustRuleBuilder.Create(invocation, blockLambda);
+                    return BlockLambdaMustRuleBuilder.Create(isMustAsync, invocation, blockLambda);
+                case LambdaExpressionSyntax { Body: AwaitExpressionSyntax } awaitLambda:
+                    return InvocationLambdaMustRuleBuilder.Create(isMustAsync, invocation, awaitLambda);
                 case LambdaExpressionSyntax { Body: InvocationExpressionSyntax } invocationLambda:
-                    return InvocationLambdaMustRuleBuilder.Create(invocation, invocationLambda);
+                    return InvocationLambdaMustRuleBuilder.Create(isMustAsync, invocation, invocationLambda);
                 case IdentifierNameSyntax identifierNameSyntax:
-                    return IdentifierNameMustRuleBuilder.Create(invocation, identifierNameSyntax);
+                    return IdentifierNameMustRuleBuilder.Create(isMustAsync, invocation, identifierNameSyntax);
             }
         }
     

@@ -11,6 +11,7 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 public class TargetValidateWithRuleChainFactory : IRuleChainFactory
 {
     public RuleChain? Create(
+        bool isAsync,
         ValidationTarget @object,
         ValidationTarget? target,
         InvocationExpressionSyntax invocation,
@@ -31,6 +32,7 @@ public class TargetValidateWithRuleChainFactory : IRuleChainFactory
         var validatorExpression = argumentExpression.ToString();
 
         return new TargetValidateWithRuleChain(
+            isAsync,
             @object,
             target!,
             depth,

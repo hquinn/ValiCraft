@@ -8,15 +8,17 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.Rules;
 
 public record BlockLambdaMustRule(
+    bool IsAsync,
     string Body,
     string Parameter,
+    string? CancellationTokenParameter,
     MessageInfo? DefaultMessage,
     MessageInfo? DefaultErrorCode,
     RuleOverrideData RuleOverrides,
     IfConditionModel IfCondition,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location) : Rule(
-    EquatableArray<ArgumentInfo>.Empty, 
+    EquatableArray<ArgumentInfo>.Empty,
     DefaultMessage,
     DefaultErrorCode,
     RuleOverrides,
@@ -41,13 +43,24 @@ public record BlockLambdaMustRule(
     {
         var targetAccessor = string.Format(target.AccessorExpressionFormat, requestName);
 
-        var localFunctionName = $"__must_{context.Counter}";
+        var localFunctionName = $"__must{(IsAsync ? "Async" : "")}_{context.Counter}";
+
+        var functionParameters = CancellationTokenParameter != null
+            ? $"{target.Type.FormattedTypeName} {Parameter}, global::System.Threading.CancellationToken {CancellationTokenParameter}"
+            : $"{target.Type.FormattedTypeName} {Parameter}";
+
         var localFunction = $$"""
-                              {{indent}}bool {{localFunctionName}}({{target.Type.FormattedTypeName}} {{Parameter}})
+                              {{indent}}{{(IsAsync ? "async global::System.Threading.Tasks.Task<bool>" : "bool")}} {{localFunctionName}}({{functionParameters}})
                               {{indent}}{{Body}}
                               """;
-        
-        var inlinedCondition = $"{localFunctionName}({targetAccessor})";
+
+        var callArguments = CancellationTokenParameter != null
+            ? $"{targetAccessor}, cancellationToken"
+            : targetAccessor;
+
+        var inlinedCondition = IsAsync
+            ? $"await {localFunctionName}({callArguments})"
+            : $"{localFunctionName}({callArguments})";
 
         var code = $$"""
                      {{localFunction}}
@@ -64,7 +77,7 @@ public record BlockLambdaMustRule(
     {
         if (RuleOverrides.OverrideErrorCode is null)
         {
-            return "\"Must\"";
+            return $"\"{KnownNames.Targets.GetMustTarget(IsAsync)}\"";
         }
         
         return base.GetErrorCode(validationRuleInvocation);

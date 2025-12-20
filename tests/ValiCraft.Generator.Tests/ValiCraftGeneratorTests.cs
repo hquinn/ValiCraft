@@ -108,6 +108,7 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
         using ValiCraft;
         using ValiCraft.Attributes;
         using ValiCraft.BuilderTypes;
+        using ValiCraft.AsyncBuilderTypes;
 
         namespace Test.Rules;
 
@@ -137,6 +138,11 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
             public static IValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
                 this IBuilderType<TRequest, TTargetType> builder) where TRequest : class
                 => throw new NotImplementedException("Extension methods never get called.");
+
+            [MapToValidationRule(typeof(NotNullRule<>), "<{0}>")]
+            public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
+                this IAsyncBuilderType<TRequest, TTargetType> builder) where TRequest : class
+                => throw new NotImplementedException("Extension methods never get called.");
         }
 
         [DefaultMessage("'{TargetName}' must have a length of {Length}.")]
@@ -146,6 +152,11 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
             [MapToValidationRule(typeof(LengthRule), "")]
             public static IValidationRuleBuilderType<TRequest, TTargetType> HasLength<TRequest, TTargetType>(
                 this IBuilderType<TRequest, TTargetType> builder, int length) where TRequest : class
+                => throw new NotImplementedException("Never gets called");
+
+            [MapToValidationRule(typeof(LengthRule), "")]
+            public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> HasLength<TRequest, TTargetType>(
+                this IAsyncBuilderType<TRequest, TTargetType> builder, int length) where TRequest : class
                 => throw new NotImplementedException("Never gets called");
         }
         """;
@@ -303,6 +314,172 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                          }
                                                                          """;
 
+    // Define the validator against our request types.
+    // This will generate a Validate method in a partial class.
+    [StringSyntax("CSharp")] private const string InputAsyncValidatorsToGenerate = """
+                                                                         using System.Threading;
+                                                                         using System.Threading.Tasks;
+                                                                         using Test.Rules;
+                                                                         using Test.Requests;
+                                                                         using ValiCraft;
+                                                                         using ValiCraft.Attributes;
+                                                                         using ValiCraft.AsyncBuilderTypes;
+
+                                                                         namespace Test.Validators;
+
+                                                                         // This attribute is required to get the validator generating
+                                                                         // The validation logic.
+                                                                         // Must also have the partial keyword as well.
+                                                                         [AsyncGenerateValidator]
+                                                                         public partial class AsyncOrderValidator : AsyncValidator<Order>
+                                                                         {
+                                                                             private readonly IValidator<Customer> _customerValidator;
+                                                                             private readonly IValidator<LineItem> _lineItemValidator;
+                                                                             
+                                                                             public AsyncOrderValidator(IValidator<Customer> customerValidator, IValidator<LineItem> lineItemValidator)
+                                                                             {
+                                                                                 _customerValidator = customerValidator;
+                                                                                 _lineItemValidator = lineItemValidator;
+                                                                             }
+                                                                             
+                                                                             private decimal OrderTotalLimit 
+                                                                                 => 999M;
+
+                                                                             private string ShippingReferenceEmptyMessage
+                                                                                => "'{TargetName}' assigned is invalid.";
+
+                                                                             private ErrorSeverity CustomerMiddleNameSeverity
+                                                                                => ErrorSeverity.Info;
+
+                                                                             private bool OrderNumberIsNotNull(Order order)
+                                                                             {
+                                                                                 return order.OrderNumber is not null;
+                                                                             }
+
+                                                                             private Task<bool> IsUniqueAsync(Customer customer, CancellationToken ct)
+                                                                             {
+                                                                                 return Task.FromResult(true); 
+                                                                             }
+
+                                                                             protected override void DefineRules(IAsyncValidationRuleBuilder<Order> orderBuilder)
+                                                                             {
+                                                                                 orderBuilder.Ensure(o => o)
+                                                                                     .MustAsync(async (o, ct) => { return await Task.FromResult(true); });
+
+                                                                                 orderBuilder.Ensure(o => o.Customer)
+                                                                                     .MustAsync(async (customer, ct) => await IsUniqueAsync(customer, ct));
+
+                                                                                 orderBuilder.Ensure(o => o.Customer.MiddleName)
+                                                                                     .IsNotNull();
+
+                                                                                 orderBuilder.Ensure(o => o.Customer)
+                                                                                     .IsNotNull().If(o => { return o.OrderTotal != 0; });
+                                                                                 
+                                                                                 orderBuilder.Ensure(o => o.Customer)
+                                                                                     .IsNotNull().If(o => o.OrderTotal != 0);
+
+                                                                                 orderBuilder.If(order => { return order.OrderTotal != 0; }, b =>
+                                                                                 {
+                                                                                     b.Ensure(o => o.Customer).IsNotNull();            
+                                                                                 });
+
+                                                                                 orderBuilder.If(order => order.OrderTotal != 0, b =>
+                                                                                 {
+                                                                                     b.Ensure(o => o.Customer).IsNotNull();            
+                                                                                 });
+                                                                                 
+                                                                                 orderBuilder.EnsureEach(o => o.Discounts, OnFailureMode.Halt, discountBuilder =>
+                                                                                 {
+                                                                                     discountBuilder.Ensure(d => d.Code)
+                                                                                         .IsNotEmpty();
+
+                                                                                     discountBuilder.Ensure(d => d.Amount)
+                                                                                         .IsGreaterThan(5);
+                                                                                 });
+
+                                                                                 orderBuilder.Ensure(o => o)
+                                                                                     .Must(OrderNumberIsNotNull);
+
+                                                                                 orderBuilder.Ensure(o => o)
+                                                                                     .Must(o => OrderNumberIsNotNull(o));
+
+                                                                                 orderBuilder.Ensure(o => o)
+                                                                                     .Must((o) => { return o.OrderNumber is not null; });
+
+                                                                                 orderBuilder.Ensure(o => o)
+                                                                                     .Must(o => o.OrderNumber is not null);
+
+                                                                                 orderBuilder.Ensure(o => o)
+                                                                                     .IsPredicate(o => o.OrderNumber is not null);
+
+                                                                                 orderBuilder.EnsureEach(o => o.LineItems)
+                                                                                     .ValidateWith(_lineItemValidator);
+
+                                                                                 orderBuilder.WithOnFailure(OnFailureMode.Halt, b =>
+                                                                                 {
+                                                                                     b.Ensure(o => o.Customer)
+                                                                                         .ValidateWith(_customerValidator);
+
+                                                                                     b.EnsureEach(o => o.LineItems, lineItemBuilder =>
+                                                                                     {
+                                                                                         lineItemBuilder.WithOnFailure(OnFailureMode.Continue, l =>
+                                                                                         {
+                                                                                             l.Ensure(li => li.SKU)
+                                                                                                 .IsNotNull()
+                                                                                                 .IsNotEmpty()
+                                                                                                 ;
+
+                                                                                             l.Ensure(li => li.Quantity)
+                                                                                                 .IsGreaterThan(0);
+                                                                                         });    
+
+                                                                                         lineItemBuilder.EnsureEach(li => li.Discounts, discountBuilder =>
+                                                                                         {
+                                                                                             discountBuilder.Ensure(li => li.Amount)
+                                                                                                 .IsGreaterThan(10);
+                                                                                         });
+                                                                                     });
+                                                                                 });
+
+                                                                                 orderBuilder.Ensure((o) => o.OrderNumber)
+                                                                                     .IsNotNull()
+                                                                                     .IsNotEmpty();
+
+                                                                                 orderBuilder.Ensure(o => o.OrderNumber)
+                                                                                     .HasLength(10);
+
+                                                                                orderBuilder.Ensure(o => o.ShippingReference, OnFailureMode.Halt)
+                                                                                    .IsNotNull().WithMessage("'{TargetName}' needs to be assigned before proceeding").WithTargetName("ReferenceNo")
+                                                                                    .IsNotEmpty().WithMessage(ShippingReferenceEmptyMessage);
+
+                                                                                 orderBuilder.Ensure(o => o.OrderTotal)
+                                                                                     .IsGreaterThan(0M)
+                                                                                     .IsLessThan(OrderTotalLimit).WithErrorCode("TotalReached");
+
+                                                                                 // WithSeverity tests
+                                                                                 orderBuilder.Ensure(o => o.Customer.FirstName)
+                                                                                     .IsNotNull()
+                                                                                     .WithSeverity(ErrorSeverity.Warning);
+
+                                                                                 orderBuilder.Ensure(o => o.Customer.LastName)
+                                                                                     .IsNotEmpty()
+                                                                                     .WithSeverity(ErrorSeverity.Info)
+                                                                                     .WithMessage("Last name is recommended");
+
+                                                                                 orderBuilder.Ensure(o => o.Customer.CustomerId)
+                                                                                     .Must(id => id != System.Guid.Empty)
+                                                                                     .WithMessage("Customer ID is required")
+                                                                                     .WithErrorCode("INVALID_CUSTOMER_ID")
+                                                                                     .WithSeverity(ErrorSeverity.Error);
+
+                                                                                 orderBuilder.Ensure(o => o.Customer.MiddleName)
+                                                                                     .WhenNotNull()
+                                                                                     .IsNotEmpty()
+                                                                                     .WithSeverity(CustomerMiddleNameSeverity);
+                                                                             }
+                                                                         }
+                                                                         """;
+
     [StringSyntax("CSharp")] private const string ExpectedNotEmptyRuleExtensions = """
         // <auto-generated />
         #nullable enable
@@ -315,6 +492,11 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotEmptyRule), "")]
                 public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
                     this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder) where TRequest : class
+                    => throw new global::System.NotImplementedException("Never gets called");
+
+                [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotEmptyRule), "")]
+                public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
+                    this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder) where TRequest : class
                     => throw new global::System.NotImplementedException("Never gets called");
             }
         }
@@ -334,6 +516,11 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
                     this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
                     => throw new global::System.NotImplementedException("Never gets called");
+
+                [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GreaterThanRule<>), "<{0}>")]
+                public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
+                    this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
+                    => throw new global::System.NotImplementedException("Never gets called");
             }
         }
         """;
@@ -352,6 +539,11 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
                     this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
                     => throw new global::System.NotImplementedException("Never gets called");
+
+                [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.LessThanRule<>), "<{0}>")]
+                public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
+                    this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
+                    => throw new global::System.NotImplementedException("Never gets called");
             }
         }
         """;
@@ -369,6 +561,11 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                    [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Predicate<>), "<{0}>")]
                                                                                    public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
                                                                                        this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class
+                                                                                       => throw new global::System.NotImplementedException("Never gets called");
+
+                                                                                   [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Predicate<>), "<{0}>")]
+                                                                                   public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
+                                                                                       this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class
                                                                                        => throw new global::System.NotImplementedException("Never gets called");
                                                                                }
                                                                            }
@@ -858,11 +1055,527 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                        }
                                                                        """;
 
+    [StringSyntax("CSharp")] private const string ExpectedAsyncValidators = """
+                                                                       // <auto-generated />
+                                                                       #nullable enable
+                                                                       
+                                                                       using System.Threading;
+                                                                       using System.Threading.Tasks;
+                                                                       using Test.Rules;
+                                                                       using Test.Requests;
+                                                                       using ValiCraft;
+                                                                       using ValiCraft.Attributes;
+                                                                       using ValiCraft.AsyncBuilderTypes;
+                                                                       
+                                                                       namespace Test.Validators
+                                                                       {
+                                                                           public partial class AsyncOrderValidator : global::ValiCraft.IAsyncValidator<global::Test.Requests.Order>
+                                                                           {
+                                                                               public async global::System.Threading.Tasks.Task<global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>, global::Test.Requests.Order>> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
+                                                                               {
+                                                                                   var errors = await RunValidationLogicAsync(request, null, cancellationToken);
+
+                                                                                   return errors is not null
+                                                                                       ? global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>, global::Test.Requests.Order>.Failure(errors)
+                                                                                       : global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>, global::Test.Requests.Order>.Success(request);
+                                                                               }
+
+                                                                               public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>> ValidateToListAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
+                                                                               {
+                                                                                   return await RunValidationLogicAsync(request, null, cancellationToken) ?? [];
+                                                                               }
+
+                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                               public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>> ValidateToListAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
+                                                                               {
+                                                                                   return await RunValidationLogicAsync(request, inheritedTargetPath, cancellationToken) ?? [];
+                                                                               }
+
+                                                                               private async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ValiCraft.IValidationError>>? RunValidationLogicAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                               {
+                                                                                   global::System.Collections.Generic.List<global::ValiCraft.IValidationError>? errors = null;
+
+                                                                                   async global::System.Threading.Tasks.Task<bool> __mustAsync_31(global::Test.Requests.Order o, global::System.Threading.CancellationToken ct)
+                                                                                   { return await Task.FromResult(true); }
+                                                                                   if (!await __mustAsync_31(request, cancellationToken))
+                                                                                   {
+                                                                                       errors ??= new(31);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = "MustAsync",
+                                                                                           Message = $"'Order' doesn't satisfy the condition",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
+                                                                                           AttemptedValue = request,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (!await IsUniqueAsync(request.Customer, cancellationToken))
+                                                                                   {
+                                                                                       errors ??= new(30);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Customer>
+                                                                                       {
+                                                                                           Code = "MustAsync",
+                                                                                           Message = $"'Customer' doesn't satisfy the condition",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Customer",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer",
+                                                                                           AttemptedValue = request.Customer,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (!global::Test.Rules.NotNullRule<string?>.IsValid(request.Customer.MiddleName))
+                                                                                   {
+                                                                                       errors ??= new(29);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string?>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<string?>),
+                                                                                           Message = $"'Middle Name' must not be null.",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Middle Name",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer.MiddleName",
+                                                                                           AttemptedValue = request.Customer.MiddleName,
+                                                                                       });
+                                                                                   }
+                                                                       
+                                                                                   bool __ifRule_28(global::Test.Requests.Order o)
+                                                                                   { return o.OrderTotal != 0; }
+                                                                                   if (__ifRule_28(request) && !global::Test.Rules.NotNullRule<global::Test.Requests.Customer>.IsValid(request.Customer))
+                                                                                   {
+                                                                                       errors ??= new(28);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Customer>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
+                                                                                           Message = $"'Customer' must not be null.",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Customer",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer",
+                                                                                           AttemptedValue = request.Customer,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (request.OrderTotal != 0 && !global::Test.Rules.NotNullRule<global::Test.Requests.Customer>.IsValid(request.Customer))
+                                                                                   {
+                                                                                       errors ??= new(27);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Customer>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
+                                                                                           Message = $"'Customer' must not be null.",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Customer",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer",
+                                                                                           AttemptedValue = request.Customer,
+                                                                                       });
+                                                                                   }
+
+                                                                                   bool __ifRuleChain_26(global::Test.Requests.Order order)
+                                                                                   { return order.OrderTotal != 0; }
+                                                                                   if (__ifRuleChain_26(request))
+                                                                                   {
+                                                                                       if (!global::Test.Rules.NotNullRule<global::Test.Requests.Customer>.IsValid(request.Customer))
+                                                                                       {
+                                                                                           errors ??= new(26);
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Customer>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
+                                                                                               Message = $"'Customer' must not be null.",
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                               TargetName = "Customer",
+                                                                                               TargetPath = $"{inheritedTargetPath}Customer",
+                                                                                               AttemptedValue = request.Customer,
+                                                                                           });
+                                                                                       }
+                                                                                   }
+
+                                                                                   if (request.OrderTotal != 0)
+                                                                                   {
+                                                                                       if (!global::Test.Rules.NotNullRule<global::Test.Requests.Customer>.IsValid(request.Customer))
+                                                                                       {
+                                                                                           errors ??= new(25);
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Customer>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.NotNullRule<global::Test.Requests.Customer>),
+                                                                                               Message = $"'Customer' must not be null.",
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                               TargetName = "Customer",
+                                                                                               TargetPath = $"{inheritedTargetPath}Customer",
+                                                                                               AttemptedValue = request.Customer,
+                                                                                           });
+                                                                                       }
+                                                                                   }
+
+                                                                                   var index24 = 0;
+                                                                                   foreach (var element in request.Discounts)
+                                                                                   {
+                                                                                       if (!global::Test.Rules.NotEmptyRule.IsValid(element.Code))
+                                                                                       {
+                                                                                           errors ??= new(24);
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.NotEmptyRule),
+                                                                                               Message = $"'Code' must not be empty.",
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                               TargetName = "Code",
+                                                                                               TargetPath = $"{inheritedTargetPath}Discounts[{index24}].Code",
+                                                                                               AttemptedValue = element.Code,
+                                                                                           });
+                                                                                           goto HaltValidation_24;
+                                                                                       }
+                                                                                       if (!global::Test.Rules.GreaterThanRule<decimal>.IsValid(element.Amount, 5))
+                                                                                       {
+                                                                                           errors ??= new(23);
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<decimal>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.GreaterThanRule<decimal>),
+                                                                                               Message = $"'Amount' must be greater than 5, but received {element.Amount}.",
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                               TargetName = "Amount",
+                                                                                               TargetPath = $"{inheritedTargetPath}Discounts[{index24}].Amount",
+                                                                                               AttemptedValue = element.Amount,
+                                                                                           });
+                                                                                           goto HaltValidation_24;
+                                                                                       }
+                                                                                       index24++;
+                                                                                   }
+
+                                                                                   HaltValidation_24:
+                                                                       
+                                                                                   if (!OrderNumberIsNotNull(request))
+                                                                                   {
+                                                                                       errors ??= new(22);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = "Must",
+                                                                                           Message = $"'Order' doesn't satisfy the condition",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
+                                                                                           AttemptedValue = request,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (!OrderNumberIsNotNull(request))
+                                                                                   {
+                                                                                       errors ??= new(21);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = "Must",
+                                                                                           Message = $"'Order' doesn't satisfy the condition",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
+                                                                                           AttemptedValue = request,
+                                                                                       });
+                                                                                   }
+
+                                                                                   bool __must_20(global::Test.Requests.Order o)
+                                                                                   { return o.OrderNumber is not null; }
+                                                                                   if (!__must_20(request))
+                                                                                   {
+                                                                                       errors ??= new(20);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = "Must",
+                                                                                           Message = $"'Order' doesn't satisfy the condition",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
+                                                                                           AttemptedValue = request,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (!(request.OrderNumber is not null))
+                                                                                   {
+                                                                                       errors ??= new(19);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = "Must",
+                                                                                           Message = $"'Order' doesn't satisfy the condition",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
+                                                                                           AttemptedValue = request,
+                                                                                       });
+                                                                                   }
+    
+                                                                                   if (!global::Test.Rules.Predicate<global::Test.Requests.Order>.IsValid(request, o => o.OrderNumber is not null))
+                                                                                   {
+                                                                                       errors ??= new(18);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::Test.Requests.Order>
+                                                                                       {
+                                                                                           Code = "CustomErrorCode",
+                                                                                           Message = $"Order doesn't satisfy the condition",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order",
+                                                                                           TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Order" : null)}",
+                                                                                           AttemptedValue = request,
+                                                                                       });
+                                                                                   }
+
+                                                                                   var index17 = 0;
+                                                                                   foreach (var element in request.LineItems)
+                                                                                   {
+                                                                                       var errors17 = _lineItemValidator.ValidateToList(element, $"{inheritedTargetPath}LineItems[{index17}].");
+                                                                                       if (errors17.Count != 0)
+                                                                                       {
+                                                                                           if (errors is null)
+                                                                                           {
+                                                                                               errors = new(errors17);
+                                                                                           }
+                                                                                           else
+                                                                                           {
+                                                                                               errors.AddRange(errors17);
+                                                                                           }
+                                                                                       }
+                                                                                       index17++;
+                                                                                   }
+                                                                       
+                                                                                   var errors16 = _customerValidator.ValidateToList(request.Customer, $"{inheritedTargetPath}Customer.");
+                                                                                   if (errors16.Count != 0)
+                                                                                   {
+                                                                                       if (errors is null)
+                                                                                       {
+                                                                                           errors = new(errors16);
+                                                                                           goto HaltValidation_16;
+                                                                                       }
+                                                                                       else
+                                                                                       {
+                                                                                           errors.AddRange(errors16);
+                                                                                           goto HaltValidation_16;
+                                                                                       }
+                                                                                   }
+                                                                                   var index15 = 0;
+                                                                                   foreach (var element in request.LineItems)
+                                                                                   {
+                                                                                       if (!global::Test.Rules.NotNullRule<string>.IsValid(element.SKU))
+                                                                                       {
+                                                                                           errors ??= new(15);
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.NotNullRule<string>),
+                                                                                               Message = $"'SKU' must not be null.",
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                               TargetName = "SKU",
+                                                                                               TargetPath = $"{inheritedTargetPath}LineItems[{index15}].SKU",
+                                                                                               AttemptedValue = element.SKU,
+                                                                                           });
+                                                                                       }
+                                                                                       if (!global::Test.Rules.NotEmptyRule.IsValid(element.SKU))
+                                                                                       {
+                                                                                           errors ??= new(14);
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.NotEmptyRule),
+                                                                                               Message = $"'SKU' must not be empty.",
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                               TargetName = "SKU",
+                                                                                               TargetPath = $"{inheritedTargetPath}LineItems[{index15}].SKU",
+                                                                                               AttemptedValue = element.SKU,
+                                                                                           });
+                                                                                       }
+                                                                                       if (!global::Test.Rules.GreaterThanRule<int>.IsValid(element.Quantity, 0))
+                                                                                       {
+                                                                                           errors ??= new(13);
+                                                                                           errors.Add(new global::ValiCraft.ValidationError<int>
+                                                                                           {
+                                                                                               Code = nameof(global::Test.Rules.GreaterThanRule<int>),
+                                                                                               Message = $"'Quantity' must be greater than 0, but received {element.Quantity}.",
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                               TargetName = "Quantity",
+                                                                                               TargetPath = $"{inheritedTargetPath}LineItems[{index15}].Quantity",
+                                                                                               AttemptedValue = element.Quantity,
+                                                                                           });
+                                                                                       }
+                                                                                       var index12 = 0;
+                                                                                       foreach (var subElement in element.Discounts)
+                                                                                       {
+                                                                                           if (!global::Test.Rules.GreaterThanRule<decimal>.IsValid(subElement.Amount, 10))
+                                                                                           {
+                                                                                               errors ??= new(12);
+                                                                                               errors.Add(new global::ValiCraft.ValidationError<decimal>
+                                                                                               {
+                                                                                                   Code = nameof(global::Test.Rules.GreaterThanRule<decimal>),
+                                                                                                   Message = $"'Amount' must be greater than 10, but received {subElement.Amount}.",
+                                                                                                   Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                                   TargetName = "Amount",
+                                                                                                   TargetPath = $"{inheritedTargetPath}LineItems[{index15}].Discounts[{index12}].Amount",
+                                                                                                   AttemptedValue = subElement.Amount,
+                                                                                               });
+                                                                                               goto HaltValidation_16;
+                                                                                           }
+                                                                                           index12++;
+                                                                                       }
+                                                                                       index15++;
+                                                                                   }
+
+                                                                                   HaltValidation_16:
+
+                                                                                   if (!global::Test.Rules.NotNullRule<string>.IsValid(request.OrderNumber))
+                                                                                   {
+                                                                                       errors ??= new(11);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<string>),
+                                                                                           Message = $"'Order Number' must not be null.",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order Number",
+                                                                                           TargetPath = $"{inheritedTargetPath}OrderNumber",
+                                                                                           AttemptedValue = request.OrderNumber,
+                                                                                       });
+                                                                                   }
+                                                                                   if (!global::Test.Rules.NotEmptyRule.IsValid(request.OrderNumber))
+                                                                                   {
+                                                                                       errors ??= new(10);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotEmptyRule),
+                                                                                           Message = $"'Order Number' must not be empty.",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order Number",
+                                                                                           TargetPath = $"{inheritedTargetPath}OrderNumber",
+                                                                                           AttemptedValue = request.OrderNumber,
+                                                                                       });
+                                                                                   }
+                                                                       
+                                                                                   if (!global::Test.Rules.LengthRule.IsValid(request.OrderNumber, 10))
+                                                                                   {
+                                                                                       errors ??= new(9);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.LengthRule),
+                                                                                           Message = $"'Order Number' must have a length of 10.",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order Number",
+                                                                                           TargetPath = $"{inheritedTargetPath}OrderNumber",
+                                                                                           AttemptedValue = request.OrderNumber,
+                                                                                       });
+                                                                                   }
+                                                                       
+                                                                                   if (!global::Test.Rules.NotNullRule<string?>.IsValid(request.ShippingReference))
+                                                                                   {
+                                                                                       errors ??= new(8);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string?>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<string?>),
+                                                                                           Message = $"'ReferenceNo' needs to be assigned before proceeding",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "ReferenceNo",
+                                                                                           TargetPath = $"{inheritedTargetPath}ShippingReference",
+                                                                                           AttemptedValue = request.ShippingReference,
+                                                                                       });
+                                                                                   }
+                                                                                   else if (!global::Test.Rules.NotEmptyRule.IsValid(request.ShippingReference))
+                                                                                   {
+                                                                                       errors ??= new(7);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string?>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotEmptyRule),
+                                                                                           Message = ShippingReferenceEmptyMessage.Replace("{TargetName}", "Shipping Reference").Replace("{TargetValue}", request.ShippingReference),
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Shipping Reference",
+                                                                                           TargetPath = $"{inheritedTargetPath}ShippingReference",
+                                                                                           AttemptedValue = request.ShippingReference,
+                                                                                       });
+                                                                                   }
+                                                                       
+                                                                                   if (!global::Test.Rules.GreaterThanRule<decimal>.IsValid(request.OrderTotal, 0M))
+                                                                                   {
+                                                                                       errors ??= new(6);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<decimal>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.GreaterThanRule<decimal>),
+                                                                                           Message = $"'Order Total' must be greater than 0, but received {request.OrderTotal}.",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order Total",
+                                                                                           TargetPath = $"{inheritedTargetPath}OrderTotal",
+                                                                                           AttemptedValue = request.OrderTotal,
+                                                                                       });
+                                                                                   }
+                                                                                   if (!global::Test.Rules.LessThanRule<decimal>.IsValid(request.OrderTotal, OrderTotalLimit))
+                                                                                   {
+                                                                                       errors ??= new(5);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<decimal>
+                                                                                       {
+                                                                                           Code = "TotalReached",
+                                                                                           Message = $"'Order Total' must be less than {OrderTotalLimit}, but received {request.OrderTotal}.",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Order Total",
+                                                                                           TargetPath = $"{inheritedTargetPath}OrderTotal",
+                                                                                           AttemptedValue = request.OrderTotal,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (!global::Test.Rules.NotNullRule<string>.IsValid(request.Customer.FirstName))
+                                                                                   {
+                                                                                       errors ??= new(4);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotNullRule<string>),
+                                                                                           Message = $"'First Name' must not be null.",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Warning,
+                                                                                           TargetName = "First Name",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer.FirstName",
+                                                                                           AttemptedValue = request.Customer.FirstName,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (!global::Test.Rules.NotEmptyRule.IsValid(request.Customer.LastName))
+                                                                                   {
+                                                                                       errors ??= new(3);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotEmptyRule),
+                                                                                           Message = $"Last name is recommended",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Info,
+                                                                                           TargetName = "Last Name",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer.LastName",
+                                                                                           AttemptedValue = request.Customer.LastName,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (!(request.Customer.CustomerId != System.Guid.Empty))
+                                                                                   {
+                                                                                       errors ??= new(2);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<global::System.Guid>
+                                                                                       {
+                                                                                           Code = "INVALID_CUSTOMER_ID",
+                                                                                           Message = $"Customer ID is required",
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
+                                                                                           TargetName = "Customer Id",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer.CustomerId",
+                                                                                           AttemptedValue = request.Customer.CustomerId,
+                                                                                       });
+                                                                                   }
+
+                                                                                   if (request.Customer.MiddleName is not null)
+                                                                                   {
+                                                                                   if (!global::Test.Rules.NotEmptyRule.IsValid(request.Customer.MiddleName))
+                                                                                   {
+                                                                                       errors ??= new(1);
+                                                                                       errors.Add(new global::ValiCraft.ValidationError<string?>
+                                                                                       {
+                                                                                           Code = nameof(global::Test.Rules.NotEmptyRule),
+                                                                                           Message = $"'Middle Name' must not be empty.",
+                                                                                           Severity = CustomerMiddleNameSeverity,
+                                                                                           TargetName = "Middle Name",
+                                                                                           TargetPath = $"{inheritedTargetPath}Customer.MiddleName",
+                                                                                           AttemptedValue = request.Customer.MiddleName,
+                                                                                       });
+                                                                                   }
+                                                                                   }
+
+                                                                                   return errors;
+                                                                               }
+                                                                           }
+                                                                       }
+                                                                       """;
+
     [Fact]
     public void ShouldGenerateValidationRuleExtensionsAndValidator()
     {
-        AssertGenerator(inputs: [InputRequests, InputValidationRulesToGenerate, InputValidationRulesAlreadyGenerated, InputValidatorsToGenerate], 
-            outputs: [ExpectedNotEmptyRuleExtensions, ExpectedGreaterThanRuleExtensions, ExpectedLessThanRuleExtensions, ExpectedPredicateExtensions, ExpectedValidators],
+        AssertGenerator(inputs: [InputRequests, InputValidationRulesToGenerate, InputValidationRulesAlreadyGenerated, InputValidatorsToGenerate, InputAsyncValidatorsToGenerate], 
+            outputs: [ExpectedNotEmptyRuleExtensions, ExpectedGreaterThanRuleExtensions, ExpectedLessThanRuleExtensions, ExpectedPredicateExtensions, ExpectedValidators, ExpectedAsyncValidators],
             diagnostics: []);
     }
 }
