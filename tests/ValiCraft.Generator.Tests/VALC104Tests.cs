@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using MonadCraft;
 using ValiCraft.Generator.Tests.Helpers;
 
 namespace ValiCraft.Generator.Tests;
@@ -29,11 +28,7 @@ public class VALC104Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
     [Fact]
     public void ShouldReportVALC104()
     {
-        AssertGenerator(
-            errorCodePrefix: "VALC",
-            additionalMetadataReferences: [typeof(Validator<>), typeof(Result<,>)],
-            trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
-            inputs: [Input], 
+        AssertGenerator(inputs: [Input], 
             outputs: [],
             diagnostics: ["Parameter name 'test' is invalid. It must match a parameter name from the IsValid method."],
             assertTrackingSteps: false);

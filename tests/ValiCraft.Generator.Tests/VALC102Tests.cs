@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using MonadCraft;
 using ValiCraft.Generator.Tests.Helpers;
 
 namespace ValiCraft.Generator.Tests;
@@ -24,11 +23,7 @@ public class VALC102Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
     [Fact]
     public void ShouldReportVALC102()
     {
-        AssertGenerator(
-            errorCodePrefix: "VALC",
-            additionalMetadataReferences: [typeof(Validator<>), typeof(Result<,>)],
-            trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
-            inputs: [Input], 
+        AssertGenerator(inputs: [Input], 
             outputs: [],
             diagnostics: ["Missing ValiCraft.IValidationRule interface on Validation Rule marked with [GenerateRuleExtension]"],
             assertTrackingSteps: false);

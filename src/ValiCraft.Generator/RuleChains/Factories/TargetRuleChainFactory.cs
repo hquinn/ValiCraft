@@ -91,20 +91,6 @@ public class TargetRuleChainFactory : IRuleChainFactory
                     return IdentifierNameMustRuleBuilder.Create(invocation, identifierNameSyntax);
             }
         }
-
-        // Handle MustAsync for async validators - similar to Must but with async lambda handling
-        if (memberName == "MustAsync" &&
-            invocation.ArgumentList.Arguments.Count == 1 &&
-            argumentExpression is LambdaExpressionSyntax asyncLambda)
-        {
-            // MustAsync expects lambdas like: async (value, ct) => await SomeAsyncMethod(value, ct)
-            // The lambda body can be an await expression or a direct invocation returning Task<bool>
-            var builder = AsyncInvocationLambdaMustAsyncRuleBuilder.Create(invocation, asyncLambda);
-            if (builder is not null)
-            {
-                return builder;
-            }
-        }
     
         // We usually get a value here if the invocation is a validation rule which:
         // 1) Exists in a separate project or the extension method has been manually created

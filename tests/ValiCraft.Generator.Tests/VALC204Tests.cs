@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using MonadCraft;
 using ValiCraft.Generator.Tests.Helpers;
 
 namespace ValiCraft.Generator.Tests;
@@ -82,11 +81,7 @@ public class VALC204Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
     [Fact]
     public void ShouldReportVALC204()
     {
-        AssertGenerator(
-            errorCodePrefix: "VALC",
-            additionalMetadataReferences: [typeof(Validator<>), typeof(Result<,>)],
-            trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
-            inputs: [InputRequests, InputValidationRules, InputValidator], 
+        AssertGenerator(inputs: [InputRequests, InputValidationRules, InputValidator], 
             outputs: [ExpectedNotNullExtensions],
             diagnostics: [$"EnsureEach expects a lambda as the last parameter."],
             assertTrackingSteps: false);

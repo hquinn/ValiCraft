@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using MonadCraft;
 using ValiCraft.Generator.Tests.Helpers;
 
 namespace ValiCraft.Generator.Tests;
@@ -81,11 +80,7 @@ public class VALC206Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
     [Fact]
     public void ShouldReportVALC206()
     {
-        AssertGenerator(
-            errorCodePrefix: "VALC",
-            additionalMetadataReferences: [typeof(Validator<>), typeof(Result<,>)],
-            trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
-            inputs: [InputRequests, InputValidationRules, InputValidator], 
+        AssertGenerator(inputs: [InputRequests, InputValidationRules, InputValidator], 
             outputs: [],
             diagnostics: ["'builder' cannot be used in this scope. Try using 'userBuilder'."],
             assertTrackingSteps: false);

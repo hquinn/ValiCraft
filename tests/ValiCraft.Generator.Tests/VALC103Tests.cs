@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using MonadCraft;
 using ValiCraft.Generator.Tests.Helpers;
 
 namespace ValiCraft.Generator.Tests;
@@ -51,11 +50,7 @@ public class VALC103Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
     [InlineData(SecondInput)]
     public void ShouldReportVALC103(string input)
     {
-        AssertGenerator(
-            errorCodePrefix: "VALC",
-            additionalMetadataReferences: [typeof(Validator<>), typeof(Result<,>)],
-            trackingSteps: [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName], 
-            inputs: [input], 
+        AssertGenerator(inputs: [input], 
             outputs: [],
             diagnostics: ["Placeholder constructor argument must be a string literal."],
             assertTrackingSteps: false);
