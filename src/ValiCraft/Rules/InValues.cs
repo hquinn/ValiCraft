@@ -16,6 +16,6 @@ public class InValues<TTargetType> : IValidationRule<TTargetType, TTargetType[]>
     /// <inheritdoc />
     public static bool IsValid(TTargetType targetValue, TTargetType[] allowedValues)
     {
-        return allowedValues.Contains(targetValue);
+        return Array.IndexOf(allowedValues, targetValue) >= 0;
     }
 }

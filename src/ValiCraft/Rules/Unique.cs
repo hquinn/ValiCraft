@@ -18,7 +18,15 @@ public class Unique<TTargetType> : IValidationRule<IEnumerable<TTargetType>?>
             return true;
         }
 
-        var list = targetValue.ToList();
-        return list.Count == list.Distinct().Count();
+        var seen = new HashSet<TTargetType>();
+        foreach (var item in targetValue)
+        {
+            if (!seen.Add(item))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

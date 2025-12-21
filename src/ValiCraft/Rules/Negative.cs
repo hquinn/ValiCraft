@@ -9,11 +9,11 @@ namespace ValiCraft.Rules;
 [GenerateRuleExtension("IsNegative")]
 [DefaultMessage("{TargetName} must be negative. Value received is {TargetValue}")]
 public class Negative<TTargetType> : IValidationRule<TTargetType>
-    where TTargetType : IComparable
+    where TTargetType : IComparable<TTargetType>
 {
     /// <inheritdoc />
     public static bool IsValid(TTargetType targetValue)
     {
-        return targetValue.CompareTo(default(TTargetType)) < 0;
+        return targetValue.CompareTo(default!) < 0;
     }
 }

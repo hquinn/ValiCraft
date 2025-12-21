@@ -17,6 +17,14 @@ public class AlphaNumeric : IValidationRule<string?>
             return false;
         }
 
-        return targetValue.All(char.IsLetterOrDigit);
+        foreach (var c in targetValue)
+        {
+            if (!char.IsLetterOrDigit(c))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

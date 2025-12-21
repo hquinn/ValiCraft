@@ -15,6 +15,11 @@ public class In<TTargetType> : IValidationRule<TTargetType, IEnumerable<TTargetT
     /// <inheritdoc />
     public static bool IsValid(TTargetType targetValue, IEnumerable<TTargetType> allowedValues)
     {
+        if (allowedValues is ICollection<TTargetType> collection)
+        {
+            return collection.Contains(targetValue);
+        }
+
         return allowedValues.Contains(targetValue);
     }
 }

@@ -18,6 +18,6 @@ public class StartsWith : IValidationRule<string?, string>
             return false;
         }
 
-        return targetValue.StartsWith(parameter);
+        return targetValue.StartsWith(parameter, StringComparison.Ordinal);
     }
 }

@@ -19,7 +19,15 @@ public class UniqueWithComparer<TTargetType> : IValidationRule<IEnumerable<TTarg
             return true;
         }
 
-        var list = targetValue.ToList();
-        return list.Count == list.Distinct(comparer).Count();
+        var seen = new HashSet<TTargetType>(comparer);
+        foreach (var item in targetValue)
+        {
+            if (!seen.Add(item))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

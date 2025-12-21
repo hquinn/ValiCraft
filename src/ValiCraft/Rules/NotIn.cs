@@ -15,6 +15,11 @@ public class NotIn<TTargetType> : IValidationRule<TTargetType, IEnumerable<TTarg
     /// <inheritdoc />
     public static bool IsValid(TTargetType targetValue, IEnumerable<TTargetType> forbiddenValues)
     {
+        if (forbiddenValues is ICollection<TTargetType> collection)
+        {
+            return !collection.Contains(targetValue);
+        }
+
         return !forbiddenValues.Contains(targetValue);
     }
 }

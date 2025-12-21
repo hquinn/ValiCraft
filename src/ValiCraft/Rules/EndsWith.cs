@@ -18,6 +18,6 @@ public class EndsWith : IValidationRule<string?, string>
             return false;
         }
 
-        return targetValue.EndsWith(parameter);
+        return targetValue.EndsWith(parameter, StringComparison.Ordinal);
     }
 }

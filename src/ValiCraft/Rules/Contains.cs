@@ -18,6 +18,6 @@ public class Contains : IValidationRule<string?, string>
             return false;
         }
 
-        return targetValue.Contains(parameter);
+        return targetValue.Contains(parameter, StringComparison.Ordinal);
     }
 }

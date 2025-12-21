@@ -16,6 +16,6 @@ public class NotInValues<TTargetType> : IValidationRule<TTargetType, TTargetType
     /// <inheritdoc />
     public static bool IsValid(TTargetType targetValue, TTargetType[] forbiddenValues)
     {
-        return !forbiddenValues.Contains(targetValue);
+        return Array.IndexOf(forbiddenValues, targetValue) < 0;
     }
 }

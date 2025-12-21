@@ -13,6 +13,21 @@ public class Empty<TTargetType> : IValidationRule<IEnumerable<TTargetType>?>
     /// <inheritdoc />
     public static bool IsValid(IEnumerable<TTargetType>? targetValue)
     {
-        return targetValue == null || !targetValue.Any();
+        if (targetValue == null)
+        {
+            return true;
+        }
+
+        if (targetValue is ICollection<TTargetType> collection)
+        {
+            return collection.Count == 0;
+        }
+
+        if (targetValue is IReadOnlyCollection<TTargetType> readOnlyCollection)
+        {
+            return readOnlyCollection.Count == 0;
+        }
+
+        return !targetValue.Any();
     }
 }
