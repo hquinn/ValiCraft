@@ -11,6 +11,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} must match the specified pattern")]
 public class MatchesRegex : IValidationRule<string?, Regex>
 {
+    /// <inheritdoc />
     public static bool IsValid(string? targetValue, Regex regex)
     {
         if (targetValue == null)

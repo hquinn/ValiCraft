@@ -9,6 +9,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} must be in the past or present")]
 public class InPastOrPresent : IValidationRule<DateTime>
 {
+    /// <inheritdoc />
     public static bool IsValid(DateTime targetValue)
     {
         return targetValue <= DateTime.UtcNow;

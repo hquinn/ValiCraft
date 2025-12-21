@@ -9,6 +9,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} must be in the future")]
 public class InFuture : IValidationRule<DateTime>
 {
+    /// <inheritdoc />
     public static bool IsValid(DateTime targetValue)
     {
         return targetValue > DateTime.UtcNow;

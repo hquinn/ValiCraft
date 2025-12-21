@@ -10,6 +10,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} cannot be empty.")]
 public class HasItems<TTargetType> : IValidationRule<IEnumerable<TTargetType>?>
 {
+    /// <inheritdoc />
     public static bool IsValid(IEnumerable<TTargetType>? property)
     {
         return property?.Any() ?? false;

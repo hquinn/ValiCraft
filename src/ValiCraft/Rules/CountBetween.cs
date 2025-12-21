@@ -12,6 +12,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{MaxCount}", "maxCount")]
 public class CountBetween<TTargetType> : IValidationRule<IEnumerable<TTargetType>?, int, int>
 {
+    /// <inheritdoc />
     public static bool IsValid(IEnumerable<TTargetType>? targetValue, int minCount, int maxCount)
     {
         if (targetValue == null)

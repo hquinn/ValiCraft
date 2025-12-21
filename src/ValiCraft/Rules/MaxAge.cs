@@ -10,6 +10,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{MaxAge}", "parameter")]
 public class MaxAge : IValidationRule<DateTime, int>
 {
+    /// <inheritdoc />
     public static bool IsValid(DateTime birthDate, int parameter)
     {
         var today = DateTime.Today;

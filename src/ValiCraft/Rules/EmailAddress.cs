@@ -10,6 +10,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} must be a valid email address")]
 public class EmailAddress : IValidationRule<string?>
 {
+    /// <inheritdoc />
     public static bool IsValid(string? targetValue)
     {
         if (string.IsNullOrWhiteSpace(targetValue))

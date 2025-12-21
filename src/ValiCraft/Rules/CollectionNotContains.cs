@@ -12,6 +12,7 @@ namespace ValiCraft.Rules;
 public class CollectionNotContains<TTargetType> : IValidationRule<IEnumerable<TTargetType>?, TTargetType>
     where TTargetType : IEquatable<TTargetType>
 {
+    /// <inheritdoc />
     public static bool IsValid(IEnumerable<TTargetType>? targetValue, TTargetType parameter)
     {
         if (targetValue == null)

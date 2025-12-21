@@ -11,6 +11,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{ReferenceDate}", "referenceDate")]
 public class Before : IValidationRule<DateTime, DateTime>
 {
+    /// <inheritdoc />
     public static bool IsValid(DateTime targetValue, DateTime referenceDate)
     {
         return targetValue < referenceDate;

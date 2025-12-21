@@ -10,6 +10,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} must be empty")]
 public class Empty<TTargetType> : IValidationRule<IEnumerable<TTargetType>?>
 {
+    /// <inheritdoc />
     public static bool IsValid(IEnumerable<TTargetType>? targetValue)
     {
         return targetValue == null || !targetValue.Any();

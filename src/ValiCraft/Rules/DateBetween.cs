@@ -11,6 +11,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{EndDate}", "endDate")]
 public class DateBetween : IValidationRule<DateTime, DateTime, DateTime>
 {
+    /// <inheritdoc />
     public static bool IsValid(DateTime targetValue, DateTime startDate, DateTime endDate)
     {
         return targetValue >= startDate && targetValue <= endDate;

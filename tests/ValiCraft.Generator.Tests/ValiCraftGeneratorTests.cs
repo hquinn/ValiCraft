@@ -486,14 +486,23 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
 
         namespace Test.Rules
         {
+            /// <summary>
+            /// Extension methods for the <see cref="Test.Rules.NotEmptyRule"/> validation rule.
+            /// </summary>
             [global::ValiCraft.Attributes.DefaultMessage("'{TargetName}' must not be empty.")]
             public static class NotEmptyRuleExtensions
             {
+                /// <summary>
+                /// Adds the IsNotEmpty validation rule to the builder.
+                /// </summary>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotEmptyRule), "")]
                 public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
                     this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder) where TRequest : class
                     => throw new global::System.NotImplementedException("Never gets called");
 
+                /// <summary>
+                /// Adds the IsNotEmpty validation rule to the async builder.
+                /// </summary>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotEmptyRule), "")]
                 public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
                     this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder) where TRequest : class
@@ -508,15 +517,24 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
 
         namespace Test.Rules
         {
+            /// <summary>
+            /// Extension methods for the <see cref="Test.Rules.GreaterThanRule{TTargetValue}"/> validation rule.
+            /// </summary>
             [global::ValiCraft.Attributes.DefaultMessage("'{TargetName}' must be greater than {ValueToCompare}, but received {TargetValue}.")]
             [global::ValiCraft.Attributes.RulePlaceholder("{ValueToCompare}", "valueToCompare")]
             public static class GreaterThanRuleExtensions
             {
+                /// <summary>
+                /// Adds the IsGreaterThan validation rule to the builder.
+                /// </summary>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GreaterThanRule<>), "<{0}>")]
                 public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
                     this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
                     => throw new global::System.NotImplementedException("Never gets called");
 
+                /// <summary>
+                /// Adds the IsGreaterThan validation rule to the async builder.
+                /// </summary>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GreaterThanRule<>), "<{0}>")]
                 public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
                     this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
@@ -531,15 +549,24 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
 
         namespace Test.Rules
         {
+            /// <summary>
+            /// Extension methods for the <see cref="Test.Rules.LessThanRule{TTargetValue}"/> validation rule.
+            /// </summary>
             [global::ValiCraft.Attributes.DefaultMessage("'{TargetName}' must be less than {ValueToCompare}, but received {TargetValue}.")]
             [global::ValiCraft.Attributes.RulePlaceholder("{ValueToCompare}", "valueToCompare")]
             public static class LessThanRuleExtensions
             {
+                /// <summary>
+                /// Adds the IsLessThan validation rule to the builder.
+                /// </summary>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.LessThanRule<>), "<{0}>")]
                 public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
                     this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
                     => throw new global::System.NotImplementedException("Never gets called");
 
+                /// <summary>
+                /// Adds the IsLessThan validation rule to the async builder.
+                /// </summary>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.LessThanRule<>), "<{0}>")]
                 public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
                     this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
@@ -554,15 +581,24 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
 
                                                                            namespace Test.Rules
                                                                            {
+                                                                               /// <summary>
+                                                                               /// Extension methods for the <see cref="Test.Rules.Predicate{TTargetType}"/> validation rule.
+                                                                               /// </summary>
                                                                                [global::ValiCraft.Attributes.DefaultMessage("{TargetName} doesn't satisfy the condition")]
                                                                                [global::ValiCraft.Attributes.DefaultErrorCode("CustomErrorCode")]
                                                                                public static class PredicateExtensions
                                                                                {
+                                                                                   /// <summary>
+                                                                                   /// Adds the IsPredicate validation rule to the builder.
+                                                                                   /// </summary>
                                                                                    [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Predicate<>), "<{0}>")]
                                                                                    public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
                                                                                        this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class
                                                                                        => throw new global::System.NotImplementedException("Never gets called");
 
+                                                                                   /// <summary>
+                                                                                   /// Adds the IsPredicate validation rule to the async builder.
+                                                                                   /// </summary>
                                                                                    [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Predicate<>), "<{0}>")]
                                                                                    public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
                                                                                        this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class
@@ -583,8 +619,12 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                        
                                                                        namespace Test.Validators
                                                                        {
+                                                                           /// <summary>
+                                                                           /// Generated validator for <see cref="global::Test.Requests.Order"/>.
+                                                                           /// </summary>
                                                                            public partial class OrderValidator : global::ValiCraft.IValidator<global::Test.Requests.Order>
                                                                            {
+                                                                               /// <inheritdoc />
                                                                                public global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>, global::Test.Requests.Order> Validate(global::Test.Requests.Order request)
                                                                                {
                                                                                    var errors = RunValidationLogic(request, null);
@@ -594,11 +634,13 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        : global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>, global::Test.Requests.Order>.Success(request);
                                                                                }
 
+                                                                               /// <inheritdoc />
                                                                                public global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError> ValidateToList(global::Test.Requests.Order request)
                                                                                {
                                                                                    return RunValidationLogic(request, null) ?? [];
                                                                                }
 
+                                                                               /// <inheritdoc />
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError> ValidateToList(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
@@ -1069,8 +1111,12 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                        
                                                                        namespace Test.Validators
                                                                        {
+                                                                           /// <summary>
+                                                                           /// Generated async validator for <see cref="global::Test.Requests.Order"/>.
+                                                                           /// </summary>
                                                                            public partial class AsyncOrderValidator : global::ValiCraft.IAsyncValidator<global::Test.Requests.Order>
                                                                            {
+                                                                               /// <inheritdoc />
                                                                                public async global::System.Threading.Tasks.Task<global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>, global::Test.Requests.Order>> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
                                                                                    var errors = await RunValidationLogicAsync(request, null, cancellationToken);
@@ -1080,11 +1126,13 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                        : global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>, global::Test.Requests.Order>.Success(request);
                                                                                }
 
+                                                                               /// <inheritdoc />
                                                                                public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>> ValidateToListAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
                                                                                    return await RunValidationLogicAsync(request, null, cancellationToken) ?? [];
                                                                                }
 
+                                                                               /// <inheritdoc />
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.IReadOnlyList<global::ValiCraft.IValidationError>> ValidateToListAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {

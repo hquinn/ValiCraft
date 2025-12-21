@@ -10,6 +10,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} cannot be the default value.")]
 public class NotDefault<TTargetType> : IValidationRule<TTargetType?>
 {
+    /// <inheritdoc />
     public static bool IsValid(TTargetType? property)
     {
         return !EqualityComparer<TTargetType>.Default.Equals(property, default);

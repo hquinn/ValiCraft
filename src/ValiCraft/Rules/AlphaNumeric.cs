@@ -9,6 +9,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} must contain only letters and numbers")]
 public class AlphaNumeric : IValidationRule<string?>
 {
+    /// <inheritdoc />
     public static bool IsValid(string? targetValue)
     {
         if (string.IsNullOrWhiteSpace(targetValue))

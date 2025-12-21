@@ -10,6 +10,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} must contain only unique items")]
 public class Unique<TTargetType> : IValidationRule<IEnumerable<TTargetType>?>
 {
+    /// <inheritdoc />
     public static bool IsValid(IEnumerable<TTargetType>? targetValue)
     {
         if (targetValue == null)

@@ -12,6 +12,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{Comparer}", "comparer")]
 public class CollectionNotContainsWithComparer<TTargetType> : IValidationRule<IEnumerable<TTargetType>?, TTargetType, IEqualityComparer<TTargetType>>
 {
+    /// <inheritdoc />
     public static bool IsValid(IEnumerable<TTargetType>? targetValue, TTargetType item, IEqualityComparer<TTargetType> comparer)
     {
         if (targetValue == null)

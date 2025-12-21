@@ -11,6 +11,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{Pattern}", "pattern")]
 public class Matches : IValidationRule<string?, string>
 {
+    /// <inheritdoc />
     public static bool IsValid(string? targetValue, string pattern)
     {
         if (targetValue == null)

@@ -12,6 +12,7 @@ namespace ValiCraft.Rules;
 public class NotIn<TTargetType> : IValidationRule<TTargetType, IEnumerable<TTargetType>>
     where TTargetType : IEquatable<TTargetType>
 {
+    /// <inheritdoc />
     public static bool IsValid(TTargetType targetValue, IEnumerable<TTargetType> forbiddenValues)
     {
         return !forbiddenValues.Contains(targetValue);

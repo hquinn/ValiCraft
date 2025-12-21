@@ -13,6 +13,7 @@ namespace ValiCraft.Rules;
 public class InValues<TTargetType> : IValidationRule<TTargetType, TTargetType[]>
     where TTargetType : IEquatable<TTargetType>
 {
+    /// <inheritdoc />
     public static bool IsValid(TTargetType targetValue, TTargetType[] allowedValues)
     {
         return allowedValues.Contains(targetValue);

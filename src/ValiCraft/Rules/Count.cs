@@ -11,6 +11,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{ExpectedCount}", "parameter")]
 public class Count<TTargetType> : IValidationRule<IEnumerable<TTargetType>?, int>
 {
+    /// <inheritdoc />
     public static bool IsValid(IEnumerable<TTargetType>? targetValue, int parameter)
     {
         if (targetValue == null)

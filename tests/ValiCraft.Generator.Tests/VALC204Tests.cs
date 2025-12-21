@@ -67,14 +67,23 @@ public class VALC204Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                                               
                                                                               namespace Test.Rules
                                                                               {
+                                                                                  /// <summary>
+                                                                                  /// Extension methods for the <see cref="Test.Rules.NotNullRule{T}"/> validation rule.
+                                                                                  /// </summary>
                                                                                   [global::ValiCraft.Attributes.DefaultMessage("'{TargetName}' must not be null.")]
                                                                                   public static class NotNullRuleExtensions
                                                                                   {
+                                                                                      /// <summary>
+                                                                                      /// Adds the IsNotNull validation rule to the builder.
+                                                                                      /// </summary>
                                                                                       [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotNullRule<>), "<{0}>")]
                                                                                       public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
                                                                                           this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder) where TRequest : class
                                                                                           => throw new global::System.NotImplementedException("Never gets called");
 
+                                                                                      /// <summary>
+                                                                                      /// Adds the IsNotNull validation rule to the async builder.
+                                                                                      /// </summary>
                                                                                       [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotNullRule<>), "<{0}>")]
                                                                                       public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
                                                                                           this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder) where TRequest : class

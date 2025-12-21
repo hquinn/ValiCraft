@@ -11,6 +11,7 @@ namespace ValiCraft.Rules;
 public class NegativeOrZero<TTargetType> : IValidationRule<TTargetType>
     where TTargetType : IComparable
 {
+    /// <inheritdoc />
     public static bool IsValid(TTargetType targetValue)
     {
         return targetValue.CompareTo(default(TTargetType)) <= 0;

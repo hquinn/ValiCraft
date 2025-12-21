@@ -11,6 +11,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{MaxLength}", "parameter")]
 public class MaxLength : IValidationRule<string?, int>
 {
+    /// <inheritdoc />
     public static bool IsValid(string? targetValue, int parameter)
     {
         // Null or empty strings have length 0, which should pass MaxLength validation

@@ -10,6 +10,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{Suffix}", "parameter")]
 public class EndsWith : IValidationRule<string?, string>
 {
+    /// <inheritdoc />
     public static bool IsValid(string? targetValue, string parameter)
     {
         if (targetValue == null)

@@ -11,6 +11,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{MaxLength}", "maxLength")]
 public class LengthBetween : IValidationRule<string?, int, int>
 {
+    /// <inheritdoc />
     public static bool IsValid(string? targetValue, int minLength, int maxLength)
     {
         if (targetValue == null)

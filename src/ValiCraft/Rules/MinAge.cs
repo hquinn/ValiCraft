@@ -10,6 +10,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{MinAge}", "parameter")]
 public class MinAge : IValidationRule<DateTime, int>
 {
+    /// <inheritdoc />
     public static bool IsValid(DateTime birthDate, int parameter)
     {
         var today = DateTime.Today;

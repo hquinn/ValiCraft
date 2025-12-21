@@ -62,13 +62,22 @@ public static class ValidationRuleExtensionSourceProvider
 
                                namespace {{validationRule.Class.Namespace}}
                                {
+                                   /// <summary>
+                                   /// Extension methods for the <see cref="{{validationRule.Class.XmlDocCref}}"/> validation rule.
+                                   /// </summary>
                                    {{attributesBuilder}}{{validationRule.Class.Accessibility}} static class {{validationRule.Class.Name}}Extensions
                                    {
+                                       /// <summary>
+                                       /// Adds the {{validationRule.NameForExtensionMethod}} validation rule to the builder.
+                                       /// </summary>
                                        [global::{{KnownNames.Attributes.MapToValidationRule}}(typeof({{mapToValidationRuleData.FullyQualifiedUnboundedName}}), "{{mapToValidationRuleData.ValidationRuleGenericFormat}}")]
                                        {{validationRule.Class.Accessibility}} static global::{{KnownNames.Interfaces.IValidationRuleBuilderType}}<TRequest, TTargetType> {{validationRule.NameForExtensionMethod}}<{{validationRule.GetGenericArgumentsForExtensionMethod()}}>(
                                            {{GetMethodParameters(validationRule, false)}}) {{GetFullWhereClause(validationRule)}}
                                            => throw new global::System.NotImplementedException("Never gets called");
 
+                                       /// <summary>
+                                       /// Adds the {{validationRule.NameForExtensionMethod}} validation rule to the async builder.
+                                       /// </summary>
                                        [global::{{KnownNames.Attributes.MapToValidationRule}}(typeof({{mapToValidationRuleData.FullyQualifiedUnboundedName}}), "{{mapToValidationRuleData.ValidationRuleGenericFormat}}")]
                                        {{validationRule.Class.Accessibility}} static global::{{KnownNames.Interfaces.IAsyncValidationRuleBuilderType}}<TRequest, TTargetType> {{validationRule.NameForExtensionMethod}}<{{validationRule.GetGenericArgumentsForExtensionMethod()}}>(
                                            {{GetMethodParameters(validationRule, true)}}) {{GetFullWhereClause(validationRule)}}

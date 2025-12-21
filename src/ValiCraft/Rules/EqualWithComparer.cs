@@ -12,6 +12,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{Comparer}", "comparer")]
 public class EqualWithComparer<TTargetType> : IValidationRule<TTargetType, TTargetType, IEqualityComparer<TTargetType>>
 {
+    /// <inheritdoc />
     public static bool IsValid(TTargetType property, TTargetType value, IEqualityComparer<TTargetType> comparer)
     {
         return comparer.Equals(property, value);

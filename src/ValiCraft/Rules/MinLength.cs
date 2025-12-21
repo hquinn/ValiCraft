@@ -10,6 +10,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{MinLength}", "parameter")]
 public class MinLength : IValidationRule<string?, int>
 {
+    /// <inheritdoc />
     public static bool IsValid(string? targetValue, int parameter)
     {
         return targetValue?.Length >= parameter;

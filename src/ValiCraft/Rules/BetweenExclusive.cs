@@ -13,6 +13,7 @@ namespace ValiCraft.Rules;
 public class BetweenExclusive<TTargetType> : IValidationRule<TTargetType, TTargetType, TTargetType>
     where TTargetType : IComparable
 {
+    /// <inheritdoc />
     public static bool IsValid(TTargetType targetValue, TTargetType min, TTargetType max)
     {
         return targetValue.CompareTo(min) > 0 && targetValue.CompareTo(max) < 0;

@@ -9,6 +9,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} is must be not null or contain only white space.")]
 public class NotNullOrWhiteSpace : IValidationRule<string?>
 {
+    /// <inheritdoc />
     public static bool IsValid(string? targetValue)
     {
         return !string.IsNullOrWhiteSpace(targetValue);

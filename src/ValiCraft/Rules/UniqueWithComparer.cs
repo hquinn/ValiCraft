@@ -11,6 +11,7 @@ namespace ValiCraft.Rules;
 [RulePlaceholder("{Comparer}", "comparer")]
 public class UniqueWithComparer<TTargetType> : IValidationRule<IEnumerable<TTargetType>?, IEqualityComparer<TTargetType>>
 {
+    /// <inheritdoc />
     public static bool IsValid(IEnumerable<TTargetType>? targetValue, IEqualityComparer<TTargetType> comparer)
     {
         if (targetValue == null)

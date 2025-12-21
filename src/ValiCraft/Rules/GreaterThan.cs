@@ -12,6 +12,7 @@ namespace ValiCraft.Rules;
 public class GreaterThan<TTargetType> : IValidationRule<TTargetType, TTargetType>
     where TTargetType : IComparable
 {
+    /// <inheritdoc />
     public static bool IsValid(TTargetType property, TTargetType parameter)
     {
         return property.CompareTo(parameter) > 0;

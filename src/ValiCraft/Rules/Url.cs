@@ -9,6 +9,7 @@ namespace ValiCraft.Rules;
 [DefaultMessage("{TargetName} must be a valid URL")]
 public class Url : IValidationRule<string?>
 {
+    /// <inheritdoc />
     public static bool IsValid(string? targetValue)
     {
         if (string.IsNullOrWhiteSpace(targetValue))

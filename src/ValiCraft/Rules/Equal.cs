@@ -12,6 +12,7 @@ namespace ValiCraft.Rules;
 public class Equal<TTargetType> : IValidationRule<TTargetType, TTargetType>
     where TTargetType : IEquatable<TTargetType>
 {
+    /// <inheritdoc />
     public static bool IsValid(TTargetType property, TTargetType parameter)
     {
         return property.Equals(parameter);
