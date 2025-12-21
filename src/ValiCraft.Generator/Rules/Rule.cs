@@ -60,6 +60,8 @@ public abstract record Rule(
                            """;
         }
 
+        var metadataValue = GetMetadata(indent);
+
         return $$"""
                  {{indent}}{
                  {{indent}}    errors ??= new({{context.Counter}});
@@ -70,10 +72,40 @@ public abstract record Rule(
                  {{indent}}        Severity = {{GetSeverity(errorSeverity)}},
                  {{indent}}        TargetName = "{{targetNameInfo.Value}}",
                  {{indent}}        TargetPath = {{targetPath}},
-                 {{indent}}        AttemptedValue = {{targetAccess}},
+                 {{indent}}        AttemptedValue = {{targetAccess}},{{metadataValue}}
                  {{indent}}    });
                  {{GetGotoLabelIfNeeded(indent, context)}}{{indent}}}
                  """;
+    }
+
+    private string GetMetadata(IndentModel indent)
+    {
+        if (RuleOverrides.OverrideMetadata is not { Count: > 0 })
+        {
+            return string.Empty;
+        }
+
+        var entries = new StringBuilder();
+        foreach (var entry in RuleOverrides.OverrideMetadata)
+        {
+            var valueExpression = entry.IsLiteral && entry.ValueType == "string"
+                ? "\"" + entry.Value + "\""
+                : entry.Value;
+            
+            entries.AppendLine();
+            entries.Append(indent + "            { \"" + entry.Key + "\", " + valueExpression + " },");
+        }
+
+        var result = new StringBuilder();
+        result.AppendLine();
+        result.Append(indent + "        Metadata = new global::System.Collections.Generic.Dictionary<string, object>");
+        result.AppendLine();
+        result.Append(indent + "        {");
+        result.Append(entries);
+        result.AppendLine();
+        result.Append(indent + "        },");
+        
+        return result.ToString();
     }
 
     private string GetSeverity(string errorSeverityType)

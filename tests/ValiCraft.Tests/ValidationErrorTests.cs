@@ -183,4 +183,73 @@ public class ValidationErrorTests
         // Assert
         error.Should().BeAssignableTo<IValidationError>();
     }
+
+    [Fact]
+    public void ValidationError_Metadata_IsNullByDefault()
+    {
+        // Arrange & Act
+        var error = new ValidationError<string>
+        {
+            Code = "TEST_ERROR",
+            Message = "Test message",
+            TargetName = "TestProperty",
+            TargetPath = "Root.TestProperty",
+            AttemptedValue = "test"
+        };
+
+        // Assert
+        error.Metadata.Should().BeNull();
+    }
+
+    [Fact]
+    public void ValidationError_Metadata_CanBeSet()
+    {
+        // Arrange
+        var metadata = new Dictionary<string, object>
+        {
+            { "MinLength", 5 },
+            { "MaxLength", 10 },
+            { "CustomKey", "CustomValue" }
+        };
+
+        // Act
+        var error = new ValidationError<string>
+        {
+            Code = "TEST_ERROR",
+            Message = "Test message",
+            TargetName = "TestProperty",
+            TargetPath = "Root.TestProperty",
+            AttemptedValue = "test",
+            Metadata = metadata
+        };
+
+        // Assert
+        error.Metadata.Should().NotBeNull();
+        error.Metadata!["MinLength"].Should().Be(5);
+        error.Metadata["MaxLength"].Should().Be(10);
+        error.Metadata["CustomKey"].Should().Be("CustomValue");
+    }
+
+    [Fact]
+    public void ValidationError_IValidationError_Metadata_ReturnsValue()
+    {
+        // Arrange
+        var metadata = new Dictionary<string, object> { { "Key", "Value" } };
+        var error = new ValidationError<string>
+        {
+            Code = "TEST_ERROR",
+            Message = "Test message",
+            TargetName = "TestProperty",
+            TargetPath = "Root.TestProperty",
+            AttemptedValue = "test",
+            Metadata = metadata
+        };
+
+        // Act
+        IValidationError errorInterface = error;
+
+        // Assert
+        errorInterface.Metadata.Should().NotBeNull();
+        errorInterface.Metadata!["Key"].Should().Be("Value");
+    }
 }

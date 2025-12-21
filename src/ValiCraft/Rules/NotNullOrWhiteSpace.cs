@@ -9,7 +9,7 @@ namespace ValiCraft.Rules;
 /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
 /// </remarks>
 [GenerateRuleExtension("IsNotNullOrWhiteSpace")]
-[DefaultMessage("{TargetName} is must be not null or contain only white space.")]
+[DefaultMessage("{TargetName} must not be null or contain only whitespace.")]
 public class NotNullOrWhiteSpace : IValidationRule<string?>
 {
     /// <inheritdoc />

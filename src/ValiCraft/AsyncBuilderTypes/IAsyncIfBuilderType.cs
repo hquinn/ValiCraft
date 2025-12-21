@@ -34,4 +34,19 @@ public interface IAsyncIfBuilderType<TRequest, TTarget> : IAsyncBuilderType<TReq
     /// <param name="errorCode">The error code for programmatic error handling.</param>
     /// <returns>A builder for further configuration.</returns>
     IAsyncWithErrorCodeBuilderType<TRequest, TTarget> WithErrorCode(string errorCode);
+
+    /// <summary>
+    /// Sets the severity level for the validation error.
+    /// </summary>
+    /// <param name="severity">The severity level (Info, Warning, or Error).</param>
+    /// <returns>A builder for further configuration.</returns>
+    IAsyncWithSeverityBuilderType<TRequest, TTarget> WithSeverity(ErrorSeverity severity);
+
+    /// <summary>
+    /// Adds metadata to the validation error.
+    /// </summary>
+    /// <param name="key">The metadata key.</param>
+    /// <param name="value">The metadata value.</param>
+    /// <returns>A builder for further configuration.</returns>
+    IAsyncWithMetadataBuilderType<TRequest, TTarget> WithMetadata(string key, object value);
 }

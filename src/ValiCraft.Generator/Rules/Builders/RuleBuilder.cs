@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
+using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Rules.Builders;
 
@@ -12,6 +15,7 @@ public abstract class RuleBuilder
     private MessageInfo? _targetName;
     private MessageInfo? _severity;
     private IfConditionModel? _ifCondition;
+    private List<MetadataEntry>? _metadata;
     protected IfConditionModel IfCondition => _ifCondition ?? new BlankIfConditionModel(false);
 
     public void WithMessage(MessageInfo? message)
@@ -34,6 +38,12 @@ public abstract class RuleBuilder
         _severity = severity;
     }
 
+    public void WithMetadata(MetadataEntry entry)
+    {
+        _metadata ??= new List<MetadataEntry>();
+        _metadata.Add(entry);
+    }
+
     public void WithCondition(InvocationExpressionSyntax invocation)
     {
         var ifConditionModel = IfConditionFactory.Create(invocation, false);
@@ -46,7 +56,12 @@ public abstract class RuleBuilder
 
     protected RuleOverrideData GetRuleOverrideData()
     {
-        return new RuleOverrideData(_message, _targetName, _errorCode, _severity);
+        return new RuleOverrideData(
+            _message, 
+            _targetName, 
+            _errorCode, 
+            _severity,
+            _metadata is not null ? new EquatableArray<MetadataEntry>(_metadata.ToArray()) : null);
     }
 
     public abstract Rule Build();

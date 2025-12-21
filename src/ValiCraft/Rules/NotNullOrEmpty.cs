@@ -9,7 +9,7 @@ namespace ValiCraft.Rules;
 /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
 /// </remarks>
 [GenerateRuleExtension("IsNotNullOrEmpty")]
-[DefaultMessage("{TargetName} is must be not null or empty.")]
+[DefaultMessage("{TargetName} must not be null or empty.")]
 public class NotNullOrEmpty : IValidationRule<string?>
 {
     /// <inheritdoc />

@@ -1,14 +1,22 @@
 namespace ValiCraft.BuilderTypes;
 
 /// <summary>
-/// Builder type returned after setting an error code with <c>WithErrorCode()</c>.
-/// Allows further configuration of messages and target names.
+/// Builder type returned after setting metadata with <c>WithMetadata()</c>.
+/// Allows further configuration with messages, error codes, target names, severity, and additional metadata.
 /// </summary>
 /// <typeparam name="TRequest">The type of the object being validated.</typeparam>
 /// <typeparam name="TTarget">The type of the property being validated.</typeparam>
-public interface IWithErrorCodeBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
+public interface IWithMetadataBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
     where TRequest : class
 {
+    /// <summary>
+    /// Adds additional metadata to the validation error.
+    /// </summary>
+    /// <param name="key">The metadata key.</param>
+    /// <param name="value">The metadata value.</param>
+    /// <returns>A builder for further configuration.</returns>
+    IWithMetadataBuilderType<TRequest, TTarget> WithMetadata(string key, object value);
+
     /// <summary>
     /// Sets a custom error message for the validation rule.
     /// </summary>
@@ -17,11 +25,11 @@ public interface IWithErrorCodeBuilderType<TRequest, TTarget> : IBuilderType<TRe
     IWithMessageBuilderType<TRequest, TTarget> WithMessage(string message);
 
     /// <summary>
-    /// Sets a custom display name for the validated property in error messages.
+    /// Sets a custom error code for programmatic error handling.
     /// </summary>
-    /// <param name="targetName">The display name to use instead of the property name.</param>
+    /// <param name="errorCode">The error code identifier.</param>
     /// <returns>A builder for further configuration.</returns>
-    IWithTargetNameBuilderType<TRequest, TTarget> WithTargetName(string targetName);
+    IWithErrorCodeBuilderType<TRequest, TTarget> WithErrorCode(string errorCode);
 
     /// <summary>
     /// Sets the severity level for the validation error.
@@ -31,10 +39,9 @@ public interface IWithErrorCodeBuilderType<TRequest, TTarget> : IBuilderType<TRe
     IWithSeverityBuilderType<TRequest, TTarget> WithSeverity(ErrorSeverity severity);
 
     /// <summary>
-    /// Adds metadata to the validation error.
+    /// Sets a custom target name for display in error messages.
     /// </summary>
-    /// <param name="key">The metadata key.</param>
-    /// <param name="value">The metadata value.</param>
+    /// <param name="targetName">The display name for the target property.</param>
     /// <returns>A builder for further configuration.</returns>
-    IWithMetadataBuilderType<TRequest, TTarget> WithMetadata(string key, object value);
+    IWithTargetNameBuilderType<TRequest, TTarget> WithTargetName(string targetName);
 }

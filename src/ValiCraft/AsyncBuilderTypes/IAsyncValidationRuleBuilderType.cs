@@ -48,6 +48,14 @@ public interface IAsyncValidationRuleBuilderType<TRequest, TTarget> : IAsyncBuil
     IAsyncWithSeverityBuilderType<TRequest, TTarget> WithSeverity(ErrorSeverity severity);
 
     /// <summary>
+    /// Adds metadata to the validation error.
+    /// </summary>
+    /// <param name="key">The metadata key.</param>
+    /// <param name="value">The metadata value.</param>
+    /// <returns>A builder for further configuration.</returns>
+    IAsyncWithMetadataBuilderType<TRequest, TTarget> WithMetadata(string key, object value);
+
+    /// <summary>
     /// Applies a condition that must be met for the validation rule to execute.
     /// </summary>
     /// <param name="condition">A predicate that returns <c>true</c> if the rule should be applied.</param>

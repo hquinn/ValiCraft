@@ -150,6 +150,26 @@ public class TargetRuleChainFactory : IRuleChainFactory
                 }
     
                 return true;
+            case "WithMetadata":
+                if (invocation.ArgumentList.Arguments.Count >= 2)
+                {
+                    var keyArg = invocation.ArgumentList.Arguments[0].Expression;
+                    var valueArg = invocation.ArgumentList.Arguments[1].Expression;
+                    
+                    var keyInfo = MessageInfo.CreateFromExpression(keyArg);
+                    var valueInfo = MessageInfo.CreateFromExpression(valueArg);
+                    
+                    if (keyInfo is not null && valueInfo is not null && keyInfo.IsLiteral)
+                    {
+                        ruleBuilder?.WithMetadata(new MetadataEntry(
+                            keyInfo.Value,
+                            valueInfo.Value,
+                            GetValueType(valueArg),
+                            valueInfo.IsLiteral));
+                    }
+                }
+    
+                return true;
             case "If":
                 if (argumentExpression is not null)
                 {
@@ -163,5 +183,24 @@ public class TargetRuleChainFactory : IRuleChainFactory
         }
     
         return false;
+    }
+
+    private static string GetValueType(ExpressionSyntax expression)
+    {
+        return expression switch
+        {
+            LiteralExpressionSyntax literal => literal.Token.Value switch
+            {
+                string => "string",
+                int => "int",
+                long => "long",
+                double => "double",
+                float => "float",
+                decimal => "decimal",
+                bool => "bool",
+                _ => "object"
+            },
+            _ => "object"
+        };
     }
 }

@@ -29,4 +29,12 @@ public interface IWithSeverityBuilderType<TRequest, TTarget> : IBuilderType<TReq
     /// <param name="errorCode">The error code identifier.</param>
     /// <returns>A builder for further configuration.</returns>
     IWithErrorCodeBuilderType<TRequest, TTarget> WithErrorCode(string errorCode);
+
+    /// <summary>
+    /// Adds metadata to the validation error.
+    /// </summary>
+    /// <param name="key">The metadata key.</param>
+    /// <param name="value">The metadata value.</param>
+    /// <returns>A builder for further configuration.</returns>
+    IWithMetadataBuilderType<TRequest, TTarget> WithMetadata(string key, object value);
 }

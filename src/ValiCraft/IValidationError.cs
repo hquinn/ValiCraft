@@ -38,4 +38,9 @@ public interface IValidationError
     /// The value of the property that was attempted.
     /// </summary>
     object? AttemptedValue { get; }
+
+    /// <summary>
+    /// Optional metadata associated with the validation error, such as rule parameters or custom context.
+    /// </summary>
+    IReadOnlyDictionary<string, object>? Metadata { get; }
 }

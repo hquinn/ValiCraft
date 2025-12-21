@@ -1,14 +1,22 @@
 namespace ValiCraft.AsyncBuilderTypes;
 
 /// <summary>
-/// Builder type returned after setting a target name with <c>WithTargetName()</c>.
-/// Allows further configuration of messages and error codes.
+/// Builder type returned after setting metadata with <c>WithMetadata()</c>.
+/// Allows further configuration with messages, error codes, target names, severity, and additional metadata.
 /// </summary>
 /// <typeparam name="TRequest">The type of the object being validated.</typeparam>
 /// <typeparam name="TTarget">The type of the property being validated.</typeparam>
-public interface IAsyncWithTargetNameBuilderType<TRequest, TTarget> : IAsyncBuilderType<TRequest, TTarget>
+public interface IAsyncWithMetadataBuilderType<TRequest, TTarget> : IAsyncBuilderType<TRequest, TTarget>
     where TRequest : class
 {
+    /// <summary>
+    /// Adds additional metadata to the validation error.
+    /// </summary>
+    /// <param name="key">The metadata key.</param>
+    /// <param name="value">The metadata value.</param>
+    /// <returns>A builder for further configuration.</returns>
+    IAsyncWithMetadataBuilderType<TRequest, TTarget> WithMetadata(string key, object value);
+
     /// <summary>
     /// Sets a custom error message for the validation rule.
     /// </summary>
@@ -31,10 +39,9 @@ public interface IAsyncWithTargetNameBuilderType<TRequest, TTarget> : IAsyncBuil
     IAsyncWithSeverityBuilderType<TRequest, TTarget> WithSeverity(ErrorSeverity severity);
 
     /// <summary>
-    /// Adds metadata to the validation error.
+    /// Sets a custom target name for display in error messages.
     /// </summary>
-    /// <param name="key">The metadata key.</param>
-    /// <param name="value">The metadata value.</param>
+    /// <param name="targetName">The display name for the target property.</param>
     /// <returns>A builder for further configuration.</returns>
-    IAsyncWithMetadataBuilderType<TRequest, TTarget> WithMetadata(string key, object value);
+    IAsyncWithTargetNameBuilderType<TRequest, TTarget> WithTargetName(string targetName);
 }

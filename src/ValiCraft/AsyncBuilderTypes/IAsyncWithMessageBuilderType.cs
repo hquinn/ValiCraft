@@ -29,4 +29,12 @@ public interface IAsyncWithMessageBuilderType<TRequest, TTarget> : IAsyncBuilder
     /// <param name="severity">The severity level (Info, Warning, or Error).</param>
     /// <returns>A builder for further configuration.</returns>
     IAsyncWithSeverityBuilderType<TRequest, TTarget> WithSeverity(ErrorSeverity severity);
+
+    /// <summary>
+    /// Adds metadata to the validation error.
+    /// </summary>
+    /// <param name="key">The metadata key.</param>
+    /// <param name="value">The metadata value.</param>
+    /// <returns>A builder for further configuration.</returns>
+    IAsyncWithMetadataBuilderType<TRequest, TTarget> WithMetadata(string key, object value);
 }

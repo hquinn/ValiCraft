@@ -27,6 +27,11 @@ public readonly record struct ValidationError<TTarget> : IValidationError
     /// </summary>
     public required TTarget AttemptedValue { get; init; }
 
+    /// <summary>
+    /// Gets optional metadata associated with the validation error, such as rule parameters or custom context.
+    /// </summary>
+    public IReadOnlyDictionary<string, object>? Metadata { get; init; }
+
     // Explicit interface implementation to return the value as an object.
     object? IValidationError.AttemptedValue => this.AttemptedValue;
 }

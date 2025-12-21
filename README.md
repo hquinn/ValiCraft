@@ -22,7 +22,7 @@ ValiCraft uses C# source generators to transform your validation rules into high
 dotnet add package ValiCraft
 ```
 
-This will also add a dependency to `MonadCraft`, a library containing the Result<TError, TValue>` type.
+This will also add a dependency to `MonadCraft`, a library containing the `Result<TError, TValue>` type.
 
 ## Quick Start
 
