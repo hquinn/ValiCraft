@@ -5,6 +5,9 @@ namespace ValiCraft.Rules;
 /// <summary>
 /// Validates that a string contains only alphanumeric characters (letters and digits).
 /// </summary>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsAlphaNumeric")]
 [DefaultMessage("{TargetName} must contain only letters and numbers")]
 public class AlphaNumeric : IValidationRule<string?>

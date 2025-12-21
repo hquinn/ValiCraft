@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a value is between a minimum and maximum value (inclusive).
 /// </summary>
 /// <typeparam name="TTargetType">The type of value being compared. Must implement IComparable.</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{Min}</c>, <c>{Max}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsBetween")]
 [DefaultMessage("{TargetName} must be between {Min} and {Max}. Value received is {TargetValue}")]
 [RulePlaceholder("{Min}", "min")]

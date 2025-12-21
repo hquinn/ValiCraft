@@ -5,6 +5,9 @@ namespace ValiCraft.Rules;
 /// <summary>
 /// Validates that a string starts with a specified prefix.
 /// </summary>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{Prefix}</c>.
+/// </remarks>
 [GenerateRuleExtension("StartsWith")]
 [DefaultMessage("{TargetName} must start with {Prefix}")]
 [RulePlaceholder("{Prefix}", "parameter")]

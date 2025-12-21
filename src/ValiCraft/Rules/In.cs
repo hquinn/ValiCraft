@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a value is contained within a specified set of allowed values.
 /// </summary>
 /// <typeparam name="TTargetType">The type of value being validated</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{AllowedValues}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsIn")]
 [DefaultMessage("{TargetName} must be one of the allowed values")]
 [RulePlaceholder("{AllowedValues}", "allowedValues")]

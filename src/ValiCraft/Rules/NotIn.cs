@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a value is not contained within a specified set of forbidden values.
 /// </summary>
 /// <typeparam name="TTargetType">The type of value being validated</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ForbiddenValues}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsNotIn")]
 [DefaultMessage("{TargetName} must not be one of the forbidden values")]
 [RulePlaceholder("{ForbiddenValues}", "forbiddenValues")]

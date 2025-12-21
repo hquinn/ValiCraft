@@ -5,6 +5,9 @@ namespace ValiCraft.Rules;
 /// <summary>
 /// Validates that a string ends with a specified suffix.
 /// </summary>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{Suffix}</c>.
+/// </remarks>
 [GenerateRuleExtension("EndsWith")]
 [DefaultMessage("{TargetName} must end with {Suffix}")]
 [RulePlaceholder("{Suffix}", "parameter")]

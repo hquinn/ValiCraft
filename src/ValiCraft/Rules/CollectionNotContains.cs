@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a collection does not contain a specified item.
 /// </summary>
 /// <typeparam name="TTargetType">The type of items in the collection. Must implement IEquatable.</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{Item}</c>.
+/// </remarks>
 [GenerateRuleExtension("CollectionNotContains")]
 [DefaultMessage("{TargetName} must not contain the specified item")]
 [RulePlaceholder("{Item}", "parameter")]

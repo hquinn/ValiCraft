@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a value does not equal another specified value.
 /// </summary>
 /// <typeparam name="TTargetType">The type of value being compared</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsNotEqualTo")]
 [DefaultMessage("{TargetName} must not be equal to {ValueToCompare}. Value received is {TargetValue}")]
 [RulePlaceholder("{ValueToCompare}", "parameter")]

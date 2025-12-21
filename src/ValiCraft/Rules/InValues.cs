@@ -7,6 +7,9 @@ namespace ValiCraft.Rules;
 /// This allows a more convenient syntax: IsInValues("A", "B", "C") instead of IsIn(new[] { "A", "B", "C" })
 /// </summary>
 /// <typeparam name="TTargetType">The type of value being validated</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{AllowedValues}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsInValues")]
 [DefaultMessage("{TargetName} must be one of the allowed values")]
 [RulePlaceholder("{AllowedValues}", "allowedValues")]

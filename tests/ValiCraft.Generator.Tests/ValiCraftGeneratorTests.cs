@@ -495,6 +495,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 /// <summary>
                 /// Adds the IsNotEmpty validation rule to the builder.
                 /// </summary>
+                /// <remarks>
+                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+                /// </remarks>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotEmptyRule), "")]
                 public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
                     this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder) where TRequest : class
@@ -503,6 +506,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 /// <summary>
                 /// Adds the IsNotEmpty validation rule to the async builder.
                 /// </summary>
+                /// <remarks>
+                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+                /// </remarks>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotEmptyRule), "")]
                 public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
                     this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder) where TRequest : class
@@ -527,6 +533,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 /// <summary>
                 /// Adds the IsGreaterThan validation rule to the builder.
                 /// </summary>
+                /// <remarks>
+                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
+                /// </remarks>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GreaterThanRule<>), "<{0}>")]
                 public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
                     this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
@@ -535,6 +544,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 /// <summary>
                 /// Adds the IsGreaterThan validation rule to the async builder.
                 /// </summary>
+                /// <remarks>
+                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
+                /// </remarks>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GreaterThanRule<>), "<{0}>")]
                 public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
                     this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
@@ -559,6 +571,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 /// <summary>
                 /// Adds the IsLessThan validation rule to the builder.
                 /// </summary>
+                /// <remarks>
+                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
+                /// </remarks>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.LessThanRule<>), "<{0}>")]
                 public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
                     this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
@@ -567,6 +582,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                 /// <summary>
                 /// Adds the IsLessThan validation rule to the async builder.
                 /// </summary>
+                /// <remarks>
+                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
+                /// </remarks>
                 [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.LessThanRule<>), "<{0}>")]
                 public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
                     this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
@@ -591,6 +609,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                    /// <summary>
                                                                                    /// Adds the IsPredicate validation rule to the builder.
                                                                                    /// </summary>
+                                                                                   /// <remarks>
+                                                                                   /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+                                                                                   /// </remarks>
                                                                                    [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Predicate<>), "<{0}>")]
                                                                                    public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
                                                                                        this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class
@@ -599,6 +620,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                                    /// <summary>
                                                                                    /// Adds the IsPredicate validation rule to the async builder.
                                                                                    /// </summary>
+                                                                                   /// <remarks>
+                                                                                   /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+                                                                                   /// </remarks>
                                                                                    [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Predicate<>), "<{0}>")]
                                                                                    public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
                                                                                        this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class

@@ -76,6 +76,9 @@ public class VALC204Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                                                       /// <summary>
                                                                                       /// Adds the IsNotNull validation rule to the builder.
                                                                                       /// </summary>
+                                                                                      /// <remarks>
+                                                                                      /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+                                                                                      /// </remarks>
                                                                                       [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotNullRule<>), "<{0}>")]
                                                                                       public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
                                                                                           this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder) where TRequest : class
@@ -84,6 +87,9 @@ public class VALC204Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                                                       /// <summary>
                                                                                       /// Adds the IsNotNull validation rule to the async builder.
                                                                                       /// </summary>
+                                                                                      /// <remarks>
+                                                                                      /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+                                                                                      /// </remarks>
                                                                                       [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotNullRule<>), "<{0}>")]
                                                                                       public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
                                                                                           this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder) where TRequest : class

@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a collection has a number of items within a specified range.
 /// </summary>
 /// <typeparam name="TTargetType">The type of items in the collection</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{MinCount}</c>, <c>{MaxCount}</c>.
+/// </remarks>
 [GenerateRuleExtension("HasCountBetween")]
 [DefaultMessage("{TargetName} must have between {MinCount} and {MaxCount} items")]
 [RulePlaceholder("{MinCount}", "minCount")]

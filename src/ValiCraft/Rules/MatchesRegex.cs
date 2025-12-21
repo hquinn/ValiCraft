@@ -7,6 +7,9 @@ namespace ValiCraft.Rules;
 /// Validates that a string matches a specified compiled regular expression.
 /// This is more efficient than the string pattern version as the Regex is pre-compiled.
 /// </summary>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+/// </remarks>
 [GenerateRuleExtension("MatchesRegex")]
 [DefaultMessage("{TargetName} must match the specified pattern")]
 public class MatchesRegex : IValidationRule<string?, Regex>

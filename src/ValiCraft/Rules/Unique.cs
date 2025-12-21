@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a collection contains only unique items (no duplicates).
 /// </summary>
 /// <typeparam name="TTargetType">The type of items in the collection.</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsUnique")]
 [DefaultMessage("{TargetName} must contain only unique items")]
 public class Unique<TTargetType> : IValidationRule<IEnumerable<TTargetType>?>

@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a collection has exactly a specified number of items.
 /// </summary>
 /// <typeparam name="TTargetType">The type of items in the collection</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ExpectedCount}</c>.
+/// </remarks>
 [GenerateRuleExtension("HasCount")]
 [DefaultMessage("{TargetName} must have exactly {ExpectedCount} items")]
 [RulePlaceholder("{ExpectedCount}", "parameter")]

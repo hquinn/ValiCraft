@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a DateTime value is at or before the specified reference time.
 /// This allows for testable date validation by providing a reference point.
 /// </summary>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ReferenceDate}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsAtOrBefore")]
 [DefaultMessage("{TargetName} must be at or before {ReferenceDate}")]
 [RulePlaceholder("{ReferenceDate}", "referenceDate")]

@@ -5,6 +5,9 @@ namespace ValiCraft.Rules;
 /// <summary>
 /// Validates that a string is a valid URL format.
 /// </summary>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsUrl")]
 [DefaultMessage("{TargetName} must be a valid URL")]
 public class Url : IValidationRule<string?>

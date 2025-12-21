@@ -5,6 +5,9 @@ namespace ValiCraft.Rules;
 /// <summary>
 /// Validates that a birth date represents a person who is at most a specified maximum age in years.
 /// </summary>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{MaxAge}</c>.
+/// </remarks>
 [GenerateRuleExtension("HasMaxAge")]
 [DefaultMessage("{TargetName} must represent an age of at most {MaxAge} years")]
 [RulePlaceholder("{MaxAge}", "parameter")]

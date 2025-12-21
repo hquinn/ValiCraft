@@ -5,6 +5,9 @@ namespace ValiCraft.Rules;
 /// <summary>
 /// Validates that a string contains a specified substring.
 /// </summary>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{Substring}</c>.
+/// </remarks>
 [GenerateRuleExtension("Contains")]
 [DefaultMessage("{TargetName} must contain {Substring}")]
 [RulePlaceholder("{Substring}", "parameter")]

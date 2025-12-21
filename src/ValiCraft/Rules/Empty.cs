@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a collection is empty or null.
 /// </summary>
 /// <typeparam name="TTargetType">The type of items in the collection.</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsEmpty")]
 [DefaultMessage("{TargetName} must be empty")]
 public class Empty<TTargetType> : IValidationRule<IEnumerable<TTargetType>?>

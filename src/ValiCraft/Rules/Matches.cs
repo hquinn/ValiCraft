@@ -7,8 +7,11 @@ namespace ValiCraft.Rules;
 /// Validates that a string matches a specified regular expression pattern.
 /// </summary>
 /// <remarks>
+/// <para>Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{Pattern}</c>.</para>
+/// <para>
 /// For frequently validated patterns, consider using <see cref="MatchesRegex"/> with a
 /// pre-compiled <see cref="Regex"/> instance for better performance.
+/// </para>
 /// </remarks>
 [GenerateRuleExtension("Matches")]
 [DefaultMessage("{TargetName} must match the pattern {Pattern}")]

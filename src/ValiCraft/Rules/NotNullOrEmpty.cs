@@ -5,6 +5,9 @@ namespace ValiCraft.Rules;
 /// <summary>
 /// Validates that a string is not null or empty.
 /// </summary>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsNotNullOrEmpty")]
 [DefaultMessage("{TargetName} is must be not null or empty.")]
 public class NotNullOrEmpty : IValidationRule<string?>

@@ -6,6 +6,9 @@ namespace ValiCraft.Rules;
 /// Validates that a value is equal to another specified value using a custom equality comparer.
 /// </summary>
 /// <typeparam name="TTargetType">The type of value being compared.</typeparam>
+/// <remarks>
+/// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>, <c>{Comparer}</c>.
+/// </remarks>
 [GenerateRuleExtension("IsEqualTo")]
 [DefaultMessage("{TargetName} must be equal to {ValueToCompare}. Value received is {TargetValue}")]
 [RulePlaceholder("{ValueToCompare}", "value")]
