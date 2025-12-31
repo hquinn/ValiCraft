@@ -9,6 +9,7 @@ public static class KnownNames
         public const string BuilderTypes =  $"{Base}.BuilderTypes";
         public const string AsyncBuilderTypes =  $"{Base}.AsyncBuilderTypes";
         public const string MonadCraft = "MonadCraft";
+        public const string ErrorCraft = "ErrorCraft";
     }
 
     public static class AttributeNames
@@ -47,7 +48,7 @@ public static class KnownNames
     public static class Types
     {
         public const string Result = $"{Namespaces.MonadCraft}.Result";
-        public const string ValidationError = $"{Namespaces.Base}.ValidationError";
+        public const string ValidationError = $"{Namespaces.ErrorCraft}.ValidationError";
     }
 
     public static class Interfaces
@@ -59,16 +60,16 @@ public static class KnownNames
         public const string IAsyncValidationRuleBuilderType = $"{Namespaces.AsyncBuilderTypes}.IAsyncValidationRuleBuilderType";
         public const string IBuilderType = $"{Namespaces.BuilderTypes}.IBuilderType";
         public const string IAsyncBuilderType = $"{Namespaces.AsyncBuilderTypes}.IAsyncBuilderType";
-        public const string IValidationError = $"{Namespaces.Base}.IValidationError";
+        public const string IValidationError = $"{Namespaces.ErrorCraft}.IValidationError";
         
         public static string GetValidatorInterface(bool isAsync)
         {
             if (isAsync)
             {
-                return Interfaces.IAsyncValidator;
+                return IAsyncValidator;
             }
             
-            return Interfaces.IValidator;
+            return IValidator;
         }
     }
 
@@ -99,7 +100,7 @@ public static class KnownNames
     public static class Enums
     {
         public const string OnFailureMode = "OnFailureMode";
-        public const string ErrorSeverity = $"{Namespaces.Base}.ErrorSeverity";
+        public const string ErrorSeverity = $"{Namespaces.ErrorCraft}.ErrorSeverity";
     }
 
     public static class Targets

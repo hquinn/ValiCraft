@@ -11,10 +11,10 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         
         <PackageId>ValiCraft</PackageId>
-        <Version>0.12.0</Version>
+        <Version>0.13.0</Version>
         <Authors>Hayden Quinn</Authors>
         <Company>hquinn</Company>
-        <Copyright>Copyright © 2024-2025 Hayden Quinn</Copyright>
+        <Copyright>Copyright © 2025 Hayden Quinn</Copyright>
         <Description>A powerful, compile-time validation framework for .NET that crafts fast and boilerplate-free validation logic.</Description>
         <PackageTags>validation;source-generator;fluent;fast;roslyn;valicraft</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -22,7 +22,6 @@
         <RepositoryUrl>https://github.com/hquinn/ValiCraft</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageReleaseNotes>See https://github.com/hquinn/ValiCraft/blob/main/CHANGELOG.md for release notes.</PackageReleaseNotes>
         
         <!-- SourceLink settings for debugging into source -->
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -53,6 +52,7 @@
 
     <ItemGroup>
       <PackageReference Include="MonadCraft" Version="0.15.0" />
+      <PackageReference Include="ErrorCraft" Version="0.10.0" />
     </ItemGroup>
 
 </Project>

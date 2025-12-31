@@ -1,4 +1,5 @@
 using AwesomeAssertions.Execution;
+using ErrorCraft;
 using Microsoft.CodeAnalysis;
 using MonadCraft;
 
@@ -14,7 +15,7 @@ public abstract class IncrementalGeneratorTestBase<TGenerator> where TGenerator 
         bool assertTrackingSteps = true)
     {
         const string errorCodePrefix = "VALC";
-        Type[] additionalMetadataReferences = [typeof(Validator<>), typeof(Result<,>)];
+        Type[] additionalMetadataReferences = [typeof(Validator<>), typeof(Result<,>), typeof(IValidationError)];
         string[] trackingSteps =
             [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName];
         using var assertionScope = new AssertionScope();

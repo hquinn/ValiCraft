@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ErrorCraft;
 
 namespace ValiCraft.Tests;
 

@@ -1,3 +1,5 @@
+using ErrorCraft;
+
 namespace ValiCraft.BuilderTypes;
 
 /// <summary>
