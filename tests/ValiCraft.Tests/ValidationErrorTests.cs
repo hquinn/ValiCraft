@@ -206,7 +206,7 @@ public class ValidationErrorTests
     public void ValidationError_Metadata_CanBeSet()
     {
         // Arrange
-        var metadata = new Dictionary<string, object>
+        var metadata = new Dictionary<string, object?>
         {
             { "MinLength", 5 },
             { "MaxLength", 10 },
@@ -235,7 +235,7 @@ public class ValidationErrorTests
     public void ValidationError_IValidationError_Metadata_ReturnsValue()
     {
         // Arrange
-        var metadata = new Dictionary<string, object> { { "Key", "Value" } };
+        var metadata = new Dictionary<string, object?> { { "Key", "Value" } };
         var error = new ValidationError<string>
         {
             Code = "TEST_ERROR",
