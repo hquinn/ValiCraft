@@ -75,7 +75,7 @@ public static class ValidatorSyntaxProvider
         ClassDeclarationSyntax classDeclarationSyntax,
         INamedTypeSymbol classSymbol,
         List<DiagnosticInfo> diagnostics,
-        out string? requestTypeName)
+        out SymbolNameInfo? requestTypeName)
     {
         requestTypeName = null;
         if (!isAsync && !classSymbol.Inherits(KnownNames.Classes.Validator, 1))
@@ -89,7 +89,9 @@ public static class ValidatorSyntaxProvider
             return false;
         }
 
-        requestTypeName = $"global::{classSymbol.BaseType!.TypeArguments[0].ToDisplayString()}";
+        var typeArgument = classSymbol.BaseType!.TypeArguments[0];
+        
+        requestTypeName = new SymbolNameInfo(typeArgument);
         return true;
     }
 

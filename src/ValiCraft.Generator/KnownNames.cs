@@ -49,6 +49,7 @@ public static class KnownNames
     {
         public const string Result = $"{Namespaces.MonadCraft}.Result";
         public const string ValidationError = $"{Namespaces.ErrorCraft}.ValidationError";
+        public const string ValidationErrors = $"{Namespaces.ErrorCraft}.ValidationErrors";
     }
 
     public static class Interfaces
@@ -61,6 +62,7 @@ public static class KnownNames
         public const string IBuilderType = $"{Namespaces.BuilderTypes}.IBuilderType";
         public const string IAsyncBuilderType = $"{Namespaces.AsyncBuilderTypes}.IAsyncBuilderType";
         public const string IValidationError = $"{Namespaces.ErrorCraft}.IValidationError";
+        public const string IValidationErrors = $"{Namespaces.ErrorCraft}.IValidationErrors";
         
         public static string GetValidatorInterface(bool isAsync)
         {

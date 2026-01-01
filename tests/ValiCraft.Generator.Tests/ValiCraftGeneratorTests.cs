@@ -664,13 +664,24 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                            public partial class OrderValidator : global::ValiCraft.IValidator<global::Test.Requests.Order>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError>, global::Test.Requests.Order> Validate(global::Test.Requests.Order request)
+                                                                               public global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order> Validate(global::Test.Requests.Order request)
                                                                                {
                                                                                    var errors = RunValidationLogic(request, null);
 
                                                                                    return errors is not null
-                                                                                       ? global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError>, global::Test.Requests.Order>.Failure(errors)
-                                                                                       : global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError>, global::Test.Requests.Order>.Success(request);
+                                                                                       ? global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Failure(new global::ErrorCraft.ValidationErrors
+                                                                                       {
+                                                                                           Code = "OrderErrors",
+                                                                                           Message = "One or more validation errors occurred.",
+                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                           Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
+                                                                                           {
+                                                                                               { "RequestType", "Order" },
+                                                                                               { "ValidationCount", errors.Count }
+                                                                                           },
+                                                                                           Errors = errors
+                                                                                       })
+                                                                                       : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Success(request);
                                                                                }
 
                                                                                /// <inheritdoc />
@@ -1176,13 +1187,24 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                            public partial class AsyncOrderValidator : global::ValiCraft.IAsyncValidator<global::Test.Requests.Order>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public async global::System.Threading.Tasks.Task<global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError>, global::Test.Requests.Order>> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
+                                                                               public async global::System.Threading.Tasks.Task<global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
                                                                                    var errors = await RunValidationLogicAsync(request, null, cancellationToken);
 
                                                                                    return errors is not null
-                                                                                       ? global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError>, global::Test.Requests.Order>.Failure(errors)
-                                                                                       : global::MonadCraft.Result<global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError>, global::Test.Requests.Order>.Success(request);
+                                                                                       ? global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Failure(new global::ErrorCraft.ValidationErrors
+                                                                                       {
+                                                                                           Code = "OrderErrors",
+                                                                                           Message = "One or more validation errors occurred.",
+                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                           Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
+                                                                                           {
+                                                                                               { "RequestType", "Order" },
+                                                                                               { "ValidationCount", errors.Count }
+                                                                                           },
+                                                                                           Errors = errors
+                                                                                       })
+                                                                                       : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Success(request);
                                                                                }
 
                                                                                /// <inheritdoc />

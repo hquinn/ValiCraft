@@ -18,7 +18,7 @@ public interface IValidator<TRequest> where TRequest : class
     /// A <see cref="Result{TError, TValue}"/> containing either the validation errors
     /// or the validated request on success.
     /// </returns>
-    Result<IReadOnlyList<IValidationError>, TRequest> Validate(TRequest request);
+    Result<IValidationErrors, TRequest> Validate(TRequest request);
     
     /// <summary>
     /// Validates the specified request and returns validation errors as a list.

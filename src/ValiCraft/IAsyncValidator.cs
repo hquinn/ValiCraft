@@ -19,7 +19,7 @@ public interface IAsyncValidator<TRequest> where TRequest : class
     /// A <see cref="Result{TError, TValue}"/> containing either the validation errors
     /// or the validated request on success.
     /// </returns>
-    Task<Result<IReadOnlyList<IValidationError>, TRequest>> ValidateAsync(TRequest request, CancellationToken cancellationToken = default);
+    Task<Result<IValidationErrors, TRequest>> ValidateAsync(TRequest request, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Validates the specified request and returns validation errors as a list.

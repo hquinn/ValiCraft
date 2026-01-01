@@ -91,7 +91,7 @@ public partial class UserValidator : Validator<User>
 var validator = new UserValidator();
 
 // Using Result type (recommended)
-Result<IReadOnlyList<IValidationError>, User> result = validator.Validate(user);
+Result<IValidationErrors, User> result = validator.Validate(user);
 
 string outcome = result
     .Match(
@@ -106,33 +106,33 @@ IReadOnlyList<IValidationError> errors = validator.ValidateToList(user);
 
 ValiCraft's source generator approach delivers exceptional performance compared to traditional validation libraries:
 
-| Method                           | Mean      | Error     | StdDev    | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
-|--------------------------------- |----------:|----------:|----------:|------:|--------:|-------:|----------:|------------:|
-| ValiCraft_SmallCollection        |  25.07 ns |  0.852 ns |  0.564 ns |  1.00 |    0.03 | 0.0204 |     128 B |        1.00 |
-| FluentValidation_SmallCollection | 428.81 ns | 42.833 ns | 25.489 ns | 17.11 |    1.03 | 0.1006 |     632 B |        4.94 |
-| ValiCraft_LargeCollection        |  25.46 ns |  1.263 ns |  0.835 ns |  1.02 |    0.04 | 0.0204 |     128 B |        1.00 |
-| FluentValidation_LargeCollection | 422.70 ns |  5.528 ns |  3.289 ns | 16.87 |    0.37 | 0.1006 |     632 B |        4.94 |
-
-| Method                        | Mean         | Error     | StdDev    | Ratio  | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
-|------------------------------ |-------------:|----------:|----------:|-------:|--------:|-------:|-------:|----------:|------------:|
-| ValiCraft_ValidModel          |     16.36 ns |  0.105 ns |  0.055 ns |   1.00 |    0.00 |      - |      - |         - |          NA |
-| FluentValidation_ValidModel   |  1,189.68 ns |  7.684 ns |  4.573 ns |  72.73 |    0.35 | 0.1354 |      - |     856 B |          NA |
-| ValiCraft_InvalidModel        |    282.32 ns |  4.598 ns |  2.736 ns |  17.26 |    0.17 | 0.1988 |      - |    1248 B |          NA |
-| FluentValidation_InvalidModel | 10,219.38 ns | 45.458 ns | 23.775 ns | 624.73 |    2.41 | 4.2267 | 0.1068 |   26552 B |          NA |
+| Method                           | Mean      | Error    | StdDev   | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
+|--------------------------------- |----------:|---------:|---------:|------:|--------:|-------:|----------:|------------:|
+| ValiCraft_SmallCollection        |  80.04 ns | 0.748 ns | 0.495 ns |  1.00 |    0.01 | 0.0688 |     432 B |        1.00 |
+| FluentValidation_SmallCollection | 450.17 ns | 2.220 ns | 1.161 ns |  5.62 |    0.04 | 0.1006 |     632 B |        1.46 |
+| ValiCraft_LargeCollection        |  82.86 ns | 2.506 ns | 1.491 ns |  1.04 |    0.02 | 0.0688 |     432 B |        1.00 |
+| FluentValidation_LargeCollection | 417.04 ns | 5.280 ns | 3.493 ns |  5.21 |    0.05 | 0.1006 |     632 B |        1.46 |
 
 | Method                        | Mean         | Error      | StdDev    | Ratio  | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
 |------------------------------ |-------------:|-----------:|----------:|-------:|--------:|-------:|-------:|----------:|------------:|
-| ValiCraft_ValidModel          |     5.975 ns |  0.3761 ns | 0.2488 ns |   1.00 |    0.06 |      - |      - |         - |          NA |
-| FluentValidation_ValidModel   |   382.958 ns |  1.9151 ns | 1.0017 ns |  64.19 |    2.47 | 0.1054 |      - |     664 B |          NA |
-| ValiCraft_InvalidModel        |    74.609 ns |  0.5920 ns | 0.3916 ns |  12.50 |    0.48 | 0.0650 |      - |     408 B |          NA |
-| FluentValidation_InvalidModel | 2,527.574 ns | 11.1362 ns | 5.8244 ns | 423.63 |   16.29 | 1.0948 | 0.0076 |    6880 B |          NA |
+| ValiCraft_ValidModel          |     17.99 ns |   0.091 ns |  0.060 ns |   1.00 |    0.00 |      - |      - |         - |          NA |
+| FluentValidation_ValidModel   |  1,187.24 ns |   7.105 ns |  4.699 ns |  65.98 |    0.33 | 0.1354 |      - |     856 B |          NA |
+| ValiCraft_InvalidModel        |    303.28 ns |   4.790 ns |  2.850 ns |  16.85 |    0.16 | 0.2599 | 0.0005 |    1632 B |          NA |
+| FluentValidation_InvalidModel | 10,311.38 ns | 101.359 ns | 60.317 ns | 573.04 |    3.67 | 4.2267 | 0.1068 |   26552 B |          NA |
 
-| Method                                          | Mean          | Error       | StdDev      | Ratio | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
-|------------------------------------------------ |--------------:|------------:|------------:|------:|--------:|-------:|-------:|----------:|------------:|
-| ValiCraft_SimpleValidator_Instantiation         |     0.0000 ns |   0.0000 ns |   0.0000 ns |     ? |       ? |      - |      - |         - |           ? |
-| FluentValidation_SimpleValidator_Instantiation  | 1,823.0625 ns |  44.1707 ns |  23.1021 ns |     ? |       ? | 1.1063 | 0.0076 |    6952 B |           ? |
-| ValiCraft_ComplexValidator_Instantiation        |     0.0000 ns |   0.0000 ns |   0.0000 ns |     ? |       ? |      - |      - |         - |           ? |
-| FluentValidation_ComplexValidator_Instantiation | 8,001.6715 ns | 786.1477 ns | 411.1705 ns |     ? |       ? | 4.0894 | 0.1221 |   26024 B |           ? |
+| Method                        | Mean         | Error       | StdDev      | Ratio  | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
+|------------------------------ |-------------:|------------:|------------:|-------:|--------:|-------:|-------:|----------:|------------:|
+| ValiCraft_ValidModel          |     7.244 ns |   0.0399 ns |   0.0238 ns |   1.00 |    0.00 |      - |      - |         - |          NA |
+| FluentValidation_ValidModel   |   392.235 ns |   5.2912 ns |   3.1487 ns |  54.15 |    0.45 | 0.1054 |      - |     664 B |          NA |
+| ValiCraft_InvalidModel        |   137.080 ns |   7.5040 ns |   3.9247 ns |  18.92 |    0.51 | 0.1159 |      - |     728 B |          NA |
+| FluentValidation_InvalidModel | 2,666.771 ns | 215.4160 ns | 142.4844 ns | 368.16 |   18.80 | 1.0948 | 0.0076 |    6880 B |          NA |
+
+| Method                                          | Mean          | Error      | StdDev     | Median        | Ratio | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
+|------------------------------------------------ |--------------:|-----------:|-----------:|--------------:|------:|--------:|-------:|-------:|----------:|------------:|
+| ValiCraft_SimpleValidator_Instantiation         |     0.0000 ns |  0.0000 ns |  0.0000 ns |     0.0000 ns |     ? |       ? |      - |      - |         - |           ? |
+| FluentValidation_SimpleValidator_Instantiation  | 1,909.0638 ns | 22.2632 ns | 13.2485 ns | 1,902.7726 ns |     ? |       ? | 1.1063 | 0.0076 |    6952 B |           ? |
+| ValiCraft_ComplexValidator_Instantiation        |     0.0004 ns |  0.0010 ns |  0.0007 ns |     0.0000 ns |     ? |       ? |      - |      - |         - |           ? |
+| FluentValidation_ComplexValidator_Instantiation | 7,605.7195 ns | 63.6780 ns | 42.1191 ns | 7,608.0119 ns |     ? |       ? | 4.0894 | 0.1221 |   25944 B |           ? |
 
 ## Features
 

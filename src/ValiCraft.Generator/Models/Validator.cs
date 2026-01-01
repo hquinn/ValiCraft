@@ -10,7 +10,7 @@ namespace ValiCraft.Generator.Models;
 public record Validator(
     bool IsAsync,
     ClassInfo Class,
-    string RequestTypeName,
+    SymbolNameInfo RequestTypeName,
     EquatableArray<RuleChain> RuleChains,
     EquatableArray<string> UsingDirectives)
 {

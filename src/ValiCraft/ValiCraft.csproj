@@ -11,7 +11,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         
         <PackageId>ValiCraft</PackageId>
-        <Version>0.15.0</Version>
+        <Version>0.16.0</Version>
         <Authors>Hayden Quinn</Authors>
         <Company>hquinn</Company>
         <Copyright>Copyright © 2025 Hayden Quinn</Copyright>
@@ -52,7 +52,7 @@
 
     <ItemGroup>
       <PackageReference Include="MonadCraft" Version="0.15.0" />
-      <PackageReference Include="ErrorCraft" Version="0.11.0" />
+      <PackageReference Include="ErrorCraft" Version="0.15.0" />
     </ItemGroup>
 
 </Project>
