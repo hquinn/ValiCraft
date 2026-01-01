@@ -34,7 +34,7 @@ public static class ValidatorSourceProvider
 
             var sourceCode = GenerateSourceCode(isAsync, validator!);
 
-            context.AddSource($"{validatorResult.Value!.Class.Name}.g.cs", SourceText.From(sourceCode, Encoding.UTF8));
+            context.AddSource($"{validatorResult.Value!.Class.Namespace}.{validatorResult.Value!.Class.Name}.g.cs", SourceText.From(sourceCode, Encoding.UTF8));
         }
     }
 
