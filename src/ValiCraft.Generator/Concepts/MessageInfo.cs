@@ -16,8 +16,8 @@ public record MessageInfo(string Value, bool IsLiteral)
 
     public static MessageInfo CreateFromExpression(ExpressionSyntax expression)
     {
+        // It's a string literal, so we capture its raw value.
         if (expression is LiteralExpressionSyntax literal && literal.IsKind(SyntaxKind.StringLiteralExpression))
-            // It's a string literal, so we capture its raw value.
         {
             return new MessageInfo(literal.Token.ValueText, true);
         }

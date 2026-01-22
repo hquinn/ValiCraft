@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 
@@ -13,15 +12,6 @@ public record CollectionValidateWithRuleChain(
     OnFailureMode? FailureMode,
     string ValidatorExpression) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
-    protected override bool TryLinkRuleChain(
-        ValidationRule[] validRules,
-        SourceProductionContext context,
-        out RuleChain linkedRuleChain)
-    {
-        linkedRuleChain = this;
-        return true;
-    }
-
     public override bool NeedsGotoLabels()
     {
         return true;

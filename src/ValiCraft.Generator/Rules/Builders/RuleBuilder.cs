@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.IfConditions;
@@ -40,7 +39,7 @@ public abstract class RuleBuilder
 
     public void WithMetadata(MetadataEntry entry)
     {
-        _metadata ??= new List<MetadataEntry>();
+        _metadata ??= [];
         _metadata.Add(entry);
     }
 

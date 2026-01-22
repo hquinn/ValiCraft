@@ -27,8 +27,10 @@ public static class RuleChainFactory
     private static string Humanize(string input)
     {
         if (string.IsNullOrEmpty(input))
+        {
             return input;
-        
+        }
+
         // Add spaces before capital letters that are followed by lowercase letters
         // This preserves acronyms like "SKU" while splitting "OrderNumber" to "Order Number"
         var result = Regex.Replace(input, "(?<!^)([A-Z])(?=[a-z])", " $1");
@@ -277,7 +279,6 @@ public static class RuleChainFactory
             AccessorExpressionFormat: $"{{0}}.{fullPropertyPath}",
             Type: new TypeInfo(
                 propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                propertySymbol.Type.TypeKind == TypeKind.TypeParameter,
                 propertySymbol.NullableAnnotation == NullableAnnotation.Annotated),
             DefaultTargetName: new MessageInfo(humanizedTargetName, true),
             TargetPath: new MessageInfo(fullPropertyPath, true));
@@ -336,7 +337,6 @@ public static class RuleChainFactory
             AccessorExpressionFormat: "{0}",
             Type: new TypeInfo(
                 requestTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                requestTypeSymbol.TypeKind == TypeKind.TypeParameter,
                 requestTypeSymbol.NullableAnnotation == NullableAnnotation.Annotated),
             DefaultTargetName: new MessageInfo(humanizedTypeName, true),
             TargetPath: new MessageInfo(requestTypeSymbol.Name, true));

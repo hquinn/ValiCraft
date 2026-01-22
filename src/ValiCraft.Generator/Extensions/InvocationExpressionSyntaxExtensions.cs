@@ -25,7 +25,7 @@ public static class InvocationExpressionSyntaxExtensions
                 var name = methodSymbol?.Parameters[i].Name ?? "";
                 var value = argumentExpression.ToString();
                 var typeString = type?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? "";
-                var typeInfo = new TypeInfo(typeString, type is not null && type.TypeKind == TypeKind.TypeParameter, type is not null && type.NullableAnnotation == NullableAnnotation.Annotated, argumentExpression is SimpleLambdaExpressionSyntax);
+                var typeInfo = new TypeInfo(typeString, type is not null && type.NullableAnnotation == NullableAnnotation.Annotated);
                 var isLiteral = constantValueResult.HasValue;
                 var constantValue = isLiteral ? constantValueResult.Value : null;
                 

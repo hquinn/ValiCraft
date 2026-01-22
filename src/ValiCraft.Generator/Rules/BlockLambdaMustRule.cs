@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
@@ -26,14 +25,6 @@ public record BlockLambdaMustRule(
     Placeholders,
     Location)
 {
-    public override Rule EnrichRule(
-        ValidationTarget target,
-        ValidationRule[] validRules,
-        SourceProductionContext context)
-    {
-        return this;
-    }
-
     public override string GenerateCodeForRule(
         string requestName,
         IndentModel indent,

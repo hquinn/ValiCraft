@@ -21,10 +21,6 @@ public abstract record Rule(
     LocationInfo Location)
 {
     private const string FallbackMessage = "\"'An error has occurred\"";
-    public abstract Rule? EnrichRule(
-        ValidationTarget target,
-        ValidationRule[] validRules,
-        SourceProductionContext context);
 
     public abstract string GenerateCodeForRule(
         string requestName,
@@ -199,7 +195,7 @@ public abstract record Rule(
                 "{TargetName}", new ArgumentInfo(
                     "TargetName",
                     targetNameInfo.Value,
-                    new TypeInfo("string", false, false),
+                    new TypeInfo("string", false),
                     targetNameInfo.IsLiteral,
                     null)
             },

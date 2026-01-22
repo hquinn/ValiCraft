@@ -10,7 +10,6 @@ namespace ValiCraft.Attributes;
 /// </remarks>
 /// <example>
 /// <code>
-/// [GenerateRuleExtension("IsValidEmail")]
 /// [DefaultErrorCode("EMAIL_INVALID")]
 /// public class EmailRule : IValidationRule&lt;string?&gt;
 /// {
@@ -18,7 +17,7 @@ namespace ValiCraft.Attributes;
 /// }
 /// </code>
 /// </example>
-[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
 public sealed class DefaultErrorCodeAttribute : Attribute
 {
     /// <summary>

@@ -24,14 +24,6 @@ public record PatternLambdaMustRule(
     Placeholders,
     Location)
 {
-    public override Rule EnrichRule(
-        ValidationTarget target,
-        ValidationRule[] validRules,
-        SourceProductionContext context)
-    {
-        return this;
-    }
-
     public override string GenerateCodeForRule(
         string requestName,
         IndentModel indent,
@@ -41,11 +33,6 @@ public record PatternLambdaMustRule(
     {
         var targetAccessor = string.Format(target.AccessorExpressionFormat, requestName);
         var inlinedCondition = string.Format(ExpressionFormat, targetAccessor);
-
-        // if (IsAsync)
-        // {
-        //     inlinedCondition = $"await {inlinedCondition}";
-        // }
 
         var code = $$"""
                    {{IfCondition.GenerateIfBlock(@object, requestName, indent, context)}}!({{inlinedCondition}}))

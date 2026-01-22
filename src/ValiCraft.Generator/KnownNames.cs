@@ -21,16 +21,11 @@ public static class KnownNames
     public static class Attributes
     {
         public const string DefaultMessageAttribute = $"{Namespaces.Attributes}.DefaultMessageAttribute";
-        public const string DefaultMessage = $"{Namespaces.Attributes}.DefaultMessage";
         public const string DefaultErrorCodeAttribute = $"{Namespaces.Attributes}.DefaultErrorCodeAttribute";
-        public const string DefaultErrorCode = $"{Namespaces.Attributes}.DefaultErrorCode";
-        public const string GenerateRuleExtensionAttribute = $"{Namespaces.Attributes}.GenerateRuleExtensionAttribute";
         public const string GenerateValidatorAttribute = $"{Namespaces.Attributes}.{AttributeNames.GenerateValidator}Attribute";
         public const string AsyncGenerateValidatorAttribute = $"{Namespaces.Attributes}.{AttributeNames.AsyncGenerateValidator}Attribute";
         public const string MapToValidationRuleAttribute = $"{Namespaces.Attributes}.MapToValidationRuleAttribute";
-        public const string MapToValidationRule = $"{Namespaces.Attributes}.MapToValidationRule";
         public const string RulePlaceholderAttribute = $"{Namespaces.Attributes}.RulePlaceholderAttribute";
-        public const string RulePlaceholder = $"{Namespaces.Attributes}.RulePlaceholder";
     }
 
     public static class ClassNames

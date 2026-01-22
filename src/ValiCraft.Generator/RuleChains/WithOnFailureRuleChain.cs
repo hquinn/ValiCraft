@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis;
-using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
@@ -17,30 +14,6 @@ public record WithOnFailureRuleChain(
     OnFailureMode? FailureMode,
     EquatableArray<RuleChain> ChildRuleChains) : RuleChain(IsAsync, Object, null, Depth, Indent, NumberOfRules, FailureMode)
 {
-    protected override bool TryLinkRuleChain(
-        ValidationRule[] validRules,
-        SourceProductionContext context,
-        out RuleChain linkedRuleChain)
-    {
-        var childRuleChains = new List<RuleChain>(ChildRuleChains.Count);
-
-        foreach (var itemRuleChain in ChildRuleChains)
-        {
-            if (!itemRuleChain.TryLinkRuleChain(childRuleChains, validRules, context))
-            {
-                linkedRuleChain = this;
-                return false;
-            }
-        }
-
-        linkedRuleChain = this with
-        {
-            ChildRuleChains = childRuleChains.ToEquatableImmutableArray()
-        };
-        
-        return true;
-    }
-
     public override bool NeedsGotoLabels()
     {
         return ChildRuleChains.Any(x => x.NeedsGotoLabels());

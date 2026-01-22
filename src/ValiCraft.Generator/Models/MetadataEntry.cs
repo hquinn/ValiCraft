@@ -1,5 +1,3 @@
-using System;
-
 namespace ValiCraft.Generator.Models;
 
 /// <summary>
@@ -9,4 +7,4 @@ public record MetadataEntry(
     string Key,
     string Value,
     string ValueType,
-    bool IsLiteral) : IEquatable<MetadataEntry>;
+    bool IsLiteral);

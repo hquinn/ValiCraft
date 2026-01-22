@@ -45,64 +45,9 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                              }
                                                              """;
 
-    // Define validation rules which are annotated with [GenerateRuleExtension("...")].
-    // When annotated, it will generate extension methods which the validators can use to generate validation code.
-    [StringSyntax("CSharp")] private const string InputValidationRulesToGenerate =
-        """
-        using System;
-        using ValiCraft;
-        using ValiCraft.Attributes;
-
-        namespace Test.Rules;
-
-        // IsNotEmpty will be the name of the extension method.
-        [GenerateRuleExtension("IsNotEmpty")]
-        // This is the default message that will be displayed
-        // when the validation rule is not valid.
-        [DefaultMessage("'{TargetName}' must not be empty.")]
-        public class NotEmptyRule : IValidationRule<string?>
-        {
-            public static bool IsValid(string? value) => !string.IsNullOrEmpty(value);
-        }
-
-        [GenerateRuleExtension("IsGreaterThan")]
-        // {TargetName} and {TargetValue} are in-built placeholders.
-        // {ValueToCompare} is a user-defined placeholder.
-        [DefaultMessage("'{TargetName}' must be greater than {ValueToCompare}, but received {TargetValue}.")]
-        // Create a user-defined placeholder, which matches the 'valueToCompare' parameter value.
-        [RulePlaceholder("{ValueToCompare}", "valueToCompare")]
-        public class GreaterThanRule<TTargetValue> : IValidationRule<TTargetValue, TTargetValue>
-            where TTargetValue : IComparable
-        {
-            public static bool IsValid(TTargetValue value, TTargetValue valueToCompare) 
-                => value.CompareTo(valueToCompare) > 0;
-        }
-
-        [GenerateRuleExtension("IsLessThan")]
-        [DefaultMessage("'{TargetName}' must be less than {ValueToCompare}, but received {TargetValue}.")]
-        [RulePlaceholder("{ValueToCompare}", "valueToCompare")]
-        public class LessThanRule<TTargetValue> : IValidationRule<TTargetValue, TTargetValue>
-            where TTargetValue : IComparable
-        {
-            public static bool IsValid(TTargetValue value, TTargetValue valueToCompare) 
-                => value.CompareTo(valueToCompare) < 0;
-        }
-        
-        [GenerateRuleExtension("IsPredicate")]
-        [DefaultMessage("{TargetName} doesn't satisfy the condition")]
-        [DefaultErrorCode("CustomErrorCode")]
-        public class Predicate<TTargetType> : IValidationRule<TTargetType?, Func<TTargetType?, bool>>
-        {
-            public static bool IsValid(TTargetType? property, Func<TTargetType?, bool> predicate)
-            {
-                return predicate(property);
-            }
-        }
-        """;
-
     // Define validation rules already generated.
     // This is here so we can simulate scenarios where the validation rules exist in a different project.
-    [StringSyntax("CSharp")] private const string InputValidationRulesAlreadyGenerated =
+    [StringSyntax("CSharp")] private const string InputValidationRules =
         """
         using System;
         using ValiCraft;
@@ -112,7 +57,6 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
 
         namespace Test.Rules;
 
-        // Removing the [GenerateRuleExtension] attribute will not generate the extension method.
         [DefaultMessage("'{TargetName}' must not be null.")]
         public class NotNullRule<TTargetValue> : IValidationRule<TTargetValue?>
         {
@@ -126,7 +70,6 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
             public static bool IsValid(string? value, int length) => value?.Length == length;
         }
 
-        // We copy any attribute besides [GenerateRuleExtension] to the extension method.
         [DefaultMessage("'{TargetName}' must not be null.")]
         public static class NotNullRuleExtensions
         {
@@ -157,6 +100,164 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
             [MapToValidationRule(typeof(LengthRule), "")]
             public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> HasLength<TRequest, TTargetType>(
                 this IAsyncBuilderType<TRequest, TTargetType> builder, int length) where TRequest : class
+                => throw new NotImplementedException("Never gets called");
+        }
+        
+        // This is the default message that will be displayed
+        // when the validation rule is not valid.
+        [DefaultMessage("'{TargetName}' must not be empty.")]
+        public class NotEmptyRule : IValidationRule<string?>
+        {
+            public static bool IsValid(string? value) => !string.IsNullOrEmpty(value);
+        }
+        
+        /// <summary>
+        /// Extension methods for the <see cref="Test.Rules.NotEmptyRule"/> validation rule.
+        /// </summary>
+        [DefaultMessage("'{TargetName}' must not be empty.")]
+        public static class NotEmptyRuleExtensions
+        {
+            /// <summary>
+            /// Adds the IsNotEmpty validation rule to the builder.
+            /// </summary>
+            /// <remarks>
+            /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+            /// </remarks>
+            [MapToValidationRule(typeof(NotEmptyRule), "")]
+            public static IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
+                this IBuilderType<TRequest, TTargetType> builder) where TRequest : class
+                => throw new NotImplementedException("Never gets called");
+        
+            /// <summary>
+            /// Adds the IsNotEmpty validation rule to the async builder.
+            /// </summary>
+            /// <remarks>
+            /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+            /// </remarks>
+            [MapToValidationRule(typeof(NotEmptyRule), "")]
+            public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
+                this IAsyncBuilderType<TRequest, TTargetType> builder) where TRequest : class
+                => throw new NotImplementedException("Never gets called");
+        }
+        
+        // {TargetName} and {TargetValue} are in-built placeholders.
+        // {ValueToCompare} is a user-defined placeholder.
+        [DefaultMessage("'{TargetName}' must be greater than {ValueToCompare}, but received {TargetValue}.")]
+        // Create a user-defined placeholder, which matches the 'valueToCompare' parameter value.
+        [RulePlaceholder("{ValueToCompare}", "valueToCompare")]
+        public class GreaterThanRule<TTargetValue> : IValidationRule<TTargetValue, TTargetValue>
+            where TTargetValue : IComparable
+        {
+            public static bool IsValid(TTargetValue value, TTargetValue valueToCompare) 
+                => value.CompareTo(valueToCompare) > 0;
+        }
+        
+        /// <summary>
+        /// Extension methods for the <see cref="Test.Rules.GreaterThanRule{TTargetValue}"/> validation rule.
+        /// </summary>
+        [DefaultMessage("'{TargetName}' must be greater than {ValueToCompare}, but received {TargetValue}.")]
+        [RulePlaceholder("{ValueToCompare}", "valueToCompare")]
+        public static class GreaterThanRuleExtensions
+        {
+            /// <summary>
+            /// Adds the IsGreaterThan validation rule to the builder.
+            /// </summary>
+            /// <remarks>
+            /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
+            /// </remarks>
+            [MapToValidationRule(typeof(GreaterThanRule<>), "<{0}>")]
+            public static IValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
+                this IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : IComparable
+                => throw new NotImplementedException("Never gets called");
+        
+            /// <summary>
+            /// Adds the IsGreaterThan validation rule to the async builder.
+            /// </summary>
+            /// <remarks>
+            /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
+            /// </remarks>
+            [MapToValidationRule(typeof(GreaterThanRule<>), "<{0}>")]
+            public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
+                this IAsyncBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : IComparable
+                => throw new NotImplementedException("Never gets called");
+        }
+        
+        [DefaultMessage("'{TargetName}' must be less than {ValueToCompare}, but received {TargetValue}.")]
+        [RulePlaceholder("{ValueToCompare}", "valueToCompare")]
+        public class LessThanRule<TTargetValue> : IValidationRule<TTargetValue, TTargetValue>
+            where TTargetValue : IComparable
+        {
+            public static bool IsValid(TTargetValue value, TTargetValue valueToCompare) 
+                => value.CompareTo(valueToCompare) < 0;
+        }
+        
+        /// <summary>
+        /// Extension methods for the <see cref="Test.Rules.LessThanRule{TTargetValue}"/> validation rule.
+        /// </summary>
+        [DefaultMessage("'{TargetName}' must be less than {ValueToCompare}, but received {TargetValue}.")]
+        [RulePlaceholder("{ValueToCompare}", "valueToCompare")]
+        public static class LessThanRuleExtensions
+        {
+            /// <summary>
+            /// Adds the IsLessThan validation rule to the builder.
+            /// </summary>
+            /// <remarks>
+            /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
+            /// </remarks>
+            [MapToValidationRule(typeof(LessThanRule<>), "<{0}>")]
+            public static IValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
+                this IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : IComparable
+                => throw new NotImplementedException("Never gets called");
+        
+            /// <summary>
+            /// Adds the IsLessThan validation rule to the async builder.
+            /// </summary>
+            /// <remarks>
+            /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
+            /// </remarks>
+            [MapToValidationRule(typeof(LessThanRule<>), "<{0}>")]
+            public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
+                this IAsyncBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : IComparable
+                => throw new NotImplementedException("Never gets called");
+        }
+        
+        [DefaultMessage("{TargetName} doesn't satisfy the condition")]
+        [DefaultErrorCode("CustomErrorCode")]
+        public class Predicate<TTargetType> : IValidationRule<TTargetType?, Func<TTargetType?, bool>>
+        {
+            public static bool IsValid(TTargetType? property, Func<TTargetType?, bool> predicate)
+            {
+                return predicate(property);
+            }
+        }
+        
+        /// <summary>
+        /// Extension methods for the <see cref="Test.Rules.Predicate{TTargetType}"/> validation rule.
+        /// </summary>
+        [DefaultMessage("{TargetName} doesn't satisfy the condition")]
+        [DefaultErrorCode("CustomErrorCode")]
+        public static class PredicateExtensions
+        {
+            /// <summary>
+            /// Adds the IsPredicate validation rule to the builder.
+            /// </summary>
+            /// <remarks>
+            /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+            /// </remarks>
+            [MapToValidationRule(typeof(Predicate<>), "<{0}>")]
+            public static IValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
+                this IBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class
+                => throw new NotImplementedException("Never gets called");
+        
+            /// <summary>
+            /// Adds the IsPredicate validation rule to the async builder.
+            /// </summary>
+            /// <remarks>
+            /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+            /// </remarks>
+            [MapToValidationRule(typeof(Predicate<>), "<{0}>")]
+            public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
+                this IAsyncBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class
                 => throw new NotImplementedException("Never gets called");
         }
         """;
@@ -493,157 +594,6 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
                                                                              }
                                                                          }
                                                                          """;
-
-    [StringSyntax("CSharp")] private const string ExpectedNotEmptyRuleExtensions = """
-        // <auto-generated />
-        #nullable enable
-
-        namespace Test.Rules
-        {
-            /// <summary>
-            /// Extension methods for the <see cref="Test.Rules.NotEmptyRule"/> validation rule.
-            /// </summary>
-            [global::ValiCraft.Attributes.DefaultMessage("'{TargetName}' must not be empty.")]
-            public static class NotEmptyRuleExtensions
-            {
-                /// <summary>
-                /// Adds the IsNotEmpty validation rule to the builder.
-                /// </summary>
-                /// <remarks>
-                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
-                /// </remarks>
-                [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotEmptyRule), "")]
-                public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
-                    this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder) where TRequest : class
-                    => throw new global::System.NotImplementedException("Never gets called");
-
-                /// <summary>
-                /// Adds the IsNotEmpty validation rule to the async builder.
-                /// </summary>
-                /// <remarks>
-                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
-                /// </remarks>
-                [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.NotEmptyRule), "")]
-                public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
-                    this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder) where TRequest : class
-                    => throw new global::System.NotImplementedException("Never gets called");
-            }
-        }
-        """;
-
-    [StringSyntax("CSharp")] private const string ExpectedGreaterThanRuleExtensions = """
-        // <auto-generated />
-        #nullable enable
-
-        namespace Test.Rules
-        {
-            /// <summary>
-            /// Extension methods for the <see cref="Test.Rules.GreaterThanRule{TTargetValue}"/> validation rule.
-            /// </summary>
-            [global::ValiCraft.Attributes.DefaultMessage("'{TargetName}' must be greater than {ValueToCompare}, but received {TargetValue}.")]
-            [global::ValiCraft.Attributes.RulePlaceholder("{ValueToCompare}", "valueToCompare")]
-            public static class GreaterThanRuleExtensions
-            {
-                /// <summary>
-                /// Adds the IsGreaterThan validation rule to the builder.
-                /// </summary>
-                /// <remarks>
-                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
-                /// </remarks>
-                [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GreaterThanRule<>), "<{0}>")]
-                public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
-                    this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
-                    => throw new global::System.NotImplementedException("Never gets called");
-
-                /// <summary>
-                /// Adds the IsGreaterThan validation rule to the async builder.
-                /// </summary>
-                /// <remarks>
-                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
-                /// </remarks>
-                [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.GreaterThanRule<>), "<{0}>")]
-                public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
-                    this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
-                    => throw new global::System.NotImplementedException("Never gets called");
-            }
-        }
-        """;
-
-    [StringSyntax("CSharp")] private const string ExpectedLessThanRuleExtensions = """
-        // <auto-generated />
-        #nullable enable
-
-        namespace Test.Rules
-        {
-            /// <summary>
-            /// Extension methods for the <see cref="Test.Rules.LessThanRule{TTargetValue}"/> validation rule.
-            /// </summary>
-            [global::ValiCraft.Attributes.DefaultMessage("'{TargetName}' must be less than {ValueToCompare}, but received {TargetValue}.")]
-            [global::ValiCraft.Attributes.RulePlaceholder("{ValueToCompare}", "valueToCompare")]
-            public static class LessThanRuleExtensions
-            {
-                /// <summary>
-                /// Adds the IsLessThan validation rule to the builder.
-                /// </summary>
-                /// <remarks>
-                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
-                /// </remarks>
-                [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.LessThanRule<>), "<{0}>")]
-                public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
-                    this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
-                    => throw new global::System.NotImplementedException("Never gets called");
-
-                /// <summary>
-                /// Adds the IsLessThan validation rule to the async builder.
-                /// </summary>
-                /// <remarks>
-                /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>, <c>{ValueToCompare}</c>.
-                /// </remarks>
-                [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.LessThanRule<>), "<{0}>")]
-                public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
-                    this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, TTargetType valueToCompare) where TRequest : class where TTargetType : global::System.IComparable
-                    => throw new global::System.NotImplementedException("Never gets called");
-            }
-        }
-        """;
-
-    [StringSyntax("CSharp")] private const string ExpectedPredicateExtensions = """
-                                                                           // <auto-generated />
-                                                                           #nullable enable
-
-                                                                           namespace Test.Rules
-                                                                           {
-                                                                               /// <summary>
-                                                                               /// Extension methods for the <see cref="Test.Rules.Predicate{TTargetType}"/> validation rule.
-                                                                               /// </summary>
-                                                                               [global::ValiCraft.Attributes.DefaultMessage("{TargetName} doesn't satisfy the condition")]
-                                                                               [global::ValiCraft.Attributes.DefaultErrorCode("CustomErrorCode")]
-                                                                               public static class PredicateExtensions
-                                                                               {
-                                                                                   /// <summary>
-                                                                                   /// Adds the IsPredicate validation rule to the builder.
-                                                                                   /// </summary>
-                                                                                   /// <remarks>
-                                                                                   /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
-                                                                                   /// </remarks>
-                                                                                   [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Predicate<>), "<{0}>")]
-                                                                                   public static global::ValiCraft.BuilderTypes.IValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
-                                                                                       this global::ValiCraft.BuilderTypes.IBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class
-                                                                                       => throw new global::System.NotImplementedException("Never gets called");
-
-                                                                                   /// <summary>
-                                                                                   /// Adds the IsPredicate validation rule to the async builder.
-                                                                                   /// </summary>
-                                                                                   /// <remarks>
-                                                                                   /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
-                                                                                   /// </remarks>
-                                                                                   [global::ValiCraft.Attributes.MapToValidationRule(typeof(global::Test.Rules.Predicate<>), "<{0}>")]
-                                                                                   public static global::ValiCraft.AsyncBuilderTypes.IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsPredicate<TRequest, TTargetType>(
-                                                                                       this global::ValiCraft.AsyncBuilderTypes.IAsyncBuilderType<TRequest, TTargetType> builder, System.Func<TTargetType?, bool> predicate) where TRequest : class
-                                                                                       => throw new global::System.NotImplementedException("Never gets called");
-                                                                               }
-                                                                           }
-                                                                           """;
 
     [StringSyntax("CSharp")] private const string ExpectedValidators = """
                                                                        // <auto-generated />
@@ -1722,8 +1672,8 @@ public class ValiCraftGeneratorTests : IncrementalGeneratorTestBase<ValiCraftGen
     [Fact]
     public void ShouldGenerateValidationRuleExtensionsAndValidator()
     {
-        AssertGenerator(inputs: [InputRequests, InputValidationRulesToGenerate, InputValidationRulesAlreadyGenerated, InputValidatorsToGenerate, InputAsyncValidatorsToGenerate], 
-            outputs: [ExpectedNotEmptyRuleExtensions, ExpectedGreaterThanRuleExtensions, ExpectedLessThanRuleExtensions, ExpectedPredicateExtensions, ExpectedValidators, ExpectedAsyncValidators],
+        AssertGenerator(inputs: [InputRequests, InputValidationRules, InputValidatorsToGenerate, InputAsyncValidatorsToGenerate], 
+            outputs: [ExpectedValidators, ExpectedAsyncValidators],
             diagnostics: []);
     }
 }

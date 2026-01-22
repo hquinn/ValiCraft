@@ -6,7 +6,6 @@ namespace ValiCraft.Generator.Models;
 
 public record MapToValidationRuleData(
     string FullyQualifiedValidationRule,
-    string FullyQualifiedUnboundedName,
     string ValidationRuleGenericFormat)
 {
     public static MapToValidationRuleData? CreateFromMethodAndAttribute(
@@ -30,8 +29,7 @@ public record MapToValidationRuleData(
     {
         return new(
             (attributeData.ConstructorArguments[0].Value as INamedTypeSymbol)
-            ?.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) ?? string.Empty,
-            "", // Not needed here
+            ?.ToDisplayString(SymbolDisplayFormats.FormatWithoutGeneric) ?? string.Empty, // Not needed here
             attributeData.ConstructorArguments[1].Value as string ?? string.Empty);
     }
 }

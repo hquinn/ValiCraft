@@ -357,7 +357,6 @@ You can create your own reusable validation rules:
 using ValiCraft;
 using ValiCraft.Attributes;
 
-[GenerateRuleExtension("IsValidPostalCode")]
 [DefaultMessage("'{TargetName}' must be a valid postal code")]
 public class PostalCodeRule : IValidationRule<string?>
 {

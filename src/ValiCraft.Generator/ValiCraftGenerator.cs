@@ -1,6 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using ValiCraft.Generator.Models;
 using ValiCraft.Generator.SourceProviders;
 using ValiCraft.Generator.SyntaxProviders;
+using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator;
 
@@ -9,14 +12,6 @@ public class ValiCraftGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Sync validation rules
-        var syncValidationRulesValuesProvider = context.SyntaxProvider
-            .ForAttributeWithMetadataName(
-                KnownNames.Attributes.GenerateRuleExtensionAttribute,
-                ValidationRuleExtensionSyntaxProvider.Predicate,
-                ValidationRuleExtensionSyntaxProvider.Transform)
-            .WithTrackingName(TrackingSteps.ValidationRuleResultTrackingName);
-
         // Sync validators
         var syncValidatorsValuesProvider = context.SyntaxProvider
             .ForAttributeWithMetadataName(
@@ -33,34 +28,20 @@ public class ValiCraftGenerator : IIncrementalGenerator
                 ValidatorSyntaxProvider.TransformAsync)
             .WithTrackingName(TrackingSteps.ValidatorResultTrackingName);
 
-        var allSyncValidationRulesProvider = syncValidationRulesValuesProvider.Collect();
-        var allSyncValidatorProvider = syncValidatorsValuesProvider.Collect();
-        var allAsyncValidatorProvider = asyncValidatorsValuesProvider.Collect();
-        
-        var syncCombinedProvider = allSyncValidationRulesProvider.Combine(allSyncValidatorProvider);
-        var asyncCombinedProvider = allSyncValidationRulesProvider.Combine(allAsyncValidatorProvider);
-
-        // Emit sync validation rule extensions
-        context.RegisterSourceOutput(
-            allSyncValidationRulesProvider,
-            static (spc, source) => ValidationRuleExtensionSourceProvider.EmitSourceCode(source, spc));
-        
         // Emit sync validators
         context.RegisterSourceOutput(
-            syncCombinedProvider,
+            syncValidatorsValuesProvider.Collect(),
             static (spc, source) =>
             {
-                var (allValidationRules, allValidators) = source;
-                ValidatorSourceProvider.EmitSourceCode(false, allValidationRules, allValidators, spc);
+                ValidatorSourceProvider.EmitSourceCode(source, spc);
             });
         
         // Emit async validators
         context.RegisterSourceOutput(
-            asyncCombinedProvider,
+            asyncValidatorsValuesProvider.Collect(),
             static (spc, source) =>
             {
-                var (allValidationRules, allValidators) = source;
-                ValidatorSourceProvider.EmitSourceCode(true, allValidationRules, allValidators, spc);
+                ValidatorSourceProvider.EmitSourceCode(source, spc);
             });
     }
 }

@@ -5,6 +5,4 @@ public record ArgumentInfo(
     string Value,
     TypeInfo Type,
     bool IsLiteral,
-    object? ConstantValue)
-{
-}
+    object? ConstantValue);

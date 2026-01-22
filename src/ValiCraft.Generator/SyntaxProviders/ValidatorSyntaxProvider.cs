@@ -52,7 +52,7 @@ public static class ValidatorSyntaxProvider
 
         cancellationToken.ThrowIfCancellationRequested();
         
-        var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(classDeclarationSyntax!, classSymbol!, null);
+        var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(classDeclarationSyntax!, classSymbol!);
         var ruleChains = RuleChainsSyntaxProvider.DiscoverRuleChains(
             isAsync,
             diagnostics,

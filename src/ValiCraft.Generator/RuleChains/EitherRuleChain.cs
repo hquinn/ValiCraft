@@ -24,37 +24,6 @@ public record EitherRuleChain(
     MessageInfo? OverrideMessage,
     MessageInfo? OverrideErrorCode) : RuleChain(IsAsync, Object, null, Depth, Indent, NumberOfRules, null)
 {
-    protected override bool TryLinkRuleChain(
-        ValidationRule[] validRules,
-        SourceProductionContext context,
-        out RuleChain linkedRuleChain)
-    {
-        var linkedRuleSets = new List<EquatableArray<RuleChain>>(RuleSets.Count);
-
-        foreach (var ruleSet in RuleSets)
-        {
-            var linkedRuleChains = new List<RuleChain>(ruleSet.Count);
-            
-            foreach (var ruleChain in ruleSet)
-            {
-                if (!ruleChain.TryLinkRuleChain(linkedRuleChains, validRules, context))
-                {
-                    linkedRuleChain = this;
-                    return false;
-                }
-            }
-            
-            linkedRuleSets.Add(linkedRuleChains.ToEquatableImmutableArray());
-        }
-
-        linkedRuleChain = this with
-        {
-            RuleSets = linkedRuleSets.ToEquatableImmutableArray()
-        };
-        
-        return true;
-    }
-
     public override bool NeedsGotoLabels()
     {
         // Either chains don't propagate goto labels since they handle their own control flow

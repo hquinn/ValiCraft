@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Text;
-using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 
@@ -15,25 +13,6 @@ public abstract record RuleChain(
     int NumberOfRules,
     OnFailureMode? FailureMode)
 {
-    public bool TryLinkRuleChain(
-        List<RuleChain> ruleChains,
-        ValidationRule[] validRules,
-        SourceProductionContext context)
-    {
-        if (!TryLinkRuleChain(validRules, context, out var ruleChain))
-        {
-            return false;
-        }
-        
-        ruleChains.Add(ruleChain);
-        return true;
-    }
-
-    protected abstract bool TryLinkRuleChain(
-        ValidationRule[] validRules,
-        SourceProductionContext context,
-        out RuleChain linkedRuleChain);
-    
     public string GenerateCode(RuleChainContext context)
     {
         var code = new StringBuilder();

@@ -15,20 +15,27 @@ public sealed class MapToValidationRuleAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="MapToValidationRuleAttribute"/> class.
     /// </summary>
-    /// <param name="validationRuleType">The type of the validation rule class.</param>
+    /// <param name="validationRuleClassType">The type of the validation rule class.</param>
     /// <param name="validationRuleGenericFormat">The generic format string for the rule type.</param>
     public MapToValidationRuleAttribute(
-        Type validationRuleType,
+        Type validationRuleClassType,
+        Type validationRuleMethodType,
         string validationRuleGenericFormat)
     {
-        ValidationRuleType = validationRuleType;
+        ValidationRuleClassType = validationRuleClassType;
+        ValidationRuleMethodType = validationRuleMethodType;
         ValidationRuleGenericFormat = validationRuleGenericFormat;
     }
 
     /// <summary>
     /// Gets the type of the validation rule that this method maps to.
     /// </summary>
-    public Type ValidationRuleType { get; }
+    public Type ValidationRuleClassType { get; }
+
+    /// <summary>
+    /// Gets the type of the validation rule that this method maps to.
+    /// </summary>
+    public Type ValidationRuleMethodType { get; }
 
     /// <summary>
     /// Gets the generic format string used to construct the full generic type.

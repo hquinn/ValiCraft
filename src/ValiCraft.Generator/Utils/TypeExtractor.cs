@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace ValiCraft.Generator.Utils;
 
-public static partial class TypeExtractor
+public static class TypeExtractor
 {
     private static readonly Regex NullableTypeRegex = 
         new(@"^(?:global::)?System\.Nullable<(.+)>$", RegexOptions.Compiled);

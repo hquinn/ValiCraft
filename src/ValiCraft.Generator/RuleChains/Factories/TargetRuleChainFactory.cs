@@ -109,8 +109,9 @@ public class TargetRuleChainFactory : IRuleChainFactory
         {
             return RichSemanticValidationRuleBuilder.Create(methodSymbol, invocation, memberName, context.SemanticModel);
         }
-    
-        return WeakSemanticValidationRuleBuilder.Create(invocation, memberName, context.SemanticModel);
+
+        // We don't have something valid here
+        return null;
     }
     
     private static bool InvocationIsRuleOverride(
@@ -193,7 +194,13 @@ public class TargetRuleChainFactory : IRuleChainFactory
             {
                 string => "string",
                 int => "int",
+                uint => "uint",
                 long => "long",
+                ulong => "ulong",
+                short => "short",
+                ushort => "ushort",
+                byte => "byte",
+                sbyte => "sbyte",
                 double => "double",
                 float => "float",
                 decimal => "decimal",

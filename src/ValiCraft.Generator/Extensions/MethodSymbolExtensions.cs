@@ -18,7 +18,7 @@ public static class MethodSymbolExtensions
         return methodSymbol.Parameters
             .Select(parameter => new ParameterInfo(
                 parameter.Name,
-                new TypeInfo(parameter.Type.ToDisplayString(), parameter.Type.TypeKind == TypeKind.TypeParameter, parameter.IsNullable())))
+                new TypeInfo(parameter.Type.ToDisplayString(), parameter.IsNullable())))
             .ToEquatableImmutableArray();
     }
 }

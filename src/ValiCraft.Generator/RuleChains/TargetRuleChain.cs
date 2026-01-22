@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
-using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Rules;
@@ -19,30 +17,6 @@ public record TargetRuleChain(
     EquatableArray<Rule> Rules,
     bool WhenNotNull = false) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
-    protected override bool TryLinkRuleChain(
-        ValidationRule[] validRules,
-        SourceProductionContext context,
-        out RuleChain linkedRuleChain)
-    {
-        var rules = new List<Rule>(Rules.Count);
-
-        foreach (var rule in Rules)
-        {
-            if (rule.EnrichRule(Target!, validRules, context) is not { } linkedRule)
-            {
-                linkedRuleChain = this;
-                return false;
-            }
-            rules.Add(linkedRule);
-        }
-
-        linkedRuleChain = this with
-        {
-            Rules = rules.ToEquatableImmutableArray()
-        };
-        
-        return true;
-    }
 
     public override bool NeedsGotoLabels()
     {

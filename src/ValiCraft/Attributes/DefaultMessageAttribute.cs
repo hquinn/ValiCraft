@@ -20,7 +20,6 @@
 /// </remarks>
 /// <example>
 /// <code>
-/// [GenerateRuleExtension("HasMinLength")]
 /// [DefaultMessage("'{TargetName}' must have at least {MinLength} characters")]
 /// [RulePlaceholder("MinLength", "minLength")]
 /// public class MinLengthRule : IValidationRule&lt;string?&gt;
@@ -29,7 +28,7 @@
 /// }
 /// </code>
 /// </example>
-[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
 public sealed class DefaultMessageAttribute : Attribute
 {
     /// <summary>
