@@ -17,8 +17,7 @@ public enum RuleChainKind
     Collection,
     CollectionValidateWith,
     WithOnFailure,
-    If,
-    Either
+    If
 }
 
 public static class RuleChainFactory
@@ -49,12 +48,11 @@ public static class RuleChainFactory
             [RuleChainKind.CollectionValidateWith] = new CollectionValidateWithRuleChainFactory(),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
             [RuleChainKind.If] = new IfRuleChainFactory(),
-            [RuleChainKind.Either] = new EitherRuleChainFactory()
         };
     }
     
     public static RuleChain? CreateFromStatement(
-        bool isAsync,
+        bool isAsyncValidator,
         ExpressionStatementSyntax statement,
         string builderArgument,
         int depth,
@@ -88,10 +86,10 @@ public static class RuleChainFactory
 
         var factory = GetRuleChainFactory(ruleChainKind.Value);
 
-        return factory.Create(isAsync, validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context);
+        return factory.Create(isAsyncValidator, validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context);
     }
 
-    public static IRuleChainFactory GetRuleChainFactory(RuleChainKind ruleChainKind)
+    private static IRuleChainFactory GetRuleChainFactory(RuleChainKind ruleChainKind)
     {
         return RuleChainFactories[ruleChainKind];
     }
@@ -190,7 +188,6 @@ public static class RuleChainFactory
                 : RuleChainKind.Collection,
             KnownNames.Methods.WithOnFailure => RuleChainKind.WithOnFailure,
             KnownNames.Methods.If => RuleChainKind.If,
-            KnownNames.Methods.Either => RuleChainKind.Either,
             _ => null
         };
     }
@@ -205,7 +202,7 @@ public static class RuleChainFactory
         validationObject = null;
         validationTarget = null;
 
-        if (ruleChainKind is RuleChainKind.WithOnFailure or RuleChainKind.If or RuleChainKind.Either)
+        if (ruleChainKind is RuleChainKind.WithOnFailure or RuleChainKind.If)
         {
             return GetValidationTargetFromBuilder(
                 startingChainInvocation,

@@ -39,19 +39,19 @@ public class CollectionValidationBenchmark
     {
         var result = _valiCraftValidator.Validate(_smallCollectionModel);
     }
-
+    
     [Benchmark]
     public void FluentValidation_SmallCollection()
     {
         var result = _fluentValidator.Validate(_smallCollectionModel);
     }
-
+    
     [Benchmark]
     public void ValiCraft_LargeCollection()
     {
         var result = _valiCraftValidator.Validate(_largeCollectionModel);
     }
-
+    
     [Benchmark]
     public void FluentValidation_LargeCollection()
     {

@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -12,7 +11,7 @@ public class NotNullOrWhiteSpaceTests
         var value = "test";
 
         // Act
-        var result = NotNullOrWhiteSpace.IsValid(value);
+        var result = ValiCraft.Rules.NotNullOrWhiteSpace(value);
 
         // Assert
         result.Should().BeTrue();
@@ -25,7 +24,7 @@ public class NotNullOrWhiteSpaceTests
         string? value = null;
 
         // Act
-        var result = NotNullOrWhiteSpace.IsValid(value);
+        var result = ValiCraft.Rules.NotNullOrWhiteSpace(value);
 
         // Assert
         result.Should().BeFalse();
@@ -38,7 +37,7 @@ public class NotNullOrWhiteSpaceTests
         var value = string.Empty;
 
         // Act
-        var result = NotNullOrWhiteSpace.IsValid(value);
+        var result = ValiCraft.Rules.NotNullOrWhiteSpace(value);
 
         // Assert
         result.Should().BeFalse();
@@ -51,7 +50,7 @@ public class NotNullOrWhiteSpaceTests
         var value = "   ";
 
         // Act
-        var result = NotNullOrWhiteSpace.IsValid(value);
+        var result = ValiCraft.Rules.NotNullOrWhiteSpace(value);
 
         // Assert
         result.Should().BeFalse();
@@ -64,7 +63,7 @@ public class NotNullOrWhiteSpaceTests
         var value = "\t";
 
         // Act
-        var result = NotNullOrWhiteSpace.IsValid(value);
+        var result = ValiCraft.Rules.NotNullOrWhiteSpace(value);
 
         // Assert
         result.Should().BeFalse();
@@ -77,7 +76,7 @@ public class NotNullOrWhiteSpaceTests
         var value = "\n";
 
         // Act
-        var result = NotNullOrWhiteSpace.IsValid(value);
+        var result = ValiCraft.Rules.NotNullOrWhiteSpace(value);
 
         // Assert
         result.Should().BeFalse();
@@ -90,7 +89,7 @@ public class NotNullOrWhiteSpaceTests
         var value = "  test  ";
 
         // Act
-        var result = NotNullOrWhiteSpace.IsValid(value);
+        var result = ValiCraft.Rules.NotNullOrWhiteSpace(value);
 
         // Assert
         result.Should().BeTrue();

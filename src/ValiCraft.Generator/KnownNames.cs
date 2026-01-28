@@ -72,14 +72,12 @@ public static class KnownNames
 
     public static class Methods
     {
-        public const string IsValid = "IsValid";
         public const string DefineRules = "DefineRules";
         public const string Ensure = "Ensure";
         public const string EnsureEach = "EnsureEach";
         public const string ValidateWith = "ValidateWith";
         public const string WithOnFailure = "WithOnFailure";
         public const string If = "If";
-        public const string Either = "Either";
         public const string Validate = "Validate";
         public const string ValidateAsync = "ValidateAsync";
 
@@ -102,17 +100,6 @@ public static class KnownNames
 
     public static class Targets
     {
-        public const string Must = "Must";
-        public const string MustAsync = "MustAsync";
-
-        public static string GetMustTarget(bool isAsync)
-        {
-            if (isAsync)
-            {
-                return MustAsync;
-            }
-            
-            return Must;
-        }
+        public const string Is = "Is";
     }
 }

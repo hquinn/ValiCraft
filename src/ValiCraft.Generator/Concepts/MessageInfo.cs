@@ -7,7 +7,7 @@ namespace ValiCraft.Generator.Concepts;
 
 public record MessageInfo(string Value, bool IsLiteral)
 {
-    public static MessageInfo? CreateFromAttribute(INamedTypeSymbol? symbol, string attribute)
+    public static MessageInfo? CreateFromAttribute(ISymbol? symbol, string attribute)
     {
         var message = symbol?.GetAttributeStringArgument(attribute);
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.SourceProviders;
@@ -31,17 +32,11 @@ public class ValiCraftGenerator : IIncrementalGenerator
         // Emit sync validators
         context.RegisterSourceOutput(
             syncValidatorsValuesProvider.Collect(),
-            static (spc, source) =>
-            {
-                ValidatorSourceProvider.EmitSourceCode(source, spc);
-            });
-        
+            static (spc, source) => { ValidatorSourceProvider.EmitSourceCode(source, spc); });
+
         // Emit async validators
         context.RegisterSourceOutput(
             asyncValidatorsValuesProvider.Collect(),
-            static (spc, source) =>
-            {
-                ValidatorSourceProvider.EmitSourceCode(source, spc);
-            });
+            static (spc, source) => { ValidatorSourceProvider.EmitSourceCode(source, spc); });
     }
 }

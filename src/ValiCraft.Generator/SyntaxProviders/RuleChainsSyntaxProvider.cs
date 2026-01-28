@@ -14,7 +14,7 @@ namespace ValiCraft.Generator.SyntaxProviders;
 public static class RuleChainsSyntaxProvider
 {
     public static EquatableArray<RuleChain> DiscoverRuleChains(
-        bool isAsync,
+        bool isAsyncValidator,
         List<DiagnosticInfo> diagnostics,
         ClassDeclarationSyntax classDeclarationSyntax,
         INamedTypeSymbol classSymbol,
@@ -31,7 +31,8 @@ public static class RuleChainsSyntaxProvider
 
         var ruleChains = defineRulesMethodSyntax.Body!.Statements
             .OfType<ExpressionStatementSyntax>()
-            .Select(statement => RuleChainFactory.CreateFromStatement(isAsync, statement, builderArgument, 0, IndentModel.CreateNew(), diagnostics, context))
+            .Select(statement => RuleChainFactory.CreateFromStatement(isAsyncValidator, statement, builderArgument, 0, IndentModel.CreateNew(), diagnostics, context))
+            .Where(ruleChain => ruleChain is not null)
             .OfType<RuleChain>()
             .ToEquatableImmutableArray();
 

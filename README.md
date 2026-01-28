@@ -285,24 +285,6 @@ builder.EnsureEach(x => x.Orders, order =>
     order.ValidateWith(new OrderValidator()));
 ```
 
-#### WhenNotNull - Optional Property Validation
-```csharp
-// Only validate if the value is not null
-builder.Ensure(x => x.OptionalEmail)
-    .WhenNotNull()
-    .IsEmailAddress()
-    .HasMaxLength(255);
-```
-
-#### Either - OR-Based Validation
-```csharp
-// At least one of these validation groups must pass
-builder.Either(
-    b => b.Ensure(x => x.Email).IsNotNullOrEmpty(),
-    b => b.Ensure(x => x.Phone).IsNotNullOrEmpty()
-);
-```
-
 #### Date/Time Validation with Testability
 ```csharp
 // Use parameterized date checks for testable validation

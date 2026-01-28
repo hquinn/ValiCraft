@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -13,7 +12,7 @@ public class EqualTests
         var comparison = 42;
 
         // Act
-        var result = Equal<int>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.Equal(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -27,7 +26,7 @@ public class EqualTests
         var comparison = 10;
 
         // Act
-        var result = Equal<int>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.Equal(value, comparison);
 
         // Assert
         result.Should().BeFalse();
@@ -41,7 +40,7 @@ public class EqualTests
         var comparison = "test";
 
         // Act
-        var result = Equal<string>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.Equal(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -55,7 +54,7 @@ public class EqualTests
         var comparison = "different";
 
         // Act
-        var result = Equal<string>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.Equal(value, comparison);
 
         // Assert
         result.Should().BeFalse();
@@ -69,7 +68,7 @@ public class EqualTests
         var comparison = "test";
 
         // Act
-        var result = Equal<string>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.Equal(value, comparison);
 
         // Assert
         result.Should().BeFalse();
@@ -84,7 +83,7 @@ public class EqualTests
         var comparison = guid;
 
         // Act
-        var result = Equal<Guid>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.Equal(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -98,7 +97,7 @@ public class EqualTests
         var comparison = Guid.NewGuid();
 
         // Act
-        var result = Equal<Guid>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.Equal(value, comparison);
 
         // Assert
         result.Should().BeFalse();
@@ -112,7 +111,7 @@ public class EqualTests
         var comparison = 3.14;
 
         // Act
-        var result = Equal<double>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.Equal(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -126,7 +125,7 @@ public class EqualTests
         var comparison = 2.71;
 
         // Act
-        var result = Equal<double>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.Equal(value, comparison);
 
         // Assert
         result.Should().BeFalse();

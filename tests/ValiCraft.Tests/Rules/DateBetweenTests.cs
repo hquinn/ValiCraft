@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -12,7 +11,7 @@ public class DateBetweenTests
         var end = new DateTime(2025, 12, 31);
         var value = new DateTime(2025, 6, 15);
         
-        var result = DateBetween.IsValid(value, start, end);
+        var result = ValiCraft.Rules.DateBetween(value, start, end);
         result.Should().BeTrue();
     }
 
@@ -23,7 +22,7 @@ public class DateBetweenTests
         var end = new DateTime(2025, 12, 31);
         var value = new DateTime(2025, 1, 1);
         
-        var result = DateBetween.IsValid(value, start, end);
+        var result = ValiCraft.Rules.DateBetween(value, start, end);
         result.Should().BeTrue();
     }
 
@@ -34,7 +33,7 @@ public class DateBetweenTests
         var end = new DateTime(2025, 12, 31);
         var value = new DateTime(2025, 12, 31);
         
-        var result = DateBetween.IsValid(value, start, end);
+        var result = ValiCraft.Rules.DateBetween(value, start, end);
         result.Should().BeTrue();
     }
 
@@ -45,7 +44,7 @@ public class DateBetweenTests
         var end = new DateTime(2025, 12, 31);
         var value = new DateTime(2024, 12, 31);
         
-        var result = DateBetween.IsValid(value, start, end);
+        var result = ValiCraft.Rules.DateBetween(value, start, end);
         result.Should().BeFalse();
     }
 
@@ -56,7 +55,7 @@ public class DateBetweenTests
         var end = new DateTime(2025, 12, 31);
         var value = new DateTime(2026, 1, 1);
         
-        var result = DateBetween.IsValid(value, start, end);
+        var result = ValiCraft.Rules.DateBetween(value, start, end);
         result.Should().BeFalse();
     }
 }

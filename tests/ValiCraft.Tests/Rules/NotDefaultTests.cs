@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -12,7 +11,7 @@ public class NotDefaultTests
         int? value = 42;
 
         // Act
-        var result = NotDefault<int?>.IsValid(value);
+        var result = ValiCraft.Rules.NotDefault(value);
 
         // Assert
         result.Should().BeTrue();
@@ -25,7 +24,7 @@ public class NotDefaultTests
         int value = 0;
 
         // Act
-        var result = NotDefault<int>.IsValid(value);
+        var result = ValiCraft.Rules.NotDefault(value);
 
         // Assert
         result.Should().BeFalse();
@@ -38,7 +37,7 @@ public class NotDefaultTests
         int? value = null;
 
         // Act
-        var result = NotDefault<int?>.IsValid(value);
+        var result = ValiCraft.Rules.NotDefault(value);
 
         // Assert
         result.Should().BeFalse();
@@ -51,7 +50,7 @@ public class NotDefaultTests
         string? value = "test";
 
         // Act
-        var result = NotDefault<string>.IsValid(value);
+        var result = ValiCraft.Rules.NotDefault<string>(value);
 
         // Assert
         result.Should().BeTrue();
@@ -64,7 +63,7 @@ public class NotDefaultTests
         string? value = null;
 
         // Act
-        var result = NotDefault<string>.IsValid(value);
+        var result = ValiCraft.Rules.NotDefault<string>(value);
 
         // Assert
         result.Should().BeFalse();
@@ -77,7 +76,7 @@ public class NotDefaultTests
         Guid? value = Guid.NewGuid();
 
         // Act
-        var result = NotDefault<Guid?>.IsValid(value);
+        var result = ValiCraft.Rules.NotDefault(value);
 
         // Assert
         result.Should().BeTrue();
@@ -90,7 +89,7 @@ public class NotDefaultTests
         Guid value = Guid.Empty;
 
         // Act
-        var result = NotDefault<Guid>.IsValid(value);
+        var result = ValiCraft.Rules.NotDefault(value);
 
         // Assert
         result.Should().BeFalse();
@@ -103,7 +102,7 @@ public class NotDefaultTests
         bool? value = true;
 
         // Act
-        var result = NotDefault<bool?>.IsValid(value);
+        var result = ValiCraft.Rules.NotDefault(value);
 
         // Assert
         result.Should().BeTrue();
@@ -116,7 +115,7 @@ public class NotDefaultTests
         bool value = false;
 
         // Act
-        var result = NotDefault<bool>.IsValid(value);
+        var result = ValiCraft.Rules.NotDefault(value);
 
         // Assert
         result.Should().BeFalse();

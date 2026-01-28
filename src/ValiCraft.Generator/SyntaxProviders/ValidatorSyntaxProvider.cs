@@ -31,7 +31,7 @@ public static class ValidatorSyntaxProvider
     }
 
     public static ProviderResult<Validator> Transform(
-        bool isAsync,
+        bool isAsyncValidator,
         GeneratorAttributeSyntaxContext context,
         CancellationToken cancellationToken)
     {
@@ -43,7 +43,7 @@ public static class ValidatorSyntaxProvider
         }
 
         var succeeded = TryCheckPartialKeyword(classDeclarationSyntax!, diagnostics);
-        succeeded &= TryGetRequestTypeName(isAsync, classDeclarationSyntax!, classSymbol!, diagnostics, out var requestTypeName);
+        succeeded &= TryGetRequestTypeName(isAsyncValidator, classDeclarationSyntax!, classSymbol!, diagnostics, out var requestTypeName);
 
         if (!succeeded)
         {
@@ -54,14 +54,14 @@ public static class ValidatorSyntaxProvider
         
         var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(classDeclarationSyntax!, classSymbol!);
         var ruleChains = RuleChainsSyntaxProvider.DiscoverRuleChains(
-            isAsync,
+            isAsyncValidator,
             diagnostics,
             classDeclarationSyntax!,
             classSymbol!,
             context);
 
         var validator = new Validator(
-            isAsync,
+            isAsyncValidator,
             classInfo,
             requestTypeName!,
             ruleChains,
@@ -71,21 +71,21 @@ public static class ValidatorSyntaxProvider
     }
 
     private static bool TryGetRequestTypeName(
-        bool isAsync,
+        bool isAsyncValidator,
         ClassDeclarationSyntax classDeclarationSyntax,
         INamedTypeSymbol classSymbol,
         List<DiagnosticInfo> diagnostics,
         out SymbolNameInfo? requestTypeName)
     {
         requestTypeName = null;
-        if (!isAsync && !classSymbol.Inherits(KnownNames.Classes.Validator, 1))
+        if (!isAsyncValidator && !classSymbol.Inherits(KnownNames.Classes.Validator, 1))
         {
-            diagnostics.Add(DefinedDiagnostics.MissingValidatorBaseClass(isAsync, classDeclarationSyntax.Identifier.GetLocation()));
+            diagnostics.Add(DefinedDiagnostics.MissingValidatorBaseClass(isAsyncValidator, classDeclarationSyntax.Identifier.GetLocation()));
             return false;
         }
-        if (isAsync && !classSymbol.Inherits(KnownNames.Classes.AsyncValidator, 1))
+        if (isAsyncValidator && !classSymbol.Inherits(KnownNames.Classes.AsyncValidator, 1))
         {
-            diagnostics.Add(DefinedDiagnostics.MissingValidatorBaseClass(isAsync, classDeclarationSyntax.Identifier.GetLocation()));
+            diagnostics.Add(DefinedDiagnostics.MissingValidatorBaseClass(isAsyncValidator, classDeclarationSyntax.Identifier.GetLocation()));
             return false;
         }
 

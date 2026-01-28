@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
@@ -20,7 +19,7 @@ public abstract record Rule(
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location)
 {
-    private const string FallbackMessage = "\"'An error has occurred\"";
+    private static MessageInfo FallbackMessage = new("'{TargetName}' doesn't satisfy the condition", true);
 
     public abstract string GenerateCodeForRule(
         string requestName,
@@ -169,11 +168,7 @@ public abstract record Rule(
 
     private string GetErrorMessage(string requestName, ValidationTarget target, MessageInfo targetNameInfo)
     {
-        var messageInfo = RuleOverrides.OverrideMessage ?? DefaultMessage;
-        if (messageInfo is null)
-        {
-            return FallbackMessage;
-        }
+        var messageInfo = RuleOverrides.OverrideMessage ?? DefaultMessage ?? FallbackMessage;
 
         // Build a complete map of all available placeholders for this rule invocation.
         var placeholderMap = BuildPlaceholderMap(requestName, target, targetNameInfo);

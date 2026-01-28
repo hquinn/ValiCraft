@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -9,7 +8,7 @@ public class EqualWithComparerTests
     public void IsValid_WhenValuesEqualWithComparer_ReturnsTrue()
     {
         var comparer = StringComparer.OrdinalIgnoreCase;
-        var result = EqualWithComparer<string>.IsValid("Hello", "hello", comparer);
+        var result = ValiCraft.Rules.Equal<string>("Hello", "hello", comparer);
         result.Should().BeTrue();
     }
 
@@ -17,7 +16,7 @@ public class EqualWithComparerTests
     public void IsValid_WhenValuesNotEqualWithComparer_ReturnsFalse()
     {
         var comparer = StringComparer.OrdinalIgnoreCase;
-        var result = EqualWithComparer<string>.IsValid("Hello", "world", comparer);
+        var result = ValiCraft.Rules.Equal<string>("Hello", "world", comparer);
         result.Should().BeFalse();
     }
 
@@ -25,7 +24,7 @@ public class EqualWithComparerTests
     public void IsValid_WithDefaultComparer_WorksCorrectly()
     {
         var comparer = EqualityComparer<int>.Default;
-        var result = EqualWithComparer<int>.IsValid(42, 42, comparer);
+        var result = ValiCraft.Rules.Equal(42, 42, comparer);
         result.Should().BeTrue();
     }
 }

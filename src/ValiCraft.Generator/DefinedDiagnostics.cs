@@ -59,6 +59,19 @@ public static class DefinedDiagnostics
             location);
     }
 
+    public static DiagnosticInfo InvalidRuleInvocation(Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC203",
+                "Invalid rule invocation",
+                $"Invalid rule invocation. Either use the .Is() method or define an extension method.",
+                KnownNames.Namespaces.Base,
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
     public static DiagnosticInfo InvalidLambdaDefined(string ruleChainName, Location location)
     {
         return new DiagnosticInfo(
@@ -102,24 +115,13 @@ public static class DefinedDiagnostics
             location);
     }
 
-    public static DiagnosticInfo TypeMismatchForValidationRule(
-        string ruleName,
-        string expectedType,
-        string actualType,
-        string? suggestion,
-        Location location)
+    public static DiagnosticInfo MissingMapToValidationRuleAttribute(Location location)
     {
-        var message = $"'{ruleName}' expects '{expectedType}' but property is of type '{actualType}'.";
-        if (!string.IsNullOrEmpty(suggestion))
-        {
-            message += $" {suggestion}";
-        }
-
         return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC207",
-                "Type mismatch for validation rule",
-                message,
+                "Missing MapToValidationRule attribute on extenstion method",
+                "Missing MapToValidationRule attribute on extenstion method.",
                 KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),

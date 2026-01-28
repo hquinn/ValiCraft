@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -13,7 +12,7 @@ public class NotEqualTests
         var comparison = 10;
 
         // Act
-        var result = NotEqual<int>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.NotEqual(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -27,7 +26,7 @@ public class NotEqualTests
         var comparison = 42;
 
         // Act
-        var result = NotEqual<int>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.NotEqual(value, comparison);
 
         // Assert
         result.Should().BeFalse();
@@ -41,7 +40,7 @@ public class NotEqualTests
         var comparison = "different";
 
         // Act
-        var result = NotEqual<string>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.NotEqual<string>(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -55,7 +54,7 @@ public class NotEqualTests
         var comparison = "test";
 
         // Act
-        var result = NotEqual<string>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.NotEqual<string>(value, comparison);
 
         // Assert
         result.Should().BeFalse();
@@ -69,7 +68,7 @@ public class NotEqualTests
         var comparison = "test";
 
         // Act
-        var result = NotEqual<string>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.NotEqual<string>(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -83,7 +82,7 @@ public class NotEqualTests
         var comparison = Guid.NewGuid();
 
         // Act
-        var result = NotEqual<Guid>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.NotEqual(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -98,7 +97,7 @@ public class NotEqualTests
         var comparison = guid;
 
         // Act
-        var result = NotEqual<Guid>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.NotEqual(value, comparison);
 
         // Assert
         result.Should().BeFalse();
@@ -112,7 +111,7 @@ public class NotEqualTests
         var comparison = 2.71;
 
         // Act
-        var result = NotEqual<double>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.NotEqual(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -126,7 +125,7 @@ public class NotEqualTests
         var comparison = 3.14;
 
         // Act
-        var result = NotEqual<double>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.NotEqual(value, comparison);
 
         // Assert
         result.Should().BeFalse();

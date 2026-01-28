@@ -26,7 +26,7 @@ public static class NamedTypeSymbolExtensions
     }
 
     public static string? GetAttributeStringArgument(
-        this INamedTypeSymbol symbol,
+        this ISymbol symbol,
         string attributeFullName)
     {
         var attributeData = symbol.GetAttributes()

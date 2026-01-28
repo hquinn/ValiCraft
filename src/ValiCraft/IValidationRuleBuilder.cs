@@ -66,24 +66,4 @@ public interface IValidationRuleBuilder<TRequest> where TRequest : class
     /// <param name="condition">The condition that must be true for rules to apply.</param>
     /// <param name="rules">A delegate to configure rules that apply when the condition is true.</param>
     void If(Func<TRequest, bool> condition, Action<IValidationRuleBuilder<TRequest>> rules);
-    
-    /// <summary>
-    /// Define validation rules that must satisfy at least one of the provided rule sets (OR logic).
-    /// </summary>
-    void Either(
-        Action<IValidationRuleBuilder<TRequest>> firstRules,
-        Action<IValidationRuleBuilder<TRequest>> secondRules);
-    
-    /// <summary>
-    /// Define validation rules that must satisfy at least one of the provided rule sets (OR logic).
-    /// </summary>
-    void Either(
-        Action<IValidationRuleBuilder<TRequest>> firstRules,
-        Action<IValidationRuleBuilder<TRequest>> secondRules,
-        Action<IValidationRuleBuilder<TRequest>> thirdRules);
-    
-    /// <summary>
-    /// Define validation rules that must satisfy at least one of the provided rule sets (OR logic).
-    /// </summary>
-    void Either(params Action<IValidationRuleBuilder<TRequest>>[] ruleSets);
 }

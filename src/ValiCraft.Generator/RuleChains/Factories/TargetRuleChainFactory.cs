@@ -13,7 +13,7 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 public class TargetRuleChainFactory : IRuleChainFactory
 {
     public RuleChain? Create(
-        bool isAsync,
+        bool isAsyncValidator,
         ValidationTarget @object,
         ValidationTarget? target,
         InvocationExpressionSyntax invocation,
@@ -25,12 +25,19 @@ public class TargetRuleChainFactory : IRuleChainFactory
     {
         RuleBuilder? ruleBuilder = null;
         var rules = new List<Rule>();
-        var whenNotNull = false;
     
         // Skip the Ensure method as that's not a rule.
         foreach (var ruleInvocation in invocationChain.Skip(1))
         {
-            ruleBuilder = ProcessNextInChain(isAsync, ruleBuilder, ruleInvocation, rules, context, ref whenNotNull);
+            var result = ProcessNextInChain(isAsyncValidator, ruleBuilder, ruleInvocation, rules, diagnostics, context);
+            
+            // We don't have a valid rule, return early
+            if (result is null)
+            {
+                return null;
+            }
+            
+            ruleBuilder = result;
         }
     
         // Add the last rule into the rule list
@@ -41,30 +48,29 @@ public class TargetRuleChainFactory : IRuleChainFactory
         
         // Now that we have all the rules in the chain, we can now create the rule chain
         return new TargetRuleChain(
-            isAsync,
+            isAsyncValidator,
             @object,
             target!,
             depth,
             indent,
             rules.Count,
             invocation?.GetOnFailureModeFromSyntax(),
-            rules.ToEquatableImmutableArray(),
-            whenNotNull);
+            rules.ToEquatableImmutableArray());
     }
     
     private static RuleBuilder? ProcessNextInChain(
-        bool isAsync,
+        bool isAsyncValidator,
         RuleBuilder? ruleBuilder,
         InvocationExpressionSyntax invocation,
         List<Rule> rules,
-        GeneratorAttributeSyntaxContext context,
-        ref bool whenNotNull)
+        List<DiagnosticInfo> diagnostics,
+        GeneratorAttributeSyntaxContext context)
     {
         var ruleMemberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
         var memberName = ruleMemberAccess.Name.Identifier.ValueText;
         var argumentExpression = invocation.ArgumentList.Arguments.FirstOrDefault()?.Expression;
     
-        if (InvocationIsRuleOverride(ruleBuilder, memberName, argumentExpression, invocation, ref whenNotNull))
+        if (InvocationIsRuleOverride(ruleBuilder, memberName, argumentExpression, invocation))
         {
             return ruleBuilder;
         }
@@ -74,52 +80,119 @@ public class TargetRuleChainFactory : IRuleChainFactory
         {
             rules.Add(ruleBuilder.Build());
         }
-    
-        // We are specifically handling Must differently, as we want to generate specific logic for handling
-        // the inlining of Must.
-        var isMustMethod = (memberName is KnownNames.Targets.Must or KnownNames.Targets.MustAsync) &&
-                invocation.ArgumentList.Arguments.Count == 1;
         
-        if (isMustMethod && argumentExpression is not null)
+        if (memberName is KnownNames.Targets.Is)
         {
-            var isMustAsync = isAsync && memberName is KnownNames.Targets.MustAsync;
+            var memberSymbol = context.SemanticModel.GetSymbolInfo(ruleMemberAccess).Symbol;
+
+            var (isMethodAsync, usesCancellationToken) =
+                GetIsRuleSignatureInfo(isAsyncValidator, memberSymbol, context.SemanticModel.Compilation);
             switch (argumentExpression)
             {
-                case LambdaExpressionSyntax { Body: IsPatternExpressionSyntax or BinaryExpressionSyntax } patternLambda:
-                    return PatternLambdaMustRuleBuilder.Create(isMustAsync, invocation, patternLambda);
-                case LambdaExpressionSyntax { Body: PrefixUnaryExpressionSyntax } prefixUnaryLambda:
-                    return PatternLambdaMustRuleBuilder.Create(isMustAsync, invocation, prefixUnaryLambda);
-                case LambdaExpressionSyntax { Body: BlockSyntax } blockLambda:
-                    return BlockLambdaMustRuleBuilder.Create(isMustAsync, invocation, blockLambda);
-                case LambdaExpressionSyntax { Body: AwaitExpressionSyntax } awaitLambda:
-                    return InvocationLambdaMustRuleBuilder.Create(isMustAsync, invocation, awaitLambda);
-                case LambdaExpressionSyntax { Body: InvocationExpressionSyntax } invocationLambda:
-                    return InvocationLambdaMustRuleBuilder.Create(isMustAsync, invocation, invocationLambda);
+                // Method groups (e.g. .Is(NotEmpty))
                 case IdentifierNameSyntax identifierNameSyntax:
-                    return IdentifierNameMustRuleBuilder.Create(isMustAsync, invocation, identifierNameSyntax);
+                    return IdentifierNameRuleBuilder.Create(
+                        isMethodAsync,
+                        usesCancellationToken,
+                        invocation,
+                        identifierNameSyntax,
+                        context);
+                
+                // Method groups that are accessed (e.g. .Is(Rules.NotEmpty))
+                case MemberAccessExpressionSyntax memberAccessExpressionSyntax:
+                    return MemberAccessRuleBuilder.Create(
+                        isMethodAsync,
+                        usesCancellationToken,
+                        invocation,
+                        memberAccessExpressionSyntax,
+                        context);
+                
+                // Block lambdas (e.g. .Is(x => { return string.IsNullOrEmpty(x) }))
+                case LambdaExpressionSyntax { Body: BlockSyntax } blockLambda:
+                    return BlockLambdaRuleBuilder.Create(
+                        isMethodAsync,
+                        usesCancellationToken,
+                        invocation,
+                        blockLambda);
+                
+                // Invocations (e.g. .Is(x => NotEmpty(x), .Is(async x => await NotEmpty(x))
+                // Note: .Is(x => !NotEmpty(x)) is not an invocation lambda
+                case LambdaExpressionSyntax { Body: InvocationExpressionSyntax or AwaitExpressionSyntax } invocationLambda:
+                    return InvocationLambdaRuleBuilder.Create(
+                        isMethodAsync,
+                        usesCancellationToken,
+                        invocation,
+                        invocationLambda,
+                        context);
+
+                // Everything else (Binary, Unary, Patterns, Properties, Arrays, Parentheses, etc)
+                // If it's a lambda with an expression body that isn't a method call, it goes here
+                case LambdaExpressionSyntax lambda:
+                    return LambdaRuleBuilder.Create(
+                        isMethodAsync,
+                        usesCancellationToken,
+                        invocation,
+                        lambda);
             }
         }
     
-        // We usually get a value here if the invocation is a validation rule which:
-        // 1) Exists in a separate project or the extension method has been manually created
-        // 2) The invocation does not follow another invocation which cannot be resolved.
-        //    This generally happens when a validation rule is created in the same project as the validator,
-        //    and they used the [GenerateRuleValidation] attribute.
+        // We usually get a value here if the invocation is a validation rule the extension method has been created for
         if (context.SemanticModel.GetSymbolInfo(invocation).Symbol is IMethodSymbol methodSymbol)
         {
-            return RichSemanticValidationRuleBuilder.Create(methodSymbol, invocation, memberName, context.SemanticModel);
+            return ExtensionMethodRuleBuilder.Create(methodSymbol, invocation, diagnostics, context.SemanticModel);
         }
 
         // We don't have something valid here
+        diagnostics.Add(DefinedDiagnostics.InvalidRuleInvocation(invocation.GetLocation()));
         return null;
+    }
+
+    private static (bool IsAsync, bool UsesCancellationToken) GetIsRuleSignatureInfo(
+        bool isAsyncValidator,
+        ISymbol? memberSymbol,
+        Compilation compilation)
+    {
+        if (!isAsyncValidator)
+        {
+            return (false, false);
+        }
+        
+        if (memberSymbol is not IMethodSymbol methodSymbol)
+        {
+            return (false, false);
+        }
+
+        var ruleParameter = methodSymbol.Parameters.FirstOrDefault();
+        if (ruleParameter?.Type is not INamedTypeSymbol
+            {
+                TypeKind: TypeKind.Delegate,
+                DelegateInvokeMethod: { } invokeMethod
+            })
+        {
+            return (false, false);
+        }
+
+        var cancellationTokenType = compilation.GetTypeByMetadataName("System.Threading.CancellationToken");
+        var taskType = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task`1");
+
+        var usesCancellationToken = cancellationTokenType != null &&
+            invokeMethod.Parameters.Any(parameter =>
+                SymbolEqualityComparer.Default.Equals(parameter.Type, cancellationTokenType));
+
+        var isAsync = taskType != null &&
+            invokeMethod.ReturnType is INamedTypeSymbol returnType &&
+            SymbolEqualityComparer.Default.Equals(returnType.OriginalDefinition, taskType) &&
+            returnType.TypeArguments.Length == 1 &&
+            returnType.TypeArguments[0].SpecialType == SpecialType.System_Boolean;
+
+        return (isAsync, usesCancellationToken);
     }
     
     private static bool InvocationIsRuleOverride(
         RuleBuilder? ruleBuilder,
         string memberName,
         ExpressionSyntax? argumentExpression,
-        InvocationExpressionSyntax invocation,
-        ref bool whenNotNull)
+        InvocationExpressionSyntax invocation)
     {
         switch (memberName)
         {
@@ -177,9 +250,6 @@ public class TargetRuleChainFactory : IRuleChainFactory
                     ruleBuilder?.WithCondition(invocation);
                 }
                 
-                return true;
-            case "WhenNotNull":
-                whenNotNull = true;
                 return true;
         }
     

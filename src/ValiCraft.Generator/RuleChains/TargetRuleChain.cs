@@ -14,8 +14,7 @@ public record TargetRuleChain(
     IndentModel Indent,
     int NumberOfRules,
     OnFailureMode? FailureMode,
-    EquatableArray<Rule> Rules,
-    bool WhenNotNull = false) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    EquatableArray<Rule> Rules) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
 
     public override bool NeedsGotoLabels()
@@ -41,16 +40,6 @@ public record TargetRuleChain(
         }
         
         var generatedCode = string.Join("\r\n", ruleCodes);
-        
-        // If WhenNotNull is set, wrap the validation code in a null check
-        if (WhenNotNull)
-        {
-            var targetAccess = string.Format(Target!.AccessorExpressionFormat, GetRequestParameterName());
-            generatedCode = Indent + "if (" + targetAccess + " is not null)\r\n" +
-                            Indent + "{\r\n" +
-                            generatedCode + "\r\n" +
-                            Indent + "}";
-        }
         
         return generatedCode;
     }
