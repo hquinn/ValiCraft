@@ -2,12 +2,12 @@ namespace ValiCraft;
 
 /// <summary>
 /// Base class for creating asynchronous validators. Inherit from this class and apply the
-/// <c>[AsyncGenerateValidator]</c> attribute to generate validation logic at compile time.
+/// <c>[GenerateValidator]</c> attribute to generate validation logic at compile time.
 /// </summary>
 /// <typeparam name="TRequest">The type of object to validate.</typeparam>
 /// <example>
 /// <code>
-/// [AsyncGenerateValidator]
+/// [GenerateValidator]
 /// public partial class UserValidator : AsyncValidator&lt;User&gt;
 /// {
 ///     protected override void DefineRules(IAsyncValidationRuleBuilder&lt;User&gt; builder)

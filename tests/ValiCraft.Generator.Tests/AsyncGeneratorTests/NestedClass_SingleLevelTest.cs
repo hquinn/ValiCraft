@@ -30,7 +30,7 @@ public class NestedClass_SingleLevelTest : IncrementalGeneratorTestBase<ValiCraf
 
                                                                          public partial class Feature
                                                                          {
-                                                                             [AsyncGenerateValidator]
+                                                                             [GenerateValidator]
                                                                              public partial class OrderValidator : AsyncValidator<Order>
                                                                              {
                                                                                  protected override void DefineRules(IAsyncValidationRuleBuilder<Order> orderBuilder)

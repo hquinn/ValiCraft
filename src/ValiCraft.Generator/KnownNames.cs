@@ -15,7 +15,6 @@ public static class KnownNames
     public static class AttributeNames
     {
         public const string GenerateValidator = "GenerateValidator";
-        public const string AsyncGenerateValidator = "AsyncGenerateValidator";
     }
     
     public static class Attributes
@@ -23,7 +22,6 @@ public static class KnownNames
         public const string DefaultMessageAttribute = $"{Namespaces.Attributes}.DefaultMessageAttribute";
         public const string DefaultErrorCodeAttribute = $"{Namespaces.Attributes}.DefaultErrorCodeAttribute";
         public const string GenerateValidatorAttribute = $"{Namespaces.Attributes}.{AttributeNames.GenerateValidator}Attribute";
-        public const string AsyncGenerateValidatorAttribute = $"{Namespaces.Attributes}.{AttributeNames.AsyncGenerateValidator}Attribute";
         public const string MapToValidationRuleAttribute = $"{Namespaces.Attributes}.MapToValidationRuleAttribute";
         public const string RulePlaceholderAttribute = $"{Namespaces.Attributes}.RulePlaceholderAttribute";
     }

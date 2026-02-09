@@ -178,7 +178,7 @@ ValiCraft supports fully asynchronous validators and rules.
 using ValiCraft;
 using ValiCraft.Attributes;
 
-[AsyncGenerateValidator]
+[GenerateValidator]
 public partial class AsyncUserValidator : AsyncValidator<User>
 {
     protected override void DefineRules(IAsyncValidationRuleBuilder<User> builder)
@@ -201,7 +201,7 @@ IReadOnlyList<IValidationError> errors = await validator.ValidateToListAsync(use
 ```
 
 Notes:
-- Use `[AsyncGenerateValidator]` + `AsyncValidator<T>` + `IAsyncValidationRuleBuilder<T>` for async.
+- Use `[GenerateValidator]` + `AsyncValidator<T>` + `IAsyncValidationRuleBuilder<T>` for async.
 - Async counterparts are provided where applicable (e.g., `MustAsync(...)`, `ValidateToListAsync(...)`).
 - You can mix sync and async rules inside async validators.
 

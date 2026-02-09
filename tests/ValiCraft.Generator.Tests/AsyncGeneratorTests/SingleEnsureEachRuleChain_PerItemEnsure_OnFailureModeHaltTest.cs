@@ -32,7 +32,7 @@ public class SingleEnsureEachRuleChain_PerItemEnsure_OnFailureModeHaltTest : Inc
 
                                                                          namespace Test.Validators;
 
-                                                                         [AsyncGenerateValidator]
+                                                                         [GenerateValidator]
                                                                          public partial class OrderValidator : AsyncValidator<Order>
                                                                          {
                                                                              protected override void DefineRules(IAsyncValidationRuleBuilder<Order> orderBuilder)

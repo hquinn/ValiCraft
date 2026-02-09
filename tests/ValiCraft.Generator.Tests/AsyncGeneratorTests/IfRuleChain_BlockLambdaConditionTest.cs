@@ -26,7 +26,7 @@ public class IfRuleChain_BlockLambdaConditionTest : IncrementalGeneratorTestBase
 
                                                                          namespace Test.Validators;
 
-                                                                         [AsyncGenerateValidator]
+                                                                         [GenerateValidator]
                                                                          public partial class OrderValidator : AsyncValidator<Order>
                                                                          {
                                                                              protected override void DefineRules(IAsyncValidationRuleBuilder<Order> orderBuilder)

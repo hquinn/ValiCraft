@@ -32,7 +32,7 @@ public class SingleEnsureRuleChain_ValidateWith_ThenIsTest : IncrementalGenerato
 
                                                                          namespace Test.Validators;
 
-                                                                         [AsyncGenerateValidator]
+                                                                         [GenerateValidator]
                                                                          public partial class OrderValidator(IValidator<Customer> customerValidator) : AsyncValidator<Order>
                                                                          {
                                                                              protected override void DefineRules(IAsyncValidationRuleBuilder<Order> orderBuilder)

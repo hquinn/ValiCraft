@@ -47,12 +47,11 @@ public static class DefinedDiagnostics
     public static DiagnosticInfo MissingValidatorBaseClass(bool isAsync, Location location)
     {
         var validatorBaseClass = isAsync ? KnownNames.ClassNames.AsyncValidator : KnownNames.ClassNames.Validator;
-        var generateValidator = isAsync ? KnownNames.AttributeNames.AsyncGenerateValidator : KnownNames.AttributeNames.GenerateValidator;
         return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC202",
                 $"Missing {validatorBaseClass} base class",
-                $"Missing {validatorBaseClass} base class on Validator marked with [{generateValidator}]",
+                $"Missing Validator<T> or AsyncValidator<T> base class on Validator marked with [GenerateValidator]",
                 KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),

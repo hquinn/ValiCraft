@@ -26,7 +26,7 @@ public class IfRuleChain_MethodGroupConditionTest : IncrementalGeneratorTestBase
 
                                                                          namespace Test.Validators;
 
-                                                                         [AsyncGenerateValidator]
+                                                                         [GenerateValidator]
                                                                          public partial class OrderValidator : AsyncValidator<Order>
                                                                          {
                                                                              private static bool IsActive(Order order) => order.IsActive;

@@ -32,7 +32,7 @@ public class SingleEnsureRuleChain_AsyncSingleIsMethodRuleUsingLambda_AllOverrid
 
                                                                          namespace Test.Validators;
 
-                                                                         [AsyncGenerateValidator]
+                                                                         [GenerateValidator]
                                                                          public partial class OrderValidator : AsyncValidator<Order>
                                                                          {
                                                                              private Task<bool> HasValidOrderTotal(decimal orderTotal, CancellationToken cancellationToken) => Task.FromResult(true);

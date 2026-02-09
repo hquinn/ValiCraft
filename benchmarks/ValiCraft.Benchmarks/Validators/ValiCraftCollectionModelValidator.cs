@@ -27,7 +27,7 @@ public partial class ValiCraftCollectionModelValidator : Validator<CollectionMod
     }
 }
 
-[AsyncGenerateValidator]
+[GenerateValidator]
 public partial class AsyncValiCraftCollectionModelValidator : AsyncValidator<CollectionModel>
 {
     private async Task<bool> IsValidAsync(int age, CancellationToken cancellationToken)

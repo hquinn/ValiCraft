@@ -38,7 +38,7 @@ public class MultipleValidateWithRuleChains_UniqueErrorVariablesTest : Increment
 
                                                                          namespace Test.Validators;
 
-                                                                         [AsyncGenerateValidator]
+                                                                         [GenerateValidator]
                                                                          public partial class OrderValidator(IValidator<Customer> customerValidator, IValidator<LineItem> lineItemValidator) : AsyncValidator<Order>
                                                                          {
                                                                              protected override void DefineRules(IAsyncValidationRuleBuilder<Order> orderBuilder)

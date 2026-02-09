@@ -32,7 +32,7 @@ public class SingleWithOnFailureRuleChain_ValidateWith_OnFailureModeHaltTest : I
 
                                                                          namespace Test.Validators;
 
-                                                                         [AsyncGenerateValidator]
+                                                                         [GenerateValidator]
                                                                          public partial class OrderValidator(IValidator<LineItem> lineItemValidator) : AsyncValidator<Order>
                                                                          {
                                                                              protected override void DefineRules(IAsyncValidationRuleBuilder<Order> orderBuilder)

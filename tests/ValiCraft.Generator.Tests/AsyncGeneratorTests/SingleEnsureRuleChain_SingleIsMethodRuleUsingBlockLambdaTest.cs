@@ -30,7 +30,7 @@ public class SingleEnsureRuleChain_SingleIsMethodRuleUsingBlockLambdaTest : Incr
 
                                                                          namespace Test.Validators;
 
-                                                                         [AsyncGenerateValidator]
+                                                                         [GenerateValidator]
                                                                          public partial class OrderValidator : AsyncValidator<Order>
                                                                          {
                                                                              protected override void DefineRules(IAsyncValidationRuleBuilder<Order> orderBuilder)

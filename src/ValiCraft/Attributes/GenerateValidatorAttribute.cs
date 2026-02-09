@@ -10,7 +10,7 @@ namespace ValiCraft.Attributes;
 /// Classes decorated with this attribute must:
 /// <list type="bullet">
 ///     <item><description>Be declared as <c>partial</c></description></item>
-///     <item><description>Inherit from <see cref="Validator{TRequest}"/></description></item>
+///     <item><description>Inherit from <see cref="Validator{TRequest}"/> or <see cref="AsyncValidator{TRequest}"/></description></item>
 ///     <item><description>Override the <c>DefineRules</c> method</description></item>
 /// </list>
 /// </para>

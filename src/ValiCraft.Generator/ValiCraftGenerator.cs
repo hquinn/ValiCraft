@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
-using ValiCraft.Generator.Models;
+﻿using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.SourceProviders;
 using ValiCraft.Generator.SyntaxProviders;
-using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator;
 
@@ -13,30 +9,17 @@ public class ValiCraftGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Sync validators
-        var syncValidatorsValuesProvider = context.SyntaxProvider
+        // All validators (sync and async) - async is detected from base class
+        var validatorsValuesProvider = context.SyntaxProvider
             .ForAttributeWithMetadataName(
                 KnownNames.Attributes.GenerateValidatorAttribute,
                 ValidatorSyntaxProvider.Predicate,
-                ValidatorSyntaxProvider.TransformSync)
+                ValidatorSyntaxProvider.Transform)
             .WithTrackingName(TrackingSteps.ValidatorResultTrackingName);
 
-        // Async validators
-        var asyncValidatorsValuesProvider = context.SyntaxProvider
-            .ForAttributeWithMetadataName(
-                KnownNames.Attributes.AsyncGenerateValidatorAttribute,
-                ValidatorSyntaxProvider.Predicate,
-                ValidatorSyntaxProvider.TransformAsync)
-            .WithTrackingName(TrackingSteps.ValidatorResultTrackingName);
-
-        // Emit sync validators
+        // Emit validators
         context.RegisterSourceOutput(
-            syncValidatorsValuesProvider.Collect(),
-            static (spc, source) => { ValidatorSourceProvider.EmitSourceCode(source, spc); });
-
-        // Emit async validators
-        context.RegisterSourceOutput(
-            asyncValidatorsValuesProvider.Collect(),
+            validatorsValuesProvider.Collect(),
             static (spc, source) => { ValidatorSourceProvider.EmitSourceCode(source, spc); });
     }
 }

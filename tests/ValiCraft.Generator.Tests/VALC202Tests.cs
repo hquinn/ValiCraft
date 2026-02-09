@@ -39,7 +39,7 @@ public class VALC202Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
     {
         AssertGenerator(inputs: [InputRequests, InputValidator], 
             outputs: [],
-            diagnostics: ["Missing Validator base class on Validator marked with [GenerateValidator]"],
+            diagnostics: ["Missing Validator<T> or AsyncValidator<T> base class on Validator marked with [GenerateValidator]"],
             assertTrackingSteps: false);
     }
 }
