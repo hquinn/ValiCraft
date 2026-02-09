@@ -38,8 +38,8 @@ public static class AsyncRuleExtensions
    /// </remarks>
    [DefaultMessage("{TargetName} must contain only letters and numbers")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.AlphaNumeric))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> IsAlphaNumeric<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder)
+   public static IAsyncValidationRuleBuilderType<TRequest, string> IsAlphaNumeric<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder)
       where TRequest : class
    {
       return builder.Is(Rules.AlphaNumeric);
@@ -244,8 +244,8 @@ public static class AsyncRuleExtensions
    [DefaultMessage("{TargetName} must contain {Substring}")]
    [RulePlaceholder("{Substring}", "parameter")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.Contains))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> Contains<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder,
+   public static IAsyncValidationRuleBuilderType<TRequest, string> Contains<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder,
       string parameter)
       where TRequest : class
    {
@@ -285,7 +285,7 @@ public static class AsyncRuleExtensions
    [RulePlaceholder("{MaxCount}", "maxCount")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.CountBetween))]
    public static IAsyncValidationRuleBuilderType<TRequest, TCollectionType> HasCountBetween<TRequest, TCollectionType>(
-      this IAsyncBuilderType<TRequest, TCollectionType?> builder,
+      this IAsyncBuilderType<TRequest, TCollectionType> builder,
       int minCount,
       int maxCount)
       where TRequest : class
@@ -324,8 +324,8 @@ public static class AsyncRuleExtensions
    /// </remarks>
    [DefaultMessage("{TargetName} must be a valid email address")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.EmailAddress))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> IsEmailAddress<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder)
+   public static IAsyncValidationRuleBuilderType<TRequest, string> IsEmailAddress<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder)
       where TRequest : class
    {
       return builder.Is(Rules.EmailAddress);
@@ -359,8 +359,8 @@ public static class AsyncRuleExtensions
    [DefaultMessage("{TargetName} must end with {Suffix}")]
    [RulePlaceholder("{Suffix}", "parameter")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.EndsWith))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> EndsWith<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder,
+   public static IAsyncValidationRuleBuilderType<TRequest, string> EndsWith<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder,
       string parameter)
       where TRequest : class
    {
@@ -581,8 +581,8 @@ public static class AsyncRuleExtensions
    [DefaultMessage("{TargetName} must have exactly {ExpectedLength} characters")]
    [RulePlaceholder("{ExpectedLength}", "parameter")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.Length))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> HasLength<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder,
+   public static IAsyncValidationRuleBuilderType<TRequest, string> HasLength<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder,
       int parameter)
       where TRequest : class
    {
@@ -600,8 +600,8 @@ public static class AsyncRuleExtensions
    [RulePlaceholder("{MinLength}", "minLength")]
    [RulePlaceholder("{MaxLength}", "maxLength")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.LengthBetween))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> HasLengthBetween<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder,
+   public static IAsyncValidationRuleBuilderType<TRequest, string> HasLengthBetween<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder,
       int minLength,
       int maxLength)
       where TRequest : class
@@ -663,8 +663,8 @@ public static class AsyncRuleExtensions
    [DefaultMessage("{TargetName} must match the pattern {Pattern}")]
    [RulePlaceholder("{Pattern}", "pattern")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.Matches))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> Matches<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder,
+   public static IAsyncValidationRuleBuilderType<TRequest, string> Matches<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder,
       string pattern)
       where TRequest : class
    {
@@ -681,8 +681,8 @@ public static class AsyncRuleExtensions
    /// </remarks>
    [DefaultMessage("{TargetName} must match the specified pattern")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.MatchesRegex))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> MatchesRegex<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder,
+   public static IAsyncValidationRuleBuilderType<TRequest, string> MatchesRegex<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder,
       Regex regex)
       where TRequest : class
    {
@@ -738,8 +738,8 @@ public static class AsyncRuleExtensions
    [DefaultMessage("{TargetName} must have a maximum length of {MaxLength}")]
    [RulePlaceholder("{MaxLength}", "parameter")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.MaxLength))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> HasMaxLength<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder,
+   public static IAsyncValidationRuleBuilderType<TRequest, string> HasMaxLength<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder,
       int parameter)
       where TRequest : class
    {
@@ -794,8 +794,8 @@ public static class AsyncRuleExtensions
    [DefaultMessage("{TargetName} must have a minimum length of {MinLength}")]
    [RulePlaceholder("{MinLength}", "parameter")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.MinLength))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> HasMinLength<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder,
+   public static IAsyncValidationRuleBuilderType<TRequest, string> HasMinLength<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder,
       int parameter)
       where TRequest : class
    {
@@ -848,8 +848,8 @@ public static class AsyncRuleExtensions
    /// </remarks>
    [DefaultMessage("{TargetName} cannot be the default value.")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.NotDefault))]
-   public static IAsyncValidationRuleBuilderType<TRequest, TTargetType?> IsNotDefault<TRequest, TTargetType>(
-      this IAsyncBuilderType<TRequest, TTargetType?> builder)
+   public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotDefault<TRequest, TTargetType>(
+      this IAsyncBuilderType<TRequest, TTargetType> builder)
       where TRequest : class
    {
       return builder.Is(Rules.NotDefault);
@@ -947,8 +947,8 @@ public static class AsyncRuleExtensions
    /// </remarks>
    [DefaultMessage("{TargetName} is required.")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.NotNull))]
-   public static IAsyncValidationRuleBuilderType<TRequest, TTargetType?> IsNotNull<TRequest, TTargetType>(
-      this IAsyncBuilderType<TRequest, TTargetType?> builder)
+   public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
+      this IAsyncBuilderType<TRequest, TTargetType> builder)
       where TRequest : class
    {
       return builder.Is(Rules.NotNull);
@@ -963,8 +963,8 @@ public static class AsyncRuleExtensions
    /// </remarks>
    [DefaultMessage("{TargetName} must not be null or empty.")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.NotNullOrEmpty))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> IsNotNullOrEmpty<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder)
+   public static IAsyncValidationRuleBuilderType<TRequest, string> IsNotNullOrEmpty<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder)
       where TRequest : class
    {
       return builder.Is(Rules.NotNullOrEmpty);
@@ -979,8 +979,8 @@ public static class AsyncRuleExtensions
    /// </remarks>
    [DefaultMessage("{TargetName} must not be null or contain only whitespace.")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.NotNullOrWhiteSpace))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> IsNotNullOrWhiteSpace<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder)
+   public static IAsyncValidationRuleBuilderType<TRequest, string> IsNotNullOrWhiteSpace<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder)
       where TRequest : class
    {
       return builder.Is(Rules.NotNullOrWhiteSpace);
@@ -1032,8 +1032,8 @@ public static class AsyncRuleExtensions
    [DefaultMessage("{TargetName} must start with {Prefix}")]
    [RulePlaceholder("{Prefix}", "parameter")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.StartsWith))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> StartsWith<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder,
+   public static IAsyncValidationRuleBuilderType<TRequest, string> StartsWith<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder,
       string parameter)
       where TRequest : class
    {
@@ -1085,8 +1085,8 @@ public static class AsyncRuleExtensions
    /// </remarks>
    [DefaultMessage("{TargetName} must be a valid URL")]
    [MapToValidationRule(typeof(Rules), nameof(Rules.Url))]
-   public static IAsyncValidationRuleBuilderType<TRequest, string?> IsUrl<TRequest>(
-      this IAsyncBuilderType<TRequest, string?> builder)
+   public static IAsyncValidationRuleBuilderType<TRequest, string> IsUrl<TRequest>(
+      this IAsyncBuilderType<TRequest, string> builder)
       where TRequest : class
    {
       return builder.Is(Rules.Url);
