@@ -1,6 +1,6 @@
 # Contributing to ValiCraft
 
-First off, thank you for considering contributing to ValiCraft! It's people like you that make ValiCraft such a great tool.
+Thank you for considering contributing to ValiCraft! It's people like you that make ValiCraft such a great tool.
 
 ## Code of Conduct
 
@@ -41,8 +41,7 @@ Feature suggestions are welcome! Please open an issue with:
 
 ### Prerequisites
 
-- .NET 8.0 SDK or higher
-- An IDE with C# support (VS Code, Visual Studio, Rider)
+- .NET 10.0 SDK (also builds for .NET 9.0 and .NET 8.0)
 
 ### Building the Project
 
@@ -54,70 +53,25 @@ cd ValiCraft
 # Build the solution
 dotnet build
 
-# Run tests
+# Run all tests
 dotnet test
 
+# Run specific test project
+dotnet test tests/ValiCraft.Generator.Tests
+dotnet test tests/ValiCraft.IntegrationTests
+dotnet test tests/ValiCraft.Tests
+
 # Run benchmarks (optional)
-cd benchmarks/ValiCraft.Benchmarks
-dotnet run -c Release
+dotnet run -c Release --project benchmarks/ValiCraft.Benchmarks
 ```
-
-### Project Structure
-
-```
-ValiCraft/
-├── src/
-│   ├── ValiCraft/              # Main library (runtime types)
-│   └── ValiCraft.Generator/    # Source generator (compile-time)
-├── tests/
-│   ├── ValiCraft.Tests/        # Runtime tests
-│   └── ValiCraft.Generator.Tests/  # Generator tests
-└── benchmarks/
-    └── ValiCraft.Benchmarks/   # Performance benchmarks
-```
-
 ### Writing Tests
 
-- **Generator tests** verify that the source generator produces correct code
-- **Runtime tests** verify that the generated code behaves correctly
-- Use the existing test patterns as a guide
+- **Generator tests** — Snapshot tests verifying the source generator produces correct code. Located in `tests/ValiCraft.Generator.Tests/`
+- **Integration tests** — End-to-end tests that compile and run generated validators. Located in `tests/ValiCraft.IntegrationTests/`
+- **Unit tests** — Tests for runtime types and behaviors. Located in `tests/ValiCraft.Tests/`
 
-### Code Style
+Use the existing test patterns as a guide.
 
-- Use C# 12 features where appropriate
-- Follow Microsoft's C# coding conventions
-- Add XML documentation to all public APIs
-- Keep methods focused and small
-- Prefer immutability where possible
-
-## Creating Custom Validation Rules
-
-If you'd like to contribute new built-in validation rules:
-
-1. Create the rule class in `src/ValiCraft/Rules/`
-2. Add appropriate attributes (`GenerateRuleExtension`, `DefaultMessage`, etc.)
-3. Include comprehensive unit tests
-4. Update the README if adding a significant rule
-
-### Example Rule Structure
-
-```csharp
-using ValiCraft.Attributes;
-
-namespace ValiCraft.Rules;
-
-[GenerateRuleExtension("IsValidPostalCode")]
-[DefaultMessage("'{TargetName}' must be a valid postal code")]
-[DefaultErrorCode("INVALID_POSTAL_CODE")]
-public class PostalCodeRule : IValidationRule<string?>
-{
-    public static bool IsValid(string? value)
-    {
-        if (string.IsNullOrEmpty(value)) return false;
-        return Regex.IsMatch(value, @"^\d{5}(-\d{4})?$");
-    }
-}
-```
 
 ## Questions?
 
