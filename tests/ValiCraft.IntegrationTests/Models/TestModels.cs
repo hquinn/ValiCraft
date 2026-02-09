@@ -33,3 +33,13 @@ public class CollectionModel
     public List<string> Tags { get; set; } = [];
     public List<ChildModel> Children { get; set; } = [];
 }
+
+/// <summary>
+/// Model with nullable string properties to verify nullability support.
+/// </summary>
+public class NullableModel
+{
+    public string? Name { get; set; }
+    public string? Email { get; set; }
+    public int Age { get; set; }
+}

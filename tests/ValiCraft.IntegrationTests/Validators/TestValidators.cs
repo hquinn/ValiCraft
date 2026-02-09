@@ -78,3 +78,28 @@ public partial class CollectionModelValidator : Validator<CollectionModel>
             .ValidateWith(new ChildModelValidator());
     }
 }
+
+/// <summary>
+/// Validator for nullable string model.
+/// This tests that nullable string properties work with string extension methods.
+/// </summary>
+[GenerateValidator]
+public partial class NullableModelValidator : Validator<NullableModel>
+{
+    protected override void DefineRules(IValidationRuleBuilder<NullableModel> builder)
+    {
+        // These extension methods should work with string? properties
+        builder.Ensure(x => x.Name)
+            .IsNotNullOrWhiteSpace()
+            .HasMinLength(2)
+            .HasMaxLength(100);
+
+        builder.Ensure(x => x.Email)
+            .IsNotNullOrWhiteSpace()
+            .IsEmailAddress();
+
+        builder.Ensure(x => x.Age)
+            .IsGreaterThan(0)
+            .IsLessThan(150);
+    }
+}

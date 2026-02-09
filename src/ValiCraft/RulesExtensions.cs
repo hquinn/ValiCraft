@@ -29,6 +29,7 @@ public static class RulesExtensions
       return builder.Is(Rules.After, referenceDate);
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string contains only alphanumeric characters (letters and digits).
    /// </summary>
@@ -44,6 +45,7 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.AlphaNumeric);
    }
+#nullable restore
 
    /// <summary>
    /// Validates that a DateTime value is at or after the specified reference time.
@@ -234,6 +236,7 @@ public static class RulesExtensions
       return null!;
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string contains a specified substring.
    /// </summary>
@@ -251,6 +254,7 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.Contains, parameter);
    }
+#nullable restore
 
    /// <summary>
    /// Validates that a collection has exactly a specified number of items.
@@ -314,6 +318,7 @@ public static class RulesExtensions
       return builder.Is(Rules.DateBetween, startDate, endDate);
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string is a valid email address format.
    /// Performs a simple check for presence of @ with text before and after.
@@ -330,6 +335,7 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.EmailAddress);
    }
+#nullable restore
 
    /// <summary>
    /// Validates that a collection is empty or null.
@@ -349,6 +355,7 @@ public static class RulesExtensions
       return null!;
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string ends with a specified suffix.
    /// </summary>
@@ -366,6 +373,7 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.EndsWith, parameter);
    }
+#nullable restore
 
    /// <summary>
    /// Validates that a value equals another specified value.
@@ -571,6 +579,7 @@ public static class RulesExtensions
       return builder.Is(Rules.InValues, allowedValues);
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string has exactly a specified length.
    /// </summary>
@@ -588,7 +597,9 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.Length, parameter);
    }
+#nullable restore
 
+#nullable disable
    /// <summary>
    /// Validates that a string has a length within a specified range.
    /// </summary>
@@ -608,6 +619,7 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.LengthBetween, minLength, maxLength);
    }
+#nullable restore
 
    /// <summary>
    /// Validates that a value is less than or equal to another specified value.
@@ -649,6 +661,7 @@ public static class RulesExtensions
       return builder.Is(Rules.LessThan, parameter);
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string matches a specified regular expression pattern.
    /// </summary>
@@ -670,7 +683,9 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.Matches, pattern);
    }
+#nullable restore
 
+#nullable disable
    /// <summary>
    /// Validates that a string matches a specified compiled regular expression.
    /// This is more efficient than the string pattern version as the Regex is pre-compiled.
@@ -688,6 +703,7 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.MatchesRegex, regex);
    }
+#nullable restore
 
    /// <summary>
    /// Validates that a birth date represents a person who is at most a specified maximum age in years.
@@ -727,6 +743,7 @@ public static class RulesExtensions
       return null!;
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string does not exceed a maximum length.
    /// Null strings are considered valid (length 0).
@@ -745,6 +762,7 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.MaxLength, parameter);
    }
+#nullable restore
 
    /// <summary>
    /// Validates that a birth date represents a person who is at least a specified minimum age in years.
@@ -784,6 +802,7 @@ public static class RulesExtensions
       return null!;
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string has at least a minimum length.
    /// </summary>
@@ -801,6 +820,7 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.MinLength, parameter);
    }
+#nullable restore
 
    /// <summary>
    /// Validates that a numeric value is negative (less than zero).
@@ -954,6 +974,7 @@ public static class RulesExtensions
       return builder.Is(Rules.NotNull);
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string is not null or empty.
    /// </summary>
@@ -969,7 +990,9 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.NotNullOrEmpty);
    }
+#nullable restore
 
+#nullable disable
    /// <summary>
    /// Validates that a string is not null, empty, or consists only of white-space characters.
    /// </summary>
@@ -985,6 +1008,7 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.NotNullOrWhiteSpace);
    }
+#nullable restore
 
    /// <summary>
    /// Validates that a numeric value is positive (greater than zero).
@@ -1022,6 +1046,7 @@ public static class RulesExtensions
       return builder.Is(Rules.PositiveOrZero);
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string starts with a specified prefix.
    /// </summary>
@@ -1039,6 +1064,7 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.StartsWith, parameter);
    }
+#nullable restore
 
    /// <summary>
    /// Validates that a collection contains only unique items (no duplicates).
@@ -1076,6 +1102,7 @@ public static class RulesExtensions
       return builder.Is(Rules.Unique, comparer);
    }
 
+#nullable disable
    /// <summary>
    /// Validates that a string is a valid URL format.
    /// </summary>
@@ -1091,4 +1118,5 @@ public static class RulesExtensions
    {
       return builder.Is(Rules.Url);
    }
+#nullable restore
 }

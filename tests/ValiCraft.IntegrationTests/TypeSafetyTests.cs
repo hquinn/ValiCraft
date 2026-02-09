@@ -227,3 +227,88 @@ public class CollectionValidationTests
         errors.Should().NotBeEmpty();
     }
 }
+
+/// <summary>
+/// Integration tests for nullable string property support.
+/// These tests verify that the library works with string? properties.
+/// </summary>
+public class NullableStringTests
+{
+    [Fact]
+    public void NullableModel_ValidData_ReturnsNoErrors()
+    {
+        // Arrange
+        var validator = new NullableModelValidator();
+        var model = new NullableModel
+        {
+            Name = "John Doe",
+            Email = "john@example.com",
+            Age = 30
+        };
+
+        // Act
+        var errors = validator.ValidateToList(model);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void NullableModel_NullName_ReturnsError()
+    {
+        // Arrange
+        var validator = new NullableModelValidator();
+        var model = new NullableModel
+        {
+            Name = null, // Null, should fail IsNotNullOrWhiteSpace
+            Email = "test@example.com",
+            Age = 25
+        };
+
+        // Act
+        var errors = validator.ValidateToList(model);
+
+        // Assert
+        errors.Should().NotBeEmpty();
+        errors.Should().Contain(e => e.TargetName == "Name");
+    }
+
+    [Fact]
+    public void NullableModel_EmptyName_ReturnsError()
+    {
+        // Arrange
+        var validator = new NullableModelValidator();
+        var model = new NullableModel
+        {
+            Name = "", // Empty
+            Email = "test@example.com",
+            Age = 25
+        };
+
+        // Act
+        var errors = validator.ValidateToList(model);
+
+        // Assert
+        errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void NullableModel_InvalidEmail_ReturnsError()
+    {
+        // Arrange
+        var validator = new NullableModelValidator();
+        var model = new NullableModel
+        {
+            Name = "Valid Name",
+            Email = "not-an-email",
+            Age = 25
+        };
+
+        // Act
+        var errors = validator.ValidateToList(model);
+
+        // Assert
+        errors.Should().NotBeEmpty();
+        errors.Should().Contain(e => e.TargetName == "Email");
+    }
+}
