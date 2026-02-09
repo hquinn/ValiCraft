@@ -24,8 +24,19 @@ public interface IValidationRuleBuilderType<TRequest, TTarget> : IBuilderType<TR
     /// <summary>
     /// Sets a custom error message for the validation rule.
     /// </summary>
-    /// <param name="message">The error message, optionally containing placeholders like {TargetName}, {TargetValue}.</param>
+    /// <param name="message">
+    /// The error message, optionally containing placeholders like <c>{TargetName}</c>, <c>{TargetValue}</c>.
+    /// Placeholders support standard .NET format specifiers using the syntax <c>{Placeholder:format}</c>.
+    /// For example: <c>{TargetValue:C}</c> for currency, <c>{TargetValue:F2}</c> for fixed-point decimals.
+    /// </param>
     /// <returns>A builder for further configuration.</returns>
+    /// <example>
+    /// <code>
+    /// builder.Ensure(x => x.Price)
+    ///     .IsGreaterThan(0m)
+    ///     .WithMessage("'{TargetName}' must be positive. Current: {TargetValue:C}");
+    /// </code>
+    /// </example>
     IWithMessageBuilderType<TRequest, TTarget> WithMessage(string message);
 
     /// <summary>

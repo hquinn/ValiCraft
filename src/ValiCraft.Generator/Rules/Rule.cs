@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.IfConditions;
 using ValiCraft.Generator.Models;
@@ -231,28 +233,48 @@ public abstract record Rule(
         return BuildMessageFromExpression(messageTemplate, placeholderMap);
     }
 
+    // Regex to match placeholders with optional format specifiers: {Name} or {Name:format}
+    // Captures: Group 1 = placeholder name, Group 2 = format specifier (optional)
+    private static readonly Regex PlaceholderRegex = new(@"\{(\w+)(?::([^}]+))?\}", RegexOptions.Compiled);
+
     private static string BuildMessageFromLiteral(
         MessageInfo messageTemplate,
         Dictionary<string, ArgumentInfo> placeholderMap)
     {
-        var templateBuilder = new StringBuilder(messageTemplate.Value);
-
-        foreach (var entry in placeholderMap)
+        var result = PlaceholderRegex.Replace(messageTemplate.Value, match =>
         {
-            var placeholderText = entry.Key;
-            var replacementInfo = entry.Value;
+            var placeholderName = match.Groups[1].Value;
+            var formatSpecifier = match.Groups[2].Success ? match.Groups[2].Value : null;
+            var placeholderKey = $"{{{placeholderName}}}";
+
+            if (!placeholderMap.TryGetValue(placeholderKey, out var replacementInfo))
+            {
+                // Unknown placeholder, leave as-is
+                return match.Value;
+            }
 
             // If the replacement value is a literal, bake it in.
-            // Otherwise, create a C# interpolation hole for the expression.
-            var replacementExpression = replacementInfo.IsLiteral
-                ? replacementInfo.ConstantValue?.ToString() ?? replacementInfo.Value
+            if (replacementInfo.IsLiteral)
+            {
+                var literalValue = replacementInfo.ConstantValue?.ToString() ?? replacementInfo.Value;
+                
+                // Apply format specifier if present and value is formattable
+                if (formatSpecifier is not null && replacementInfo.ConstantValue is IFormattable formattable)
+                {
+                    return formattable.ToString(formatSpecifier, null);
+                }
+                
+                return literalValue;
+            }
+
+            // Create a C# interpolation hole for the expression, with optional format specifier.
+            return formatSpecifier is not null
+                ? $"{{{replacementInfo.Value}:{formatSpecifier}}}"
                 : $"{{{replacementInfo.Value}}}";
+        });
 
-            templateBuilder.Replace(placeholderText, replacementExpression);
-        }
-
-        // Return a valid C# interpolated string expression.
-        return $"$\"{templateBuilder.Replace("\"", "\"\"")}\"";
+        // Escape any double quotes for the C# string literal and return as interpolated string.
+        return $"$\"{result.Replace("\"", "\"\"")}\"";
     }
 
     private static string BuildMessageFromExpression(
@@ -261,18 +283,43 @@ public abstract record Rule(
     {
         var expressionBuilder = new StringBuilder(messageTemplate.Value);
 
-        foreach (var entry in placeholderMap)
+        // Find all placeholders in the template to preserve their format specifiers.
+        var matches = PlaceholderRegex.Matches(messageTemplate.Value);
+        
+        // Process in reverse order to maintain correct string positions when replacing.
+        foreach (Match match in matches.Cast<Match>().Reverse())
         {
-            var placeholderText = entry.Key;
-            var replacementInfo = entry.Value;
+            var placeholderName = match.Groups[1].Value;
+            var formatSpecifier = match.Groups[2].Success ? match.Groups[2].Value : null;
+            var placeholderKey = $"{{{placeholderName}}}";
 
-            var valueExpression = replacementInfo.IsLiteral ? $"\"{replacementInfo.Value}\"" : replacementInfo.Value;
+            if (!placeholderMap.TryGetValue(placeholderKey, out var replacementInfo))
+            {
+                // Unknown placeholder, skip
+                continue;
+            }
 
-            var finalReplacementExpression = replacementInfo.Type.PureTypeName.EndsWith("string")
-                ? valueExpression
-                : $"{valueExpression}?.ToString() ?? \"\"";
+            var valueExpression = replacementInfo.IsLiteral 
+                ? $"\"{replacementInfo.Value}\"" 
+                : replacementInfo.Value;
 
-            expressionBuilder.Append($".Replace(\"{placeholderText}\", {finalReplacementExpression})");
+            string finalReplacementExpression;
+            
+            if (formatSpecifier is not null)
+            {
+                // Use string.Format for formatted values at runtime
+                finalReplacementExpression = replacementInfo.Type.PureTypeName.EndsWith("string")
+                    ? valueExpression
+                    : $"string.Format(\"{{0:{formatSpecifier}}}\", {valueExpression})";
+            }
+            else
+            {
+                finalReplacementExpression = replacementInfo.Type.PureTypeName.EndsWith("string")
+                    ? valueExpression
+                    : $"{valueExpression}?.ToString() ?? \"\"";
+            }
+
+            expressionBuilder.Append($".Replace(\"{match.Value}\", {finalReplacementExpression})");
         }
 
         return expressionBuilder.ToString();
