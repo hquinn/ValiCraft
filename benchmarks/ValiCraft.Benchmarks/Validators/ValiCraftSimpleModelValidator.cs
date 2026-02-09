@@ -1,6 +1,5 @@
 using ValiCraft.Attributes;
 using ValiCraft.Benchmarks.Models;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Benchmarks.Validators;
 
@@ -10,6 +9,7 @@ public partial class ValiCraftSimpleModelValidator : Validator<SimpleModel>
     protected override void DefineRules(IValidationRuleBuilder<SimpleModel> builder)
     {
         builder.Ensure(x => x.Name)
+            .IsNotDefault()
             .IsNotNullOrWhiteSpace()
             .HasMinLength(2)
             .HasMaxLength(100);

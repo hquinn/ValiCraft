@@ -8,8 +8,8 @@ public static class StatementsParserExtensions
 {
     public static LambdaInfo? GetLambdaInfoFromLastArgument(this InvocationExpressionSyntax invocation)
     {
-        if (invocation.ArgumentList.Arguments.LastOrDefault()?.Expression is not LambdaExpressionSyntax lambda ||
-            lambda.Body is not BlockSyntax blockSyntax)
+        if (invocation.ArgumentList.Arguments.LastOrDefault()?
+                .Expression is not LambdaExpressionSyntax { Body: BlockSyntax } lambda)
         {
             return null;
         }

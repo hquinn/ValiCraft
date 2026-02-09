@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
-using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
@@ -17,30 +15,6 @@ public record CollectionRuleChain(
     OnFailureMode? FailureMode,
     EquatableArray<RuleChain> ItemRuleChains) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
-    protected override bool TryLinkRuleChain(
-        ValidationRule[] validRules,
-        SourceProductionContext context,
-        out RuleChain linkedRuleChain)
-    {
-        var itemRuleChains = new List<RuleChain>(ItemRuleChains.Count);
-
-        foreach (var itemRuleChain in ItemRuleChains)
-        {
-            if (!itemRuleChain.TryLinkRuleChain(itemRuleChains, validRules, context))
-            {
-                linkedRuleChain = this;
-                return false;
-            }
-        }
-
-        linkedRuleChain = this with
-        {
-            ItemRuleChains = itemRuleChains.ToEquatableImmutableArray()
-        };
-        
-        return true;
-    }
-
     public override bool NeedsGotoLabels()
     {
         // Loops have no reliable way (besides break and return) to exit loops early

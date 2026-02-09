@@ -34,7 +34,7 @@ namespace ValiCraft.Attributes;
 /// }
 /// </code>
 /// </example>
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
 public sealed class RulePlaceholderAttribute : Attribute
 {
     /// <summary>

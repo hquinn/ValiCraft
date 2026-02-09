@@ -18,7 +18,7 @@ public enum RuleChainKind
     CollectionValidateWith,
     WithOnFailure,
     If,
-    Either
+    Polymorphic
 }
 
 public static class RuleChainFactory
@@ -27,8 +27,10 @@ public static class RuleChainFactory
     private static string Humanize(string input)
     {
         if (string.IsNullOrEmpty(input))
+        {
             return input;
-        
+        }
+
         // Add spaces before capital letters that are followed by lowercase letters
         // This preserves acronyms like "SKU" while splitting "OrderNumber" to "Order Number"
         var result = Regex.Replace(input, "(?<!^)([A-Z])(?=[a-z])", " $1");
@@ -47,12 +49,12 @@ public static class RuleChainFactory
             [RuleChainKind.CollectionValidateWith] = new CollectionValidateWithRuleChainFactory(),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
             [RuleChainKind.If] = new IfRuleChainFactory(),
-            [RuleChainKind.Either] = new EitherRuleChainFactory()
+            [RuleChainKind.Polymorphic] = new PolymorphicRuleChainFactory(),
         };
     }
     
     public static RuleChain? CreateFromStatement(
-        bool isAsync,
+        bool isAsyncValidator,
         ExpressionStatementSyntax statement,
         string builderArgument,
         int depth,
@@ -86,10 +88,10 @@ public static class RuleChainFactory
 
         var factory = GetRuleChainFactory(ruleChainKind.Value);
 
-        return factory.Create(isAsync, validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context);
+        return factory.Create(isAsyncValidator, validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context);
     }
 
-    public static IRuleChainFactory GetRuleChainFactory(RuleChainKind ruleChainKind)
+    private static IRuleChainFactory GetRuleChainFactory(RuleChainKind ruleChainKind)
     {
         return RuleChainFactories[ruleChainKind];
     }
@@ -188,7 +190,7 @@ public static class RuleChainFactory
                 : RuleChainKind.Collection,
             KnownNames.Methods.WithOnFailure => RuleChainKind.WithOnFailure,
             KnownNames.Methods.If => RuleChainKind.If,
-            KnownNames.Methods.Either => RuleChainKind.Either,
+            KnownNames.Methods.Polymorphic => invocationChain.Count > 1 ? RuleChainKind.Polymorphic : null,
             _ => null
         };
     }
@@ -203,7 +205,7 @@ public static class RuleChainFactory
         validationObject = null;
         validationTarget = null;
 
-        if (ruleChainKind is RuleChainKind.WithOnFailure or RuleChainKind.If or RuleChainKind.Either)
+        if (ruleChainKind is RuleChainKind.WithOnFailure or RuleChainKind.If)
         {
             return GetValidationTargetFromBuilder(
                 startingChainInvocation,
@@ -277,7 +279,6 @@ public static class RuleChainFactory
             AccessorExpressionFormat: $"{{0}}.{fullPropertyPath}",
             Type: new TypeInfo(
                 propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                propertySymbol.Type.TypeKind == TypeKind.TypeParameter,
                 propertySymbol.NullableAnnotation == NullableAnnotation.Annotated),
             DefaultTargetName: new MessageInfo(humanizedTargetName, true),
             TargetPath: new MessageInfo(fullPropertyPath, true));
@@ -336,7 +337,6 @@ public static class RuleChainFactory
             AccessorExpressionFormat: "{0}",
             Type: new TypeInfo(
                 requestTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                requestTypeSymbol.TypeKind == TypeKind.TypeParameter,
                 requestTypeSymbol.NullableAnnotation == NullableAnnotation.Annotated),
             DefaultTargetName: new MessageInfo(humanizedTypeName, true),
             TargetPath: new MessageInfo(requestTypeSymbol.Name, true));

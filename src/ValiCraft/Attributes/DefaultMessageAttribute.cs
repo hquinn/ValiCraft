@@ -17,19 +17,33 @@
 ///     <item><description>Custom placeholders defined via <see cref="RulePlaceholderAttribute"/></description></item>
 /// </list>
 /// </para>
+/// <para>
+/// Placeholders support standard .NET format specifiers using the syntax <c>{Placeholder:format}</c>.
+/// For example: <c>{TargetValue:C}</c> for currency, <c>{TargetValue:F2}</c> for fixed-point with 2 decimals,
+/// <c>{TargetValue:N0}</c> for number with thousand separators. The format specifier is passed to
+/// the interpolated string and uses <see cref="System.Globalization.CultureInfo.CurrentCulture"/> by default.
+/// </para>
 /// </remarks>
 /// <example>
 /// <code>
-/// [GenerateRuleExtension("HasMinLength")]
+/// // Basic placeholder usage
 /// [DefaultMessage("'{TargetName}' must have at least {MinLength} characters")]
 /// [RulePlaceholder("MinLength", "minLength")]
 /// public class MinLengthRule : IValidationRule&lt;string?&gt;
 /// {
 ///     // ...
 /// }
+/// 
+/// // With format specifiers
+/// [DefaultMessage("'{TargetName}' must be greater than {MinValue:C}")]
+/// [RulePlaceholder("MinValue", "minValue")]
+/// public class MinCurrencyRule : IValidationRule&lt;decimal&gt;
+/// {
+///     // ...
+/// }
 /// </code>
 /// </example>
-[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
 public sealed class DefaultMessageAttribute : Attribute
 {
     /// <summary>

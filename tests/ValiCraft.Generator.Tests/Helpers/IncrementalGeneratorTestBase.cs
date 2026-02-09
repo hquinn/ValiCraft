@@ -17,7 +17,7 @@ public abstract class IncrementalGeneratorTestBase<TGenerator> where TGenerator 
         const string errorCodePrefix = "VALC";
         Type[] additionalMetadataReferences = [typeof(Validator<>), typeof(Result<,>), typeof(IValidationError)];
         string[] trackingSteps =
-            [TrackingSteps.ValidationRuleResultTrackingName, TrackingSteps.ValidatorResultTrackingName];
+            [TrackingSteps.ValidatorResultTrackingName, TrackingSteps.AsyncValidatorResultTrackingName];
         using var assertionScope = new AssertionScope();
         assertionScope.FormattingOptions.MaxLines = 30000;
         assertionScope.FormattingOptions.MaxDepth = 1000;

@@ -10,6 +10,20 @@ namespace ValiCraft;
 public interface IAsyncValidationRuleBuilder<TRequest> where TRequest : class
 {
     /// <summary>
+    /// Starts a polymorphic validation rule chain for a property that may have different runtime types.
+    /// Allows defining type-specific validation logic for each derived type.
+    /// </summary>
+    /// <typeparam name="TTarget">The base type of the property to validate.</typeparam>
+    /// <param name="selector">An expression selecting the property to validate.</param>
+    /// <param name="nullBehavior">Optional. Specifies behavior when the target is null. Defaults to Skip.</param>
+    /// <param name="failureMode">Optional. Specifies behavior when validation fails (Continue or Halt).</param>
+    /// <returns>A builder for configuring type-specific validation branches.</returns>
+    IAsyncPolymorphicBuilderType<TRequest, TTarget> Polymorphic<TTarget>(
+        Expression<Func<TRequest, TTarget?>> selector,
+        PolymorphicNullBehavior nullBehavior = PolymorphicNullBehavior.Skip,
+        OnFailureMode? failureMode = null) where TTarget : class;
+
+    /// <summary>
     /// Starts a validation rule chain for a specific property.
     /// </summary>
     /// <typeparam name="TTarget">The type of the property to validate.</typeparam>
@@ -66,24 +80,4 @@ public interface IAsyncValidationRuleBuilder<TRequest> where TRequest : class
     /// <param name="condition">The condition that must be true for rules to apply.</param>
     /// <param name="rules">A delegate to configure rules that apply when the condition is true.</param>
     void If(Func<TRequest, bool> condition, Action<IAsyncValidationRuleBuilder<TRequest>> rules);
-    
-    /// <summary>
-    /// Define validation rules that must satisfy at least one of the provided rule sets (OR logic).
-    /// </summary>
-    void Either(
-        Action<IAsyncValidationRuleBuilder<TRequest>> firstRules,
-        Action<IAsyncValidationRuleBuilder<TRequest>> secondRules);
-    
-    /// <summary>
-    /// Define validation rules that must satisfy at least one of the provided rule sets (OR logic).
-    /// </summary>
-    void Either(
-        Action<IAsyncValidationRuleBuilder<TRequest>> firstRules,
-        Action<IAsyncValidationRuleBuilder<TRequest>> secondRules,
-        Action<IAsyncValidationRuleBuilder<TRequest>> thirdRules);
-    
-    /// <summary>
-    /// Define validation rules that must satisfy at least one of the provided rule sets (OR logic).
-    /// </summary>
-    void Either(params Action<IAsyncValidationRuleBuilder<TRequest>>[] ruleSets);
 }

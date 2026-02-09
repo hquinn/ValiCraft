@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 
@@ -11,18 +10,9 @@ public record TargetValidateWithRuleChain(
     int Depth,
     IndentModel Indent,
     OnFailureMode? FailureMode,
-    string ValidatorExpression) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
+    string ValidatorExpression,
+    bool IsAsyncValidatorCall) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
-    protected override bool TryLinkRuleChain(
-        ValidationRule[] validRules,
-        SourceProductionContext context,
-        out RuleChain linkedRuleChain)
-    {
-        linkedRuleChain = this;
-
-        return true;
-    }
-
     public override bool NeedsGotoLabels()
     {
         return false;
@@ -32,10 +22,20 @@ public record TargetValidateWithRuleChain(
     {
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
+
+        string methodCall;
+        if (IsAsync && IsAsyncValidatorCall)
+        {
+            methodCall = $"await {ValidatorExpression}.ValidateToListAsync({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\", cancellationToken)";
+        }
+        else
+        {
+            methodCall = $"{ValidatorExpression}.ValidateToList({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\")";
+        }
         
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple ValidateWith calls exist
         var code = $$"""
-                     {{Indent}}var errors{{context.Counter}} = {{ValidatorExpression}}.ValidateToList({{requestAccessor}}, $"{inheritedTargetPath}{{Target.TargetPath.Value}}.");
+                     {{Indent}}var errors{{context.Counter}} = {{methodCall}};
                      {{Indent}}{{context.GetIfElseIfKeyword()}} (errors{{context.Counter}}.Count != 0)
                      {{Indent}}{
                      {{Indent}}    if (errors is null)

@@ -7,48 +7,261 @@ namespace ValiCraft.AsyncBuilderTypes;
 /// <typeparam name="TTarget">The type of the property or value being validated.</typeparam>
 /// <remarks>
 /// This interface defines the foundation for the fluent validation API, including custom predicate
-/// validation via <see cref="Must"/> and <see cref="MustAsync"/> and optional validation via <see cref="WhenNotNull"/>.
+/// validation via Is.
 /// </remarks>
 public interface IAsyncBuilderType<TRequest, TTarget>
     where TRequest : class
 {
     /// <summary>
-    /// Adds a custom validation rule using a predicate function.
+    /// Adds a validation rule for the target based on a specified condition.
     /// </summary>
-    /// <param name="predicate">A function that returns <c>true</c> if the value is valid, <c>false</c> otherwise.</param>
-    /// <returns>A builder for configuring additional options like error messages and codes.</returns>
-    /// <example>
-    /// <code>
-    /// builder.Ensure(x => x.Password)
-    ///     .Must(password => password.Any(char.IsDigit))
-    ///     .WithMessage("Password must contain at least one digit");
-    /// </code>
-    /// </example>
-    IAsyncValidationRuleBuilderType<TRequest, TTarget> Must(Func<TTarget, bool> predicate);
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <returns>A builder for chaining additional validation rules on the target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is(
+        Func<TTarget, bool> rule);
+
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter">The parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam">The type of the parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam>(
+        Func<TTarget, TParam, bool> rule,
+        TParam parameter);
+
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter1">The first parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter2">The second parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam1">The type of the first parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam2">The type of the second parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam1, TParam2>(
+        Func<TTarget, TParam1, TParam2, bool> rule,
+        TParam1 parameter1,
+        TParam2 parameter2);
     
     /// <summary>
-    /// Adds a custom asynchronous validation rule using a predicate function.
+    /// Adds a validation rule for the target based on a specified condition.
     /// </summary>
-    /// <param name="predicate">A function that returns <c>true</c> if the value is valid, <c>false</c> otherwise.</param>
-    /// <returns>A builder for configuring additional options like error messages and codes.</returns>
-    /// <example>
-    /// <code>
-    /// builder.Ensure(x => x.Password)
-    ///     .MustAsync(async (password, ct) => await service.CheckRulesAsync(password, ct))
-    ///     .WithMessage("Password must comply with our rules");
-    /// </code>
-    /// </example>
-    IAsyncValidationRuleBuilderType<TRequest, TTarget> MustAsync(Func<TTarget, CancellationToken, Task<bool>> predicate);
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter1">The first parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter2">The second parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter3">The third parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam1">The type of the first parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam2">The type of the second parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam3">The type of the third parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam1, TParam2, TParam3>(
+        Func<TTarget, TParam1, TParam2, TParam3, bool> rule,
+        TParam1 parameter1,
+        TParam2 parameter2,
+        TParam3 parameter3);
     
     /// <summary>
-    /// Indicates that subsequent validation rules should only be applied if the target value is not null.
-    /// This is useful for optional nullable properties where you want to validate the value only when present.
+    /// Adds a validation rule for the target based on a specified condition.
     /// </summary>
-    /// <example>
-    /// builder.Ensure(x => x.OptionalEmail)
-    ///     .WhenNotNull()
-    ///     .IsEmailAddress()
-    ///     .HasMaxLength(255);
-    /// </example>
-    IAsyncWhenNotNullBuilderType<TRequest, TTarget> WhenNotNull();
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter1">The first parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter2">The second parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter3">The third parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter4">The fourth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam1">The type of the first parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam2">The type of the second parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam3">The type of the third parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam4">The type of the fourth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam1, TParam2, TParam3, TParam4>(
+        Func<TTarget, TParam1, TParam2, TParam3, TParam4, bool> rule,
+        TParam1 parameter1,
+        TParam2 parameter2,
+        TParam3 parameter3,
+        TParam4 parameter4);
+    
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter1">The first parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter2">The second parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter3">The third parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter4">The fourth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter5">The fifth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam1">The type of the first parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam2">The type of the second parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam3">The type of the third parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam4">The type of the fourth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam5">The type of the fifth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam1, TParam2, TParam3, TParam4, TParam5>(
+        Func<TTarget, TParam1, TParam2, TParam3, TParam4, TParam5, bool> rule,
+        TParam1 parameter1,
+        TParam2 parameter2,
+        TParam3 parameter3,
+        TParam4 parameter4,
+        TParam5 parameter5);
+    
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter1">The first parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter2">The second parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter3">The third parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter4">The fourth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter5">The fifth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter6">The sixth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam1">The type of the first parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam2">The type of the second parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam3">The type of the third parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam4">The type of the fourth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam5">The type of the fifth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam6">The type of the sixth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>(
+        Func<TTarget, TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, bool> rule,
+        TParam1 parameter1,
+        TParam2 parameter2,
+        TParam3 parameter3,
+        TParam4 parameter4,
+        TParam5 parameter5,
+        TParam6 parameter6);
+    
+    
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <returns>A builder for chaining additional validation rules on the target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is(
+        Func<TTarget, CancellationToken, Task<bool>> rule);
+
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter">The parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam">The type of the parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam>(
+        Func<TTarget, TParam, CancellationToken, Task<bool>> rule,
+        TParam parameter);
+
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter1">The first parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter2">The second parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam1">The type of the first parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam2">The type of the second parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam1, TParam2>(
+        Func<TTarget, TParam1, TParam2, CancellationToken, Task<bool>> rule,
+        TParam1 parameter1,
+        TParam2 parameter2);
+    
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter1">The first parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter2">The second parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter3">The third parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam1">The type of the first parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam2">The type of the second parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam3">The type of the third parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam1, TParam2, TParam3>(
+        Func<TTarget, TParam1, TParam2, TParam3, CancellationToken, Task<bool>> rule,
+        TParam1 parameter1,
+        TParam2 parameter2,
+        TParam3 parameter3);
+    
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter1">The first parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter2">The second parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter3">The third parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter4">The fourth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam1">The type of the first parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam2">The type of the second parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam3">The type of the third parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam4">The type of the fourth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam1, TParam2, TParam3, TParam4>(
+        Func<TTarget, TParam1, TParam2, TParam3, TParam4, CancellationToken, Task<bool>> rule,
+        TParam1 parameter1,
+        TParam2 parameter2,
+        TParam3 parameter3,
+        TParam4 parameter4);
+    
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter1">The first parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter2">The second parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter3">The third parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter4">The fourth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter5">The fifth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam1">The type of the first parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam2">The type of the second parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam3">The type of the third parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam4">The type of the fourth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam5">The type of the fifth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam1, TParam2, TParam3, TParam4, TParam5>(
+        Func<TTarget, TParam1, TParam2, TParam3, TParam4, TParam5, CancellationToken, Task<bool>> rule,
+        TParam1 parameter1,
+        TParam2 parameter2,
+        TParam3 parameter3,
+        TParam4 parameter4,
+        TParam5 parameter5);
+    
+    /// <summary>
+    /// Adds a validation rule for the target based on a specified condition.
+    /// </summary>
+    /// <param name="rule">A function that defines the condition to validate the target.
+    /// Returns true if the target satisfies the condition, otherwise false.</param>
+    /// <param name="parameter1">The first parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter2">The second parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter3">The third parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter4">The fourth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter5">The fifth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <param name="parameter6">The sixth parameter that will be passed to <paramref name="rule"/> function.</param>
+    /// <typeparam name="TParam1">The type of the first parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam2">The type of the second parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam3">The type of the third parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam4">The type of the fourth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam5">The type of the fifth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <typeparam name="TParam6">The type of the sixth parameter used in the <paramref name="rule"/> function.</typeparam>
+    /// <returns>A validation rule builder for chaining further validation rules on the current target.</returns>
+    IAsyncValidationRuleBuilderType<TRequest, TTarget> Is<TParam1, TParam2, TParam3, TParam4, TParam5, TParam6>(
+        Func<TTarget, TParam1, TParam2, TParam3, TParam4, TParam5, TParam6, CancellationToken, Task<bool>> rule,
+        TParam1 parameter1,
+        TParam2 parameter2,
+        TParam3 parameter3,
+        TParam4 parameter4,
+        TParam5 parameter5,
+        TParam6 parameter6);
 }

@@ -1,6 +1,5 @@
 using ValiCraft.Attributes;
 using ValiCraft.Benchmarks.Models;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Benchmarks.Validators;
 

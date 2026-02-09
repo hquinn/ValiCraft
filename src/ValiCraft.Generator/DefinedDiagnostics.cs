@@ -31,60 +31,6 @@ public static class DefinedDiagnostics
             location);
     }
 
-    public static DiagnosticInfo MissingValidationRuleExtensionName(Location location)
-    {
-        return new DiagnosticInfo(
-            new DiagnosticDescriptor(
-                "VALC101",
-                "Missing Validation Rule Extension Name",
-                "Missing Validation Rule Extension Name",
-                KnownNames.Namespaces.Base,
-                DiagnosticSeverity.Error,
-                true),
-            location);
-    }
-
-    public static DiagnosticInfo MissingIValidationRuleInterface(Location location)
-    {
-        return new DiagnosticInfo(
-            new DiagnosticDescriptor(
-                "VALC102",
-                "Missing IValidationRule interface",
-                "Missing ValiCraft.IValidationRule interface on Validation Rule marked with [GenerateRuleExtension]",
-                KnownNames.Namespaces.Base,
-                DiagnosticSeverity.Error,
-                true),
-            location);
-    }
-
-    public static DiagnosticInfo InvalidRulePlaceholderConstructorArgument(Location location)
-    {
-        return new DiagnosticInfo(
-            new DiagnosticDescriptor(
-                "VALC103",
-                "Invalid Rule Placeholder Constructor Argument",
-                $"Placeholder constructor argument must be a string literal.",
-                KnownNames.Namespaces.Base,
-                DiagnosticSeverity.Error,
-                true),
-            location);
-    }
-
-    public static DiagnosticInfo InvalidRulePlaceholderParameterName(
-        string parameterName,
-        Location location)
-    {
-        return new DiagnosticInfo(
-            new DiagnosticDescriptor(
-                "VALC104",
-                "Invalid Rule Placeholder Parameter Name",
-                $"Parameter name '{parameterName}' is invalid. It must match a parameter name from the IsValid method.",
-                KnownNames.Namespaces.Base,
-                DiagnosticSeverity.Error,
-                true),
-            location);
-    }
-
     public static DiagnosticInfo MissingPartialKeyword(Location location)
     {
         return new DiagnosticInfo(
@@ -101,25 +47,24 @@ public static class DefinedDiagnostics
     public static DiagnosticInfo MissingValidatorBaseClass(bool isAsync, Location location)
     {
         var validatorBaseClass = isAsync ? KnownNames.ClassNames.AsyncValidator : KnownNames.ClassNames.Validator;
-        var generateValidator = isAsync ? KnownNames.AttributeNames.AsyncGenerateValidator : KnownNames.AttributeNames.GenerateValidator;
         return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC202",
                 $"Missing {validatorBaseClass} base class",
-                $"Missing {validatorBaseClass} base class on Validator marked with [{generateValidator}]",
+                $"Missing Validator<T> or AsyncValidator<T> base class on Validator marked with [GenerateValidator]",
                 KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
             location);
     }
 
-    public static DiagnosticInfo UnrecognizableRuleInvocation(Location location)
+    public static DiagnosticInfo InvalidRuleInvocation(Location location)
     {
         return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC203",
-                "Unrecognizable Rule Invocation",
-                "Rule cannot be mapped to a validation rule. Try moving the rule out of the invocation chain.",
+                "Invalid rule invocation",
+                $"Invalid rule invocation. Either use the .Is() method or define an extension method.",
                 KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),
@@ -169,24 +114,13 @@ public static class DefinedDiagnostics
             location);
     }
 
-    public static DiagnosticInfo TypeMismatchForValidationRule(
-        string ruleName,
-        string expectedType,
-        string actualType,
-        string? suggestion,
-        Location location)
+    public static DiagnosticInfo MissingMapToValidationRuleAttribute(Location location)
     {
-        var message = $"'{ruleName}' expects '{expectedType}' but property is of type '{actualType}'.";
-        if (!string.IsNullOrEmpty(suggestion))
-        {
-            message += $" {suggestion}";
-        }
-
         return new DiagnosticInfo(
             new DiagnosticDescriptor(
                 "VALC207",
-                "Type mismatch for validation rule",
-                message,
+                "Missing MapToValidationRule attribute on extenstion method",
+                "Missing MapToValidationRule attribute on extenstion method.",
                 KnownNames.Namespaces.Base,
                 DiagnosticSeverity.Error,
                 true),

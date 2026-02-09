@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -8,28 +7,28 @@ public class NegativeTests
     [Fact]
     public void IsValid_WhenIntegerIsNegative_ReturnsTrue()
     {
-        var result = Negative<int>.IsValid(-5);
+        var result = ValiCraft.Rules.Negative(-5);
         result.Should().BeTrue();
     }
 
     [Fact]
     public void IsValid_WhenIntegerIsZero_ReturnsFalse()
     {
-        var result = Negative<int>.IsValid(0);
+        var result = ValiCraft.Rules.Negative(0);
         result.Should().BeFalse();
     }
 
     [Fact]
     public void IsValid_WhenIntegerIsPositive_ReturnsFalse()
     {
-        var result = Negative<int>.IsValid(5);
+        var result = ValiCraft.Rules.Negative(5);
         result.Should().BeFalse();
     }
 
     [Fact]
     public void IsValid_WithDouble_WorksCorrectly()
     {
-        var result = Negative<double>.IsValid(-0.1);
+        var result = ValiCraft.Rules.Negative(-0.1);
         result.Should().BeTrue();
     }
 }

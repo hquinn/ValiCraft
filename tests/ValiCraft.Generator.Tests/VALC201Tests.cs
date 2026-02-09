@@ -13,32 +13,8 @@ public class VALC201Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                                       public string? Name { get; set; }    
                                                                   }
                                                                   """;
-    [StringSyntax("CSharp")] private const string InputValidationRules = """
-                                                          using System;
-                                                          using ValiCraft;
-                                                          using ValiCraft.Attributes;
-                                                          using ValiCraft.BuilderTypes;
-                                                          
-                                                          namespace Test.Rules;
-                                                          
-                                                          [DefaultMessage("'{TargetName}' must not be empty.")]
-                                                          public class NotEmptyRule: IValidationRule<string?>
-                                                          {
-                                                              public static bool IsValid(string? value) => !string.IsNullOrEmpty(value);
-                                                          }
-                                                          
-                                                          [DefaultMessage("'{TargetName}' must not be empty.")]
-                                                          public static class NotEmptyRuleExtensions
-                                                          {
-                                                              [MapToValidationRule(typeof(NotEmptyRule), "")]
-                                                              public static IValidationRuleBuilderType<TRequest, TTargetType> IsNotEmpty<TRequest, TTargetType>(
-                                                                  this IBuilderType<TRequest, TTargetType> builder) where TRequest : class
-                                                                  => throw new NotImplementedException("Never gets called");
-                                                          }
-                                                          """;
     
     [StringSyntax("CSharp")] private const string InputValidator = """
-                                                                   using Test.Rules;
                                                                    using Test.Requests;
                                                                    using ValiCraft;
                                                                    using ValiCraft.Attributes;
@@ -53,7 +29,7 @@ public class VALC201Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
                                                                        protected override void DefineRules(IValidationRuleBuilder<User> builder)
                                                                        {
                                                                            builder.Ensure(x => x.Name)
-                                                                               .IsNotEmpty();
+                                                                               .IsNotNullOrEmpty();
                                                                        }
                                                                    }
                                                                    """;
@@ -61,7 +37,7 @@ public class VALC201Tests : IncrementalGeneratorTestBase<ValiCraftGenerator>
     [Fact]
     public void ShouldReportVALC201()
     {
-        AssertGenerator(inputs: [InputRequests, InputValidationRules, InputValidator], 
+        AssertGenerator(inputs: [InputRequests, InputValidator], 
             outputs: [],
             diagnostics: ["Missing partial keyword on Validator marked with [GenerateValidator]"],
             assertTrackingSteps: false);

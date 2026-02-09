@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -12,7 +11,7 @@ public class NotNullTests
         var value = "test";
 
         // Act
-        var result = NotNull<string>.IsValid(value);
+        var result = ValiCraft.Rules.NotNull<string>(value);
 
         // Assert
         result.Should().BeTrue();
@@ -25,7 +24,7 @@ public class NotNullTests
         string? value = null;
 
         // Act
-        var result = NotNull<string>.IsValid(value);
+        var result = ValiCraft.Rules.NotNull<string>(value);
 
         // Assert
         result.Should().BeFalse();
@@ -38,7 +37,7 @@ public class NotNullTests
         var value = new object();
 
         // Act
-        var result = NotNull<object>.IsValid(value);
+        var result = ValiCraft.Rules.NotNull<object>(value);
 
         // Assert
         result.Should().BeTrue();
@@ -51,7 +50,7 @@ public class NotNullTests
         int? value = 42;
 
         // Act
-        var result = NotNull<int?>.IsValid(value);
+        var result = ValiCraft.Rules.NotNull(value);
 
         // Assert
         result.Should().BeTrue();
@@ -64,7 +63,7 @@ public class NotNullTests
         int? value = null;
 
         // Act
-        var result = NotNull<int?>.IsValid(value);
+        var result = ValiCraft.Rules.NotNull(value);
 
         // Assert
         result.Should().BeFalse();
@@ -77,7 +76,7 @@ public class NotNullTests
         var value = string.Empty;
 
         // Act
-        var result = NotNull<string>.IsValid(value);
+        var result = ValiCraft.Rules.NotNull<string>(value);
 
         // Assert
         result.Should().BeTrue();

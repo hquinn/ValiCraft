@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -12,7 +11,7 @@ public class HasItemsTests
         var value = new List<int> { 1, 2, 3 };
 
         // Act
-        var result = HasItems<int>.IsValid(value);
+        var result = ValiCraft.Rules.HasItems(value);
 
         // Assert
         result.Should().BeTrue();
@@ -25,7 +24,7 @@ public class HasItemsTests
         var value = new List<int>();
 
         // Act
-        var result = HasItems<int>.IsValid(value);
+        var result = ValiCraft.Rules.HasItems(value);
 
         // Assert
         result.Should().BeFalse();
@@ -38,7 +37,7 @@ public class HasItemsTests
         List<int>? value = null;
 
         // Act
-        var result = HasItems<int>.IsValid(value);
+        var result = ValiCraft.Rules.HasItems(value);
 
         // Assert
         result.Should().BeFalse();
@@ -51,7 +50,7 @@ public class HasItemsTests
         var value = new[] { "a", "b", "c" };
 
         // Act
-        var result = HasItems<string>.IsValid(value);
+        var result = ValiCraft.Rules.HasItems(value);
 
         // Assert
         result.Should().BeTrue();
@@ -64,7 +63,7 @@ public class HasItemsTests
         var value = Array.Empty<string>();
 
         // Act
-        var result = HasItems<string>.IsValid(value);
+        var result = ValiCraft.Rules.HasItems(value);
 
         // Assert
         result.Should().BeFalse();
@@ -74,10 +73,10 @@ public class HasItemsTests
     public void IsValid_WhenEnumerableHasSingleItem_ReturnsTrue()
     {
         // Arrange
-        IEnumerable<int> value = new[] { 42 };
+        IEnumerable<int> value = [42];
 
         // Act
-        var result = HasItems<int>.IsValid(value);
+        var result = ValiCraft.Rules.HasItems(value);
 
         // Assert
         result.Should().BeTrue();
@@ -90,7 +89,7 @@ public class HasItemsTests
         IEnumerable<int> value = Enumerable.Range(1, 10).Where(x => x > 5);
 
         // Act
-        var result = HasItems<int>.IsValid(value);
+        var result = ValiCraft.Rules.HasItems(value);
 
         // Assert
         result.Should().BeTrue();
@@ -103,7 +102,7 @@ public class HasItemsTests
         IEnumerable<int> value = Enumerable.Range(1, 10).Where(x => x > 100);
 
         // Act
-        var result = HasItems<int>.IsValid(value);
+        var result = ValiCraft.Rules.HasItems(value);
 
         // Assert
         result.Should().BeFalse();
@@ -116,7 +115,7 @@ public class HasItemsTests
         var value = new HashSet<string> { "test" };
 
         // Act
-        var result = HasItems<string>.IsValid(value);
+        var result = ValiCraft.Rules.HasItems(value);
 
         // Assert
         result.Should().BeTrue();
@@ -129,7 +128,7 @@ public class HasItemsTests
         var value = new HashSet<string>();
 
         // Act
-        var result = HasItems<string>.IsValid(value);
+        var result = ValiCraft.Rules.HasItems(value);
 
         // Assert
         result.Should().BeFalse();

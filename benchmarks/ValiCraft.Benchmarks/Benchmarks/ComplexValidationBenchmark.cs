@@ -53,19 +53,19 @@ public class ComplexValidationBenchmark
     {
         var result = _valiCraftValidator.Validate(_validModel);
     }
-
+    
     [Benchmark]
     public void FluentValidation_ValidModel()
     {
         var result = _fluentValidator.Validate(_validModel);
     }
-
+    
     [Benchmark]
     public void ValiCraft_InvalidModel()
     {
         var result = _valiCraftValidator.Validate(_invalidModel);
     }
-
+    
     [Benchmark]
     public void FluentValidation_InvalidModel()
     {

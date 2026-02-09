@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -13,7 +12,7 @@ public class GreaterOrEqualThanTests
         var comparison = 5;
 
         // Act
-        var result = GreaterOrEqualThan<int>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.GreaterOrEqualThan(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -27,7 +26,7 @@ public class GreaterOrEqualThanTests
         var comparison = 10;
 
         // Act
-        var result = GreaterOrEqualThan<int>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.GreaterOrEqualThan(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -41,7 +40,7 @@ public class GreaterOrEqualThanTests
         var comparison = 10;
 
         // Act
-        var result = GreaterOrEqualThan<int>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.GreaterOrEqualThan(value, comparison);
 
         // Assert
         result.Should().BeFalse();
@@ -55,7 +54,7 @@ public class GreaterOrEqualThanTests
         var comparison = 3.3;
 
         // Act
-        var result = GreaterOrEqualThan<double>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.GreaterOrEqualThan(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -69,7 +68,7 @@ public class GreaterOrEqualThanTests
         var comparison = 3.14;
 
         // Act
-        var result = GreaterOrEqualThan<double>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.GreaterOrEqualThan(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -83,7 +82,7 @@ public class GreaterOrEqualThanTests
         var comparison = 5.5;
 
         // Act
-        var result = GreaterOrEqualThan<double>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.GreaterOrEqualThan(value, comparison);
 
         // Assert
         result.Should().BeFalse();
@@ -97,7 +96,7 @@ public class GreaterOrEqualThanTests
         var comparison = new DateTime(2025, 1, 10);
 
         // Act
-        var result = GreaterOrEqualThan<DateTime>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.GreaterOrEqualThan(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -111,7 +110,7 @@ public class GreaterOrEqualThanTests
         var comparison = new DateTime(2025, 1, 15);
 
         // Act
-        var result = GreaterOrEqualThan<DateTime>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.GreaterOrEqualThan(value, comparison);
 
         // Assert
         result.Should().BeTrue();
@@ -125,7 +124,7 @@ public class GreaterOrEqualThanTests
         var comparison = new DateTime(2025, 1, 15);
 
         // Act
-        var result = GreaterOrEqualThan<DateTime>.IsValid(value, comparison);
+        var result = ValiCraft.Rules.GreaterOrEqualThan(value, comparison);
 
         // Assert
         result.Should().BeFalse();

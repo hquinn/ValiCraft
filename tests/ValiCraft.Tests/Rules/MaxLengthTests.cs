@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ValiCraft.Rules;
 
 namespace ValiCraft.Tests.Rules;
 
@@ -8,21 +7,21 @@ public class MaxLengthTests
     [Fact]
     public void IsValid_WhenStringBelowMaxLength_ReturnsTrue()
     {
-        var result = MaxLength.IsValid("hi", 5);
+        var result = ValiCraft.Rules.MaxLength("hi", 5);
         result.Should().BeTrue();
     }
 
     [Fact]
     public void IsValid_WhenStringExactlyMaxLength_ReturnsTrue()
     {
-        var result = MaxLength.IsValid("hello", 5);
+        var result = ValiCraft.Rules.MaxLength("hello", 5);
         result.Should().BeTrue();
     }
 
     [Fact]
     public void IsValid_WhenStringExceedsMaxLength_ReturnsFalse()
     {
-        var result = MaxLength.IsValid("hello world", 5);
+        var result = ValiCraft.Rules.MaxLength("hello world", 5);
         result.Should().BeFalse();
     }
 
@@ -30,14 +29,14 @@ public class MaxLengthTests
     public void IsValid_WhenStringIsNull_ReturnsTrue()
     {
         // Null is treated as length 0, which passes MaxLength validation
-        var result = MaxLength.IsValid(null, 10);
+        var result = ValiCraft.Rules.MaxLength(null, 10);
         result.Should().BeTrue();
     }
 
     [Fact]
     public void IsValid_WhenEmptyStringAndMaxLengthZero_ReturnsTrue()
     {
-        var result = MaxLength.IsValid("", 0);
+        var result = ValiCraft.Rules.MaxLength("", 0);
         result.Should().BeTrue();
     }
 }

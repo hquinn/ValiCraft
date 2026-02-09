@@ -15,28 +15,26 @@ public static class KnownNames
     public static class AttributeNames
     {
         public const string GenerateValidator = "GenerateValidator";
-        public const string AsyncGenerateValidator = "AsyncGenerateValidator";
     }
     
     public static class Attributes
     {
         public const string DefaultMessageAttribute = $"{Namespaces.Attributes}.DefaultMessageAttribute";
-        public const string DefaultMessage = $"{Namespaces.Attributes}.DefaultMessage";
         public const string DefaultErrorCodeAttribute = $"{Namespaces.Attributes}.DefaultErrorCodeAttribute";
-        public const string DefaultErrorCode = $"{Namespaces.Attributes}.DefaultErrorCode";
-        public const string GenerateRuleExtensionAttribute = $"{Namespaces.Attributes}.GenerateRuleExtensionAttribute";
         public const string GenerateValidatorAttribute = $"{Namespaces.Attributes}.{AttributeNames.GenerateValidator}Attribute";
-        public const string AsyncGenerateValidatorAttribute = $"{Namespaces.Attributes}.{AttributeNames.AsyncGenerateValidator}Attribute";
         public const string MapToValidationRuleAttribute = $"{Namespaces.Attributes}.MapToValidationRuleAttribute";
-        public const string MapToValidationRule = $"{Namespaces.Attributes}.MapToValidationRule";
         public const string RulePlaceholderAttribute = $"{Namespaces.Attributes}.RulePlaceholderAttribute";
-        public const string RulePlaceholder = $"{Namespaces.Attributes}.RulePlaceholder";
     }
 
     public static class ClassNames
     {
         public const string Validator = "Validator";
         public const string AsyncValidator = "AsyncValidator";
+    }
+    
+    public static class InterfaceNames
+    {
+        public const string IAsyncValidator = "IAsyncValidator";
     }
     
     public static class Classes
@@ -77,16 +75,19 @@ public static class KnownNames
 
     public static class Methods
     {
-        public const string IsValid = "IsValid";
         public const string DefineRules = "DefineRules";
         public const string Ensure = "Ensure";
         public const string EnsureEach = "EnsureEach";
         public const string ValidateWith = "ValidateWith";
         public const string WithOnFailure = "WithOnFailure";
         public const string If = "If";
-        public const string Either = "Either";
         public const string Validate = "Validate";
         public const string ValidateAsync = "ValidateAsync";
+        public const string Polymorphic = "Polymorphic";
+        public const string WhenType = "WhenType";
+        public const string Allow = "Allow";
+        public const string Fail = "Fail";
+        public const string Otherwise = "Otherwise";
 
         public static string GetValidateMethod(bool isAsync)
         {
@@ -102,22 +103,12 @@ public static class KnownNames
     public static class Enums
     {
         public const string OnFailureMode = "OnFailureMode";
+        public const string PolymorphicNullBehavior = "PolymorphicNullBehavior";
         public const string ErrorSeverity = $"{Namespaces.ErrorCraft}.ErrorSeverity";
     }
 
     public static class Targets
     {
-        public const string Must = "Must";
-        public const string MustAsync = "MustAsync";
-
-        public static string GetMustTarget(bool isAsync)
-        {
-            if (isAsync)
-            {
-                return MustAsync;
-            }
-            
-            return Must;
-        }
+        public const string Is = "Is";
     }
 }
