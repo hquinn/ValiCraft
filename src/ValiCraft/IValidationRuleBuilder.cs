@@ -10,6 +10,20 @@ namespace ValiCraft;
 public interface IValidationRuleBuilder<TRequest> where TRequest : class
 {
     /// <summary>
+    /// Starts a polymorphic validation rule chain for a property that may have different runtime types.
+    /// Allows defining type-specific validation logic for each derived type.
+    /// </summary>
+    /// <typeparam name="TTarget">The base type of the property to validate.</typeparam>
+    /// <param name="selector">An expression selecting the property to validate.</param>
+    /// <param name="nullBehavior">Optional. Specifies behavior when the target is null. Defaults to Skip.</param>
+    /// <param name="failureMode">Optional. Specifies behavior when validation fails (Continue or Halt).</param>
+    /// <returns>A builder for configuring type-specific validation branches.</returns>
+    IPolymorphicBuilderType<TRequest, TTarget> Polymorphic<TTarget>(
+        Expression<Func<TRequest, TTarget?>> selector,
+        PolymorphicNullBehavior nullBehavior = PolymorphicNullBehavior.Skip,
+        OnFailureMode? failureMode = null) where TTarget : class;
+
+    /// <summary>
     /// Starts a validation rule chain for a specific property.
     /// </summary>
     /// <typeparam name="TTarget">The type of the property to validate.</typeparam>

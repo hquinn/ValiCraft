@@ -17,7 +17,8 @@ public enum RuleChainKind
     Collection,
     CollectionValidateWith,
     WithOnFailure,
-    If
+    If,
+    Polymorphic
 }
 
 public static class RuleChainFactory
@@ -48,6 +49,7 @@ public static class RuleChainFactory
             [RuleChainKind.CollectionValidateWith] = new CollectionValidateWithRuleChainFactory(),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
             [RuleChainKind.If] = new IfRuleChainFactory(),
+            [RuleChainKind.Polymorphic] = new PolymorphicRuleChainFactory(),
         };
     }
     
@@ -188,6 +190,7 @@ public static class RuleChainFactory
                 : RuleChainKind.Collection,
             KnownNames.Methods.WithOnFailure => RuleChainKind.WithOnFailure,
             KnownNames.Methods.If => RuleChainKind.If,
+            KnownNames.Methods.Polymorphic => invocationChain.Count > 1 ? RuleChainKind.Polymorphic : null,
             _ => null
         };
     }

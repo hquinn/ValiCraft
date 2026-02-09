@@ -83,6 +83,11 @@ public static class KnownNames
         public const string If = "If";
         public const string Validate = "Validate";
         public const string ValidateAsync = "ValidateAsync";
+        public const string Polymorphic = "Polymorphic";
+        public const string WhenType = "WhenType";
+        public const string Allow = "Allow";
+        public const string Fail = "Fail";
+        public const string Otherwise = "Otherwise";
 
         public static string GetValidateMethod(bool isAsync)
         {
@@ -98,6 +103,7 @@ public static class KnownNames
     public static class Enums
     {
         public const string OnFailureMode = "OnFailureMode";
+        public const string PolymorphicNullBehavior = "PolymorphicNullBehavior";
         public const string ErrorSeverity = $"{Namespaces.ErrorCraft}.ErrorSeverity";
     }
 
