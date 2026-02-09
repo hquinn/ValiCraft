@@ -34,6 +34,11 @@ public static class KnownNames
         public const string AsyncValidator = "AsyncValidator";
     }
     
+    public static class InterfaceNames
+    {
+        public const string IAsyncValidator = "IAsyncValidator";
+    }
+    
     public static class Classes
     {
         public const string Validator = $"{Namespaces.Base}.{ClassNames.Validator}";

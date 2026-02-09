@@ -10,7 +10,8 @@ public record CollectionValidateWithRuleChain(
     int Depth,
     IndentModel Indent,
     OnFailureMode? FailureMode,
-    string ValidatorExpression) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
+    string ValidatorExpression,
+    bool IsAsyncValidatorCall) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
     public override bool NeedsGotoLabels()
     {
@@ -23,13 +24,23 @@ public record CollectionValidateWithRuleChain(
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
         var itemRequestName = GetItemRequestParameterName();
+
+        string methodCall;
+        if (IsAsync && IsAsyncValidatorCall)
+        {
+            methodCall = $"await {ValidatorExpression}.ValidateToListAsync({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\", cancellationToken)";
+        }
+        else
+        {
+            methodCall = $"{ValidatorExpression}.ValidateToList({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\")";
+        }
         
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple ValidateWith calls exist
         var code = $$"""
                      {{Indent}}var {{index}} = 0;
                      {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
                      {{Indent}}{
-                     {{Indent}}    var errors{{context.Counter}} = {{ValidatorExpression}}.ValidateToList({{itemRequestName}}, $"{inheritedTargetPath}{{Target.TargetPath.Value}}[{{{index}}}].");
+                     {{Indent}}    var errors{{context.Counter}} = {{methodCall}};
                      {{Indent}}    if (errors{{context.Counter}}.Count != 0)
                      {{Indent}}    {
                      {{Indent}}        if (errors is null)

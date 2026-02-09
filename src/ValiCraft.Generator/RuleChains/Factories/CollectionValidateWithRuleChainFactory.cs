@@ -30,6 +30,10 @@ public class CollectionValidateWithRuleChainFactory : IRuleChainFactory
         }
 
         var validatorExpression = argumentExpression.ToString();
+        
+        // Determine if the validator argument is an IAsyncValidator
+        var typeInfo = context.SemanticModel.GetTypeInfo(argumentExpression);
+        var isAsyncValidatorCall = IsAsyncValidatorType(typeInfo.Type);
 
         return new CollectionValidateWithRuleChain(
             isAsyncValidator,
@@ -38,6 +42,34 @@ public class CollectionValidateWithRuleChainFactory : IRuleChainFactory
             depth,
             indent,
             invocation.GetOnFailureModeFromSyntax(),
-            validatorExpression);
+            validatorExpression,
+            isAsyncValidatorCall);
+    }
+
+    private static bool IsAsyncValidatorType(ITypeSymbol? typeSymbol)
+    {
+        if (typeSymbol is not INamedTypeSymbol namedType)
+        {
+            return false;
+        }
+
+        // Check if the type itself IS IAsyncValidator<T>
+        if (namedType.Name == KnownNames.InterfaceNames.IAsyncValidator &&
+            namedType.ContainingNamespace.ToDisplayString() == KnownNames.Namespaces.Base)
+        {
+            return true;
+        }
+
+        // Check if the type implements IAsyncValidator<T>
+        foreach (var iface in namedType.AllInterfaces)
+        {
+            if (iface.Name == KnownNames.InterfaceNames.IAsyncValidator &&
+                iface.ContainingNamespace.ToDisplayString() == KnownNames.Namespaces.Base)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
