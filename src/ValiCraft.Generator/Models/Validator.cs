@@ -6,6 +6,7 @@ namespace ValiCraft.Generator.Models;
 
 public record Validator(
     bool IsAsync,
+    bool IsStatic,
     ClassInfo Class,
     SymbolNameInfo RequestTypeName,
     EquatableArray<RuleChain> RuleChains,

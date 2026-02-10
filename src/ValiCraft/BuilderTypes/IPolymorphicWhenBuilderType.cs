@@ -20,6 +20,18 @@ public interface IPolymorphicWhenBuilderType<TRequest, TTarget, TDerived>
     IPolymorphicContinuationBuilderType<TRequest, TTarget> ValidateWith(IValidator<TDerived> validator);
 
     /// <summary>
+    /// Validates the target using the specified static validator when it matches this type.
+    /// The validator must implement <see cref="IStaticValidator{T}"/> where T is the derived type.
+    /// </summary>
+    /// <typeparam name="TValidator">The static validator type to use for this type.</typeparam>
+    /// <returns>A builder for chaining additional type branches.</returns>
+    /// <remarks>
+    /// The source generator will verify that <typeparamref name="TValidator"/> implements
+    /// <see cref="IStaticValidator{T}"/> for the correct derived type.
+    /// </remarks>
+    IPolymorphicContinuationBuilderType<TRequest, TTarget> Validate<TValidator>();
+
+    /// <summary>
     /// Allows validation to pass when the target matches this type without further validation.
     /// </summary>
     /// <returns>A builder for chaining additional type branches.</returns>

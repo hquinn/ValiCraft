@@ -126,4 +126,56 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
+
+    public static DiagnosticInfo StaticValidatorHasInstanceConstructor(Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC301",
+                "Static validator has parameterized constructor",
+                "Static validators cannot have parameterized constructors. Static validators are stateless and cannot use dependency injection.",
+                KnownNames.Namespaces.Base,
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
+    public static DiagnosticInfo StaticValidatorHasInstanceField(string fieldName, Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC302",
+                "Static validator has instance field",
+                $"Static validators cannot have instance fields. Field '{fieldName}' should be removed or made static.",
+                KnownNames.Namespaces.Base,
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
+    public static DiagnosticInfo StaticValidatorHasInstanceProperty(string propertyName, Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC303",
+                "Static validator has instance property",
+                $"Static validators cannot have instance properties. Property '{propertyName}' should be removed or made static.",
+                KnownNames.Namespaces.Base,
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
+    public static DiagnosticInfo StaticValidatorHasInstanceMethod(string methodName, Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC304",
+                "Static validator has instance method",
+                $"Static validators cannot have instance methods. Method '{methodName}' should be removed or made static.",
+                KnownNames.Namespaces.Base,
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
 }

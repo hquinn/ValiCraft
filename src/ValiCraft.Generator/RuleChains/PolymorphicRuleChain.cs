@@ -101,7 +101,7 @@ public record PolymorphicRuleChain(
         {
             PolymorphicBranchBehavior.Allow => $"{childIndent}// Allow - no validation needed\r\n",
             PolymorphicBranchBehavior.Fail => GenerateFailBranch(branch.FailMessage, childIndent, doubleChildIndent, context),
-            PolymorphicBranchBehavior.ValidateWith => GenerateValidateWithBranch(branch, typedVarName, childIndent, doubleChildIndent, context),
+            PolymorphicBranchBehavior.ValidateWith => GenerateValidateWithBranch(branch, typedVarName, childIndent, context),
             _ => string.Empty
         };
     }
@@ -151,11 +151,23 @@ public record PolymorphicRuleChain(
         PolymorphicBranch branch,
         string typedVarName,
         IndentModel childIndent,
-        IndentModel doubleChildIndent,
         RuleChainContext context)
     {
         string methodCall;
-        if (IsAsync && branch.IsAsyncValidatorCall)
+        
+        if (branch.IsStaticValidator)
+        {
+            // Static validator - call ValidateToList or ValidateToListAsync statically
+            if (IsAsync && branch.IsAsyncValidatorCall)
+            {
+                methodCall = $"await {branch.StaticValidatorTypeName}.ValidateToListAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
+            }
+            else
+            {
+                methodCall = $"{branch.StaticValidatorTypeName}.ValidateToList({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
+            }
+        }
+        else if (IsAsync && branch.IsAsyncValidatorCall)
         {
             methodCall = $"await {branch.ValidatorExpression}.ValidateToListAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
         }

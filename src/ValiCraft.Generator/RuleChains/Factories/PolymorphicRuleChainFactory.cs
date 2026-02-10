@@ -205,6 +205,8 @@ public class PolymorphicRuleChainFactory : IRuleChainFactory
         return methodName switch
         {
             KnownNames.Methods.ValidateWith => CreateValidateWithBranch(derivedType, invocation, context),
+            KnownNames.Methods.Validate => CreateStaticValidateBranch(derivedType, invocation, context, isAsync: false),
+            KnownNames.Methods.ValidateAsync => CreateStaticValidateBranch(derivedType, invocation, context, isAsync: true),
             KnownNames.Methods.Allow => new PolymorphicBranch(derivedType, PolymorphicBranchBehavior.Allow, null, false, null),
             KnownNames.Methods.Fail => CreateFailBranch(derivedType, invocation),
             _ => null
@@ -232,6 +234,40 @@ public class PolymorphicRuleChainFactory : IRuleChainFactory
             validatorExpression,
             isAsyncValidatorCall,
             null);
+    }
+
+    private static PolymorphicBranch? CreateStaticValidateBranch(
+        TypeInfo derivedType,
+        InvocationExpressionSyntax invocation,
+        GeneratorAttributeSyntaxContext context,
+        bool isAsync)
+    {
+        // Get the generic type argument from Validate<TValidator>() or ValidateAsync<TValidator>()
+        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess ||
+            memberAccess.Name is not GenericNameSyntax genericName ||
+            genericName.TypeArgumentList.Arguments.Count == 0)
+        {
+            return null;
+        }
+
+        var validatorTypeArgument = genericName.TypeArgumentList.Arguments[0];
+        var validatorTypeName = validatorTypeArgument.ToString();
+
+        // Get the fully qualified name if we can resolve the symbol
+        var typeInfo = context.SemanticModel.GetTypeInfo(validatorTypeArgument);
+        if (typeInfo.Type is INamedTypeSymbol namedType)
+        {
+            validatorTypeName = namedType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        }
+
+        return new PolymorphicBranch(
+            derivedType,
+            PolymorphicBranchBehavior.ValidateWith,
+            null,
+            isAsync,
+            null,
+            IsStaticValidator: true,
+            StaticValidatorTypeName: validatorTypeName);
     }
 
     private static PolymorphicBranch CreateFailBranch(

@@ -14,8 +14,10 @@ public enum RuleChainKind
 {
     Target,
     TargetValidateWith,
+    TargetStaticValidate,
     Collection,
     CollectionValidateWith,
+    CollectionStaticValidate,
     WithOnFailure,
     If,
     Polymorphic
@@ -45,8 +47,10 @@ public static class RuleChainFactory
         {
             [RuleChainKind.Target] = new TargetRuleChainFactory(),
             [RuleChainKind.TargetValidateWith] = new TargetValidateWithRuleChainFactory(),
+            [RuleChainKind.TargetStaticValidate] = new TargetStaticValidateRuleChainFactory(),
             [RuleChainKind.Collection] = new CollectionRuleChainFactory(),
             [RuleChainKind.CollectionValidateWith] = new CollectionValidateWithRuleChainFactory(),
+            [RuleChainKind.CollectionStaticValidate] = new CollectionStaticValidateRuleChainFactory(),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
             [RuleChainKind.If] = new IfRuleChainFactory(),
             [RuleChainKind.Polymorphic] = new PolymorphicRuleChainFactory(),
@@ -177,16 +181,36 @@ public static class RuleChainFactory
                 Name.Identifier.ValueText: KnownNames.Methods.ValidateWith
             }
         };
+        
+        // Check for static Validate<T>() or ValidateAsync<T>() - these have generic type arguments
+        var secondInvocationIsStaticValidate = secondInvocation is
+        {
+            Expression: MemberAccessExpressionSyntax
+            {
+                Name: GenericNameSyntax
+                {
+                    Identifier.ValueText: KnownNames.Methods.Validate or KnownNames.Methods.ValidateAsync
+                }
+            }
+        };
 
         return firstMethodName switch
         {
             // We don't have a valid rule chain if we have zero or one method invocations
             // As the first invocation should be the Ensure method.
             KnownNames.Methods.Ensure => invocationChain.Count > 1 
-                ? secondInvocationIsValidateWith ? RuleChainKind.TargetValidateWith : RuleChainKind.Target 
+                ? secondInvocationIsValidateWith 
+                    ? RuleChainKind.TargetValidateWith 
+                    : secondInvocationIsStaticValidate 
+                        ? RuleChainKind.TargetStaticValidate 
+                        : RuleChainKind.Target 
                 : null,
             KnownNames.Methods.EnsureEach => invocationChain.Count > 1
-                ? secondInvocationIsValidateWith ? RuleChainKind.CollectionValidateWith : null
+                ? secondInvocationIsValidateWith 
+                    ? RuleChainKind.CollectionValidateWith 
+                    : secondInvocationIsStaticValidate
+                        ? RuleChainKind.CollectionStaticValidate
+                        : null
                 : RuleChainKind.Collection,
             KnownNames.Methods.WithOnFailure => RuleChainKind.WithOnFailure,
             KnownNames.Methods.If => RuleChainKind.If,

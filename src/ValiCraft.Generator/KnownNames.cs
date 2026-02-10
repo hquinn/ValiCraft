@@ -30,17 +30,23 @@ public static class KnownNames
     {
         public const string Validator = "Validator";
         public const string AsyncValidator = "AsyncValidator";
+        public const string StaticValidator = "StaticValidator";
+        public const string StaticAsyncValidator = "StaticAsyncValidator";
     }
     
     public static class InterfaceNames
     {
         public const string IAsyncValidator = "IAsyncValidator";
+        public const string IStaticValidator = "IStaticValidator";
+        public const string IStaticAsyncValidator = "IStaticAsyncValidator";
     }
     
     public static class Classes
     {
         public const string Validator = $"{Namespaces.Base}.{ClassNames.Validator}";
         public const string AsyncValidator = $"{Namespaces.Base}.{ClassNames.AsyncValidator}";
+        public const string StaticValidator = $"{Namespaces.Base}.{ClassNames.StaticValidator}";
+        public const string StaticAsyncValidator = $"{Namespaces.Base}.{ClassNames.StaticAsyncValidator}";
     }
 
     public static class Types
@@ -54,6 +60,8 @@ public static class KnownNames
     {
         public const string IValidator = $"{Namespaces.Base}.IValidator";
         public const string IAsyncValidator = $"{Namespaces.Base}.IAsyncValidator";
+        public const string IStaticValidator = $"{Namespaces.Base}.IStaticValidator";
+        public const string IStaticAsyncValidator = $"{Namespaces.Base}.IStaticAsyncValidator";
         public const string IValidationRule = $"{Namespaces.Base}.IValidationRule";
         public const string IValidationRuleBuilderType = $"{Namespaces.BuilderTypes}.IValidationRuleBuilderType";
         public const string IAsyncValidationRuleBuilderType = $"{Namespaces.AsyncBuilderTypes}.IAsyncValidationRuleBuilderType";
@@ -61,6 +69,17 @@ public static class KnownNames
         public const string IAsyncBuilderType = $"{Namespaces.AsyncBuilderTypes}.IAsyncBuilderType";
         public const string IValidationError = $"{Namespaces.ErrorCraft}.IValidationError";
         public const string IValidationErrors = $"{Namespaces.ErrorCraft}.IValidationErrors";
+        
+        public static string GetValidatorInterface(bool isAsync, bool isStatic)
+        {
+            return (isAsync, isStatic) switch
+            {
+                (false, false) => IValidator,
+                (true, false) => IAsyncValidator,
+                (false, true) => IStaticValidator,
+                (true, true) => IStaticAsyncValidator
+            };
+        }
         
         public static string GetValidatorInterface(bool isAsync)
         {
