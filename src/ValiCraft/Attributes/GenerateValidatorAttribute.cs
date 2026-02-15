@@ -36,4 +36,9 @@ namespace ValiCraft.Attributes;
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class GenerateValidatorAttribute : Attribute
 {
+    /// <summary>
+    /// Gets or sets a value indicating whether to include default metadata (RequestType and ValidationCount)
+    /// in the generated ValidationErrors object. Defaults to <c>false</c>.
+    /// </summary>
+    public bool IncludeDefaultMetadata { get; set; } = false;
 }

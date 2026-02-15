@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -42,7 +43,7 @@ public static class ValidatorSyntaxProvider
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        
+
         var classInfo = ClassInfo.CreateFromSyntaxAndSymbols(classDeclarationSyntax!, classSymbol!);
         var ruleChains = RuleChainsSyntaxProvider.DiscoverRuleChains(
             isAsyncValidator,
@@ -51,13 +52,29 @@ public static class ValidatorSyntaxProvider
             classSymbol!,
             context);
 
+        // Extract IncludeDefaultMetadata from attribute, defaulting to false
+        var includeDefaultMetadata = false;
+        var attributeData = context.Attributes.FirstOrDefault();
+        if (attributeData != null)
+        {
+            foreach (var namedArg in attributeData.NamedArguments)
+            {
+                if (namedArg.Key == "IncludeDefaultMetadata" && namedArg.Value.Value is bool value)
+                {
+                    includeDefaultMetadata = value;
+                    break;
+                }
+            }
+        }
+
         var validator = new Validator(
             isAsyncValidator,
             isStaticValidator,
             classInfo,
             requestTypeName!,
             ruleChains,
-            classDeclarationSyntax!.GetUsingDirectives());
+            classDeclarationSyntax!.GetUsingDirectives(),
+            includeDefaultMetadata);
 
         return new ProviderResult<Validator>(validator, diagnostics);
     }

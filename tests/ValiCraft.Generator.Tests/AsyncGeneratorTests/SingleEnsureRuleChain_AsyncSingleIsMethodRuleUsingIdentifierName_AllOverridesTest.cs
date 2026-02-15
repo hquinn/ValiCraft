@@ -111,11 +111,6 @@ public class SingleEnsureRuleChain_AsyncSingleIsMethodRuleUsingIdentifierName_Al
                                                                                            Code = "OrderErrors",
                                                                                            Message = "One or more validation errors occurred.",
                                                                                            Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
-                                                                                           {
-                                                                                               { "RequestType", "Order" },
-                                                                                               { "ValidationCount", errors.Count }
-                                                                                           },
                                                                                            Errors = errors
                                                                                        })
                                                                                        : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Success(request);

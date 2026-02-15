@@ -10,4 +10,5 @@ public record Validator(
     ClassInfo Class,
     SymbolNameInfo RequestTypeName,
     EquatableArray<RuleChain> RuleChains,
-    EquatableArray<string> UsingDirectives);
+    EquatableArray<string> UsingDirectives,
+    bool IncludeDefaultMetadata);

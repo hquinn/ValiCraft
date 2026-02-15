@@ -102,11 +102,6 @@ public class PolymorphicRuleChain_BasicTest : IncrementalGeneratorTestBase<ValiC
                                                                                            Code = "CreditCardPaymentErrors",
                                                                                            Message = "One or more validation errors occurred.",
                                                                                            Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
-                                                                                           {
-                                                                                               { "RequestType", "CreditCardPayment" },
-                                                                                               { "ValidationCount", errors.Count }
-                                                                                           },
                                                                                            Errors = errors
                                                                                        })
                                                                                        : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.CreditCardPayment>.Success(request);
@@ -177,11 +172,6 @@ public class PolymorphicRuleChain_BasicTest : IncrementalGeneratorTestBase<ValiC
                                                                                            Code = "OrderErrors",
                                                                                            Message = "One or more validation errors occurred.",
                                                                                            Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
-                                                                                           {
-                                                                                               { "RequestType", "Order" },
-                                                                                               { "ValidationCount", errors.Count }
-                                                                                           },
                                                                                            Errors = errors
                                                                                        })
                                                                                        : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Success(request);

@@ -93,11 +93,6 @@ public class SingleEnsureEachRuleChain_StaticValidateTest : IncrementalGenerator
                                                                                            Code = "LineItemErrors",
                                                                                            Message = "One or more validation errors occurred.",
                                                                                            Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
-                                                                                           {
-                                                                                               { "RequestType", "LineItem" },
-                                                                                               { "ValidationCount", errors.Count }
-                                                                                           },
                                                                                            Errors = errors
                                                                                        })
                                                                                        : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.LineItem>.Success(request);
@@ -168,11 +163,6 @@ public class SingleEnsureEachRuleChain_StaticValidateTest : IncrementalGenerator
                                                                                            Code = "OrderErrors",
                                                                                            Message = "One or more validation errors occurred.",
                                                                                            Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
-                                                                                           {
-                                                                                               { "RequestType", "Order" },
-                                                                                               { "ValidationCount", errors.Count }
-                                                                                           },
                                                                                            Errors = errors
                                                                                        })
                                                                                        : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Success(request);

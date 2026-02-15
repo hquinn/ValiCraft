@@ -141,12 +141,7 @@ public static class ValidatorSourceProvider
                             {
                                 Code = "{{validator.RequestTypeName.Name}}Errors",
                                 Message = "One or more validation errors occurred.",
-                                Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,
-                                Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
-                                {
-                                    { "RequestType", "{{validator.RequestTypeName.Name}}" },
-                                    { "ValidationCount", errors.Count }
-                                },
+                                Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,{{GetMetadataProperty(validator)}}
                                 Errors = errors
                             })
                             : global::{{KnownNames.Types.Result}}<global::{{KnownNames.Interfaces.IValidationErrors}}, {{validator.RequestTypeName.FullyQualifiedName}}>.Success(request);
@@ -195,12 +190,7 @@ public static class ValidatorSourceProvider
                             {
                                 Code = "{{validator.RequestTypeName.Name}}Errors",
                                 Message = "One or more validation errors occurred.",
-                                Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,
-                                Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
-                                {
-                                    { "RequestType", "{{validator.RequestTypeName.Name}}" },
-                                    { "ValidationCount", errors.Count }
-                                },
+                                Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,{{GetMetadataProperty(validator)}}
                                 Errors = errors
                             })
                             : global::{{KnownNames.Types.Result}}<global::{{KnownNames.Interfaces.IValidationErrors}}, {{validator.RequestTypeName.FullyQualifiedName}}>.Success(request);
@@ -249,12 +239,7 @@ public static class ValidatorSourceProvider
                             {
                                 Code = "{{validator.RequestTypeName.Name}}Errors",
                                 Message = "One or more validation errors occurred.",
-                                Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,
-                                Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
-                                {
-                                    { "RequestType", "{{validator.RequestTypeName.Name}}" },
-                                    { "ValidationCount", errors.Count }
-                                },
+                                Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,{{GetMetadataProperty(validator)}}
                                 Errors = errors
                             })
                             : global::{{KnownNames.Types.Result}}<global::{{KnownNames.Interfaces.IValidationErrors}}, {{validator.RequestTypeName.FullyQualifiedName}}>.Success(request);
@@ -303,12 +288,7 @@ public static class ValidatorSourceProvider
                             {
                                 Code = "{{validator.RequestTypeName.Name}}Errors",
                                 Message = "One or more validation errors occurred.",
-                                Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,
-                                Metadata = new global::System.Collections.Generic.Dictionary<string, object?>
-                                {
-                                    { "RequestType", "{{validator.RequestTypeName.Name}}" },
-                                    { "ValidationCount", errors.Count }
-                                },
+                                Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,{{GetMetadataProperty(validator)}}
                                 Errors = errors
                             })
                             : global::{{KnownNames.Types.Result}}<global::{{KnownNames.Interfaces.IValidationErrors}}, {{validator.RequestTypeName.FullyQualifiedName}}>.Success(request);
@@ -343,12 +323,22 @@ public static class ValidatorSourceProvider
     {
         var ruleChainsCode = new List<string>();
         var context = new RuleChainContext(ruleChains.Sum(rc => rc.NumberOfRules));
-        
+
         foreach (var ruleChain in ruleChains)
         {
             ruleChainsCode.Add(ruleChain.GenerateCode(context));
         }
-        
+
         return string.Join("\r\n\r\n", ruleChainsCode);
+    }
+
+    private static string GetMetadataProperty(Validator validator)
+    {
+        if (!validator.IncludeDefaultMetadata)
+        {
+            return "";
+        }
+
+        return $"\n                                                                                           Metadata = new global::System.Collections.Generic.Dictionary<string, object?>\n                                                                                           {{\n                                                                                               {{ \"RequestType\", \"{validator.RequestTypeName.Name}\" }},\n                                                                                               {{ \"ValidationCount\", errors.Count }}\n                                                                                           }},";
     }
 }
