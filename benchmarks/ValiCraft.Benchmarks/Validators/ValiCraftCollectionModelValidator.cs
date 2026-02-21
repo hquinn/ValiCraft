@@ -27,19 +27,12 @@ public partial class ValiCraftCollectionModelValidator : Validator<CollectionMod
     }
 }
 
-[GenerateValidator]
-public partial class AsyncValiCraftCollectionModelValidator : AsyncValidator<CollectionModel>
+
+[GenerateValidator(IncludeDefaultMetadata = true)]
+public partial class ValiCraftCollectionModelValidator_WithMetaData : Validator<CollectionModel>
 {
-    private async Task<bool> IsValidAsync(int age, CancellationToken cancellationToken)
+    protected override void DefineRules(IValidationRuleBuilder<CollectionModel> builder)
     {
-        return await Task.FromResult(true);
-    }
-    
-    protected override void DefineRules(IAsyncValidationRuleBuilder<CollectionModel> builder)
-    {
-        builder.Ensure(x => x.Age)
-            .Is(IsValidAsync);
-        
         builder.Ensure(x => x.Name)
             .IsNotNullOrWhiteSpace()
             .HasCountBetween(1, 2)

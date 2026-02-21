@@ -1,22 +1,24 @@
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using ValiCraft.Benchmarks.Models;
 using ValiCraft.Benchmarks.Validators;
 
 namespace ValiCraft.Benchmarks.Benchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(warmupCount: 3, iterationCount: 10)]
-public class SimpleValidationBenchmark
+[SimpleJob(runtimeMoniker: RuntimeMoniker.Net10_0, warmupCount: 3, iterationCount: 10)]
+public class SimpleValidation_ValidModel_Benchmark
 {
     private ValiCraftSimpleModelValidator _valiCraftValidator = null!;
+    private ValiCraftSimpleModelValidator_WithMetaData _valiCraftValidatorWithMetaData = null!;
     private FluentSimpleModelValidator _fluentValidator = null!;
     private SimpleModel _validModel = null!;
-    private SimpleModel _invalidModel = null!;
 
     [GlobalSetup]
     public void Setup()
     {
         _valiCraftValidator = new ValiCraftSimpleModelValidator();
+        _valiCraftValidatorWithMetaData = new ValiCraftSimpleModelValidator_WithMetaData();
         _fluentValidator = new FluentSimpleModelValidator();
 
         _validModel = new SimpleModel
@@ -25,36 +27,23 @@ public class SimpleValidationBenchmark
             Age = 30,
             Email = "john@example.com"
         };
-
-        _invalidModel = new SimpleModel
-        {
-            Name = "J",
-            Age = 200,
-            Email = "invalid"
-        };
     }
 
     [Benchmark(Baseline = true)]
-    public void ValiCraft_ValidModel()
+    public void ValiCraft()
     {
         var result = _valiCraftValidator.Validate(_validModel);
     }
-    
+
     [Benchmark]
-    public void FluentValidation_ValidModel()
+    public void ValiCraftWithMetaData()
+    {
+        var result = _valiCraftValidatorWithMetaData.Validate(_validModel);
+    }
+
+    [Benchmark]
+    public void FluentValidation()
     {
         var result = _fluentValidator.Validate(_validModel);
-    }
-    
-    [Benchmark]
-    public void ValiCraft_InvalidModel()
-    {
-        var result = _valiCraftValidator.Validate(_invalidModel);
-    }
-    
-    [Benchmark]
-    public void FluentValidation_InvalidModel()
-    {
-        var result = _fluentValidator.Validate(_invalidModel);
     }
 }
