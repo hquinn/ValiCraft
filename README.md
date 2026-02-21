@@ -131,6 +131,20 @@ public partial class UserValidator : Validator<User>
 
 The `[GenerateValidator]` attribute tells the source generator to create the validation implementation. The `partial` keyword is required to allow the generated code to extend your class.
 
+**Optional Configuration:**
+
+The `[GenerateValidator]` attribute supports the following properties:
+
+- `IncludeDefaultMetadata` (default: `false`) — When `true`, includes default metadata (`RequestType` and `ValidationCount`) in the generated `ValidationErrors` object.
+
+```csharp
+[GenerateValidator(IncludeDefaultMetadata = true)]
+public partial class UserValidator : Validator<User>
+{
+    // ...
+}
+```
+
 ### 3. Run Validation
 
 ```csharp
@@ -309,6 +323,13 @@ ValiCraft includes 50+ built-in validation rules:
 | `IsNotIn(collection)` | Value not in forbidden set |
 | `IsInValues(v1, v2, ...)` | Value in allowed values |
 | `IsNotInValues(v1, v2, ...)` | Value not in forbidden values |
+
+### Enum Rules
+
+| Rule | Description |
+|------|-------------|
+| `IsValidEnumName<TEnum>()` | String is a valid enum member name |
+| `IsValidEnumValue<TEnum, TValue>()` | Value is a valid enum underlying value |
 
 ### Custom Predicate
 
