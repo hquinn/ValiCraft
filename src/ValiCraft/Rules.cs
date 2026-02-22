@@ -1044,4 +1044,19 @@ public static class Rules
     {
         return Enum.IsDefined(typeof(TEnum), targetValue);
     }
+
+    /// <summary>
+    /// Validates that an enum value is a defined member of its enum type.
+    /// This catches cases where an invalid integer is cast to an enum type.
+    /// </summary>
+    /// <typeparam name="TEnum">The enum type to validate. Must be an enum.</typeparam>
+    /// <remarks>
+    /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+    /// </remarks>
+    [DefaultMessage("{TargetName} must be a valid enum")]
+    public static bool ValidEnum<TEnum>(TEnum targetValue)
+        where TEnum : struct, Enum
+    {
+        return Enum.IsDefined(targetValue);
+    }
 }

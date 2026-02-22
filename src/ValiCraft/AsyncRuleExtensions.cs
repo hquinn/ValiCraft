@@ -1157,4 +1157,23 @@ public static class AsyncRuleExtensions
    {
       return builder.Is(Rules.ValidEnumValue<TEnum, TValue>);
    }
+
+   /// <summary>
+   /// Validates that an enum value is a defined member of its enum type.
+   /// This catches cases where an invalid integer is cast to an enum type.
+   /// </summary>
+   /// <typeparam name="TRequest">The request type in a validator.</typeparam>
+   /// <typeparam name="TEnum">The enum type to validate. Must be an enum.</typeparam>
+   /// <remarks>
+   /// Available message placeholders: <c>{TargetName}</c>, <c>{TargetValue}</c>.
+   /// </remarks>
+   [DefaultMessage("{TargetName} must be a valid enum")]
+   [MapToValidationRule(typeof(Rules), nameof(Rules.ValidEnum))]
+   public static IAsyncValidationRuleBuilderType<TRequest, TEnum> IsValidEnum<TRequest, TEnum>(
+      this IAsyncBuilderType<TRequest, TEnum> builder)
+      where TRequest : class
+      where TEnum : struct, Enum
+   {
+      return builder.Is(Rules.ValidEnum);
+   }
 }

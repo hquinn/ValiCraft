@@ -359,6 +359,7 @@ ValiCraft includes 50+ built-in validation rules:
 |------|-------------|
 | `IsValidEnumName<TEnum>()` | String is a valid enum member name |
 | `IsValidEnumValue<TEnum, TValue>()` | Value is a valid enum underlying value |
+| `IsValidEnum<TEnum>()` | Enum value is a defined member of its type |
 
 ### Custom Predicate
 
