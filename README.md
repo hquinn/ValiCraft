@@ -28,6 +28,12 @@ A high-performance validation library for .NET that uses source generators to cr
   - [Async Validation](#async-validation)
   - [Static Validators](#static-validators)
   - [Custom Validation Rules](#custom-validation-rules)
+- [Dependency Injection](#dependency-injection)
+  - [Installing the DI Package](#installing-the-di-package)
+  - [Registering All Validators](#registering-all-validators)
+  - [Service Lifetime](#service-lifetime)
+  - [Multi-Project Solutions](#multi-project-solutions)
+  - [Manual Registration](#manual-registration)
 - [Diagnostics](#diagnostics)
 - [Requirements](#requirements)
 - [License](#license)
@@ -1079,6 +1085,100 @@ For async rules, use the async overload of `Is()`:
 builder.Ensure(x => x.Username)
     .Is(async (username, ct) => await IsUsernameAvailableAsync(username, ct))
     .WithMessage("Username is already taken");
+```
+
+## Dependency Injection
+
+ValiCraft provides AOT-friendly dependency injection support through a separate package. The source generator automatically discovers all your validators at compile time and generates registration code — no reflection required.
+
+### Installing the DI Package
+
+```bash
+dotnet add package ValiCraft.DependencyInjection
+```
+
+This package includes ValiCraft, the source generator, and the DI extensions. You do not need to install `ValiCraft` separately.
+
+### Registering All Validators
+
+Call `AddValiCraft()` to register all non-static validators discovered at compile time:
+
+```csharp
+using ValiCraft.DependencyInjection;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddValiCraft();
+```
+
+This registers:
+
+- Every `Validator<T>` as `IValidator<T>`
+- Every `AsyncValidator<T>` as `IAsyncValidator<T>`
+
+Static validators (`StaticValidator<T>` and `StaticAsyncValidator<T>`) are excluded because they use static methods and do not require DI.
+
+Validators are then injected wherever they are needed:
+
+```csharp
+public class OrderController(IValidator<Order> orderValidator)
+{
+    public IActionResult CreateOrder(Order order)
+    {
+        var result = orderValidator.Validate(order);
+
+        return result.Match(
+            success: o => Ok(o),
+            failure: errors => BadRequest(errors));
+    }
+}
+```
+
+### Service Lifetime
+
+By default, validators are registered as **Transient**. You can override this:
+
+```csharp
+builder.Services.AddValiCraft(ServiceLifetime.Scoped);
+```
+
+Transient is the safest default because validators may accept other validators through constructor injection. Using Scoped or Singleton is fine when you know your validators are stateless.
+
+### Multi-Project Solutions
+
+In solutions with multiple projects, the source generator runs per-project. Each project that contains validators gets its own generated registrar.
+
+**Host-level registration** — A single `AddValiCraft()` call in your host project registers all validators from the current project **and** all referenced projects:
+
+```csharp
+// In MyApp.WebApi (references MyApp.Orders and MyApp.Customers)
+builder.Services.AddValiCraft(); // Registers validators from all three projects
+```
+
+**Module-level registration** — Each project also gets its own extension method if you want to register modules independently:
+
+```csharp
+// Register only validators from the Orders module
+builder.Services.AddMyAppOrdersValiCraft();
+```
+
+The method name is derived from the assembly name: `Add{AssemblyName}ValiCraft()`.
+
+Cross-project discovery works entirely at compile time. The generator emits an assembly-level attribute for each project with validators, and the host project's generator discovers these attributes when it compiles. No runtime reflection is involved.
+
+### Manual Registration
+
+For one-off registrations or validators from external libraries, use the manual helper methods:
+
+```csharp
+// Register a sync validator
+builder.Services.AddValidator<OrderValidator, Order>();
+
+// Register an async validator
+builder.Services.AddAsyncValidator<CustomerAsyncValidator, Customer>();
+
+// With a specific lifetime
+builder.Services.AddValidator<OrderValidator, Order>(ServiceLifetime.Singleton);
 ```
 
 ## Diagnostics

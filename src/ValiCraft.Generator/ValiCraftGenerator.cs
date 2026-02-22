@@ -21,5 +21,26 @@ public class ValiCraftGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(
             validatorsValuesProvider.Collect(),
             static (spc, source) => { ValidatorSourceProvider.EmitSourceCode(source, spc); });
+
+        // Extract DI context from compilation (cacheable value type, avoids passing Compilation directly)
+        var diContext = context.CompilationProvider.Select(
+            static (compilation, _) =>
+                DependencyInjectionSourceProvider.ExtractDiContext(compilation));
+
+        var validatorsWithDiContext = validatorsValuesProvider
+            .Collect()
+            .Combine(diContext);
+
+        context.RegisterSourceOutput(
+            validatorsWithDiContext,
+            static (spc, source) =>
+            {
+                var (validators, diCtx) = source;
+
+                if (diCtx is not null)
+                {
+                    DependencyInjectionSourceProvider.EmitSourceCode(validators, diCtx, spc);
+                }
+            });
     }
 }
