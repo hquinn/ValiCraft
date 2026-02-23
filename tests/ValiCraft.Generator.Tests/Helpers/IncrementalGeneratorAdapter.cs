@@ -57,13 +57,14 @@ public class IncrementalGeneratorAdapter
         string[] trackingSteps,
         string? errorCodePrefix,
         bool assertInitialCompilation = false,
-        bool assertTrackingSteps = true)
+        bool assertTrackingSteps = true,
+        string[]? excludeHintNameSuffixes = null)
         where T : IIncrementalGenerator, new()
     {
         return CreatePipeline<T>(sources, trackingSteps)
             .RunGenerator(assertInitialCompilation)
             .AssertCacheability(assertTrackingSteps)
-            .GetResult(errorCodePrefix);
+            .GetResult(errorCodePrefix, excludeHintNameSuffixes);
     }
 
     /// <summary>

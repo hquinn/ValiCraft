@@ -13,14 +13,17 @@ namespace ValiCraft.Generator.SourceProviders;
 public static class DependencyInjectionSourceProvider
 {
     private const string ValiCraftModuleAttributeMetadataName =
-        "ValiCraft.DependencyInjection.ValiCraftModuleAttribute`1";
+        "ValiCraft.ValiCraftModuleAttribute`1";
 
     private const string ValiCraftModuleInterfaceMetadataName =
-        "ValiCraft.DependencyInjection.IValiCraftModule";
+        "ValiCraft.IValiCraftModule";
+
+    private const string ServiceCollectionMetadataName =
+        "Microsoft.Extensions.DependencyInjection.IServiceCollection";
 
     /// <summary>
     /// Extracts DI-relevant context from the compilation into a cacheable value type.
-    /// Returns null if DI abstractions are not referenced.
+    /// Returns null if the ValiCraft core library is not referenced (i.e. IValiCraftModule is not available).
     /// </summary>
     public static DiContext? ExtractDiContext(Compilation compilation)
     {
@@ -30,9 +33,10 @@ public static class DependencyInjectionSourceProvider
         }
 
         var assemblyName = compilation.AssemblyName ?? "Unknown";
+        var hasDependencyInjection = compilation.GetTypeByMetadataName(ServiceCollectionMetadataName) is not null;
         var referencedModules = DiscoverReferencedModules(compilation);
 
-        return new DiContext(assemblyName, referencedModules.ToEquatableImmutableArray());
+        return new DiContext(assemblyName, hasDependencyInjection, referencedModules.ToEquatableImmutableArray());
     }
 
     public static void EmitSourceCode(
@@ -51,12 +55,8 @@ public static class DependencyInjectionSourceProvider
         var safeAssemblyName = GetSafeIdentifier(assemblyName);
         var referencedModules = diContext.ReferencedModuleTypes;
 
-        if (registrableValidators.Count == 0 && referencedModules.Count == 0)
-        {
-            return;
-        }
-
-        // Emit the module registrar, assembly attribute, and module extension if this project has validators
+        // Emit the module registrar and assembly attribute if this project has validators.
+        // These are DI-agnostic and only require ValiCraft core.
         if (registrableValidators.Count > 0)
         {
             var registrarSource = GenerateModuleRegistrar(registrableValidators, assemblyName);
@@ -68,26 +68,41 @@ public static class DependencyInjectionSourceProvider
             context.AddSource(
                 "ValiCraftModuleAttribute.g.cs",
                 SourceText.From(assemblyAttributeSource, Encoding.UTF8));
-
-            var moduleExtensionSource = GenerateModuleExtensionMethod(assemblyName, safeAssemblyName);
-            context.AddSource(
-                $"{safeAssemblyName}ValiCraftExtensions.g.cs",
-                SourceText.From(moduleExtensionSource, Encoding.UTF8));
         }
 
-        // Emit the host-level AddValiCraft() method
-        var addValiCraftSource = GenerateAddValiCraft(
-            registrableValidators.Count > 0 ? assemblyName : null,
-            referencedModules);
+        // Only emit DI extension methods if Microsoft.Extensions.DependencyInjection is referenced
+        if (diContext.HasDependencyInjection)
+        {
+            // Per-module extension method (e.g. AddMyModuleValiCraft)
+            if (registrableValidators.Count > 0)
+            {
+                var moduleExtensionSource = GenerateModuleExtensionMethod(assemblyName, safeAssemblyName);
+                context.AddSource(
+                    $"{safeAssemblyName}ValiCraftExtensions.g.cs",
+                    SourceText.From(moduleExtensionSource, Encoding.UTF8));
+            }
 
-        context.AddSource(
-            "ValiCraftServiceCollectionExtensions.g.cs",
-            SourceText.From(addValiCraftSource, Encoding.UTF8));
+            // Host-level AddValiCraft() method
+            var addValiCraftSource = GenerateAddValiCraft(
+                registrableValidators.Count > 0 ? assemblyName : null,
+                referencedModules);
+
+            context.AddSource(
+                "ValiCraftServiceCollectionExtensions.g.cs",
+                SourceText.From(addValiCraftSource, Encoding.UTF8));
+        }
     }
 
     private static List<string> DiscoverReferencedModules(Compilation compilation)
     {
         var moduleRegistrarTypes = new List<string>();
+
+        var moduleAttributeType = compilation.GetTypeByMetadataName(ValiCraftModuleAttributeMetadataName);
+
+        if (moduleAttributeType is null)
+        {
+            return moduleRegistrarTypes;
+        }
 
         foreach (var reference in compilation.References)
         {
@@ -105,7 +120,8 @@ public static class DependencyInjectionSourceProvider
                     continue;
                 }
 
-                if (attributeType.OriginalDefinition.ToDisplayString() != ValiCraftModuleAttributeMetadataName)
+                if (!SymbolEqualityComparer.Default.Equals(
+                        attributeType.OriginalDefinition, moduleAttributeType))
                 {
                     continue;
                 }
@@ -136,7 +152,7 @@ public static class DependencyInjectionSourceProvider
             var fullyQualifiedClassName = GetFullyQualifiedClassName(validator);
 
             registrationsBuilder.AppendLine(
-                $"            services.Add(new global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor(typeof(global::{interfaceName}<{validator.RequestTypeName.FullyQualifiedName}>), typeof({fullyQualifiedClassName}), lifetime));");
+                $"            yield return (typeof(global::{interfaceName}<{validator.RequestTypeName.FullyQualifiedName}>), typeof({fullyQualifiedClassName}));");
         }
 
         return $$"""
@@ -149,11 +165,9 @@ public static class DependencyInjectionSourceProvider
                      /// Auto-generated module registrar for ValiCraft validators in the {{assemblyName}} assembly.
                      /// </summary>
                      [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                     internal sealed class ValiCraftModuleRegistrar : global::ValiCraft.DependencyInjection.IValiCraftModule
+                     public sealed class ValiCraftModuleRegistrar : global::ValiCraft.IValiCraftModule
                      {
-                         public static void Register(
-                             global::Microsoft.Extensions.DependencyInjection.IServiceCollection services,
-                             global::Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime)
+                         public static global::System.Collections.Generic.IEnumerable<(global::System.Type ServiceType, global::System.Type ImplementationType)> GetValidatorRegistrations()
                          {
                  {{registrationsBuilder}}        }
                      }
@@ -166,7 +180,7 @@ public static class DependencyInjectionSourceProvider
         return $$"""
                  // <auto-generated />
 
-                 [assembly: global::ValiCraft.DependencyInjection.ValiCraftModuleAttribute<global::{{assemblyName}}.ValiCraft.Generated.ValiCraftModuleRegistrar>]
+                 [assembly: global::ValiCraft.ValiCraftModuleAttribute<global::{{assemblyName}}.ValiCraft.Generated.ValiCraftModuleRegistrar>]
                  """;
     }
 
@@ -195,7 +209,11 @@ public static class DependencyInjectionSourceProvider
                              this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services,
                              global::Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime = global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient)
                          {
-                             global::{{assemblyName}}.ValiCraft.Generated.ValiCraftModuleRegistrar.Register(services, lifetime);
+                             foreach (var (serviceType, implementationType) in global::{{assemblyName}}.ValiCraft.Generated.ValiCraftModuleRegistrar.GetValidatorRegistrations())
+                             {
+                                 services.Add(new global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor(serviceType, implementationType, lifetime));
+                             }
+
                              return services;
                          }
                      }
@@ -212,13 +230,27 @@ public static class DependencyInjectionSourceProvider
         if (currentAssemblyName is not null)
         {
             registrationCallsBuilder.AppendLine(
-                $"            global::{currentAssemblyName}.ValiCraft.Generated.ValiCraftModuleRegistrar.Register(services, lifetime);");
+                $"            foreach (var (serviceType, implementationType) in global::{currentAssemblyName}.ValiCraft.Generated.ValiCraftModuleRegistrar.GetValidatorRegistrations())");
+            registrationCallsBuilder.AppendLine(
+                "            {");
+            registrationCallsBuilder.AppendLine(
+                "                services.Add(new global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor(serviceType, implementationType, lifetime));");
+            registrationCallsBuilder.AppendLine(
+                "            }");
+            registrationCallsBuilder.AppendLine();
         }
 
         foreach (var moduleType in referencedModuleTypes)
         {
             registrationCallsBuilder.AppendLine(
-                $"            {moduleType}.Register(services, lifetime);");
+                $"            foreach (var (serviceType, implementationType) in {moduleType}.GetValidatorRegistrations())");
+            registrationCallsBuilder.AppendLine(
+                "            {");
+            registrationCallsBuilder.AppendLine(
+                "                services.Add(new global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor(serviceType, implementationType, lifetime));");
+            registrationCallsBuilder.AppendLine(
+                "            }");
+            registrationCallsBuilder.AppendLine();
         }
 
         return $$"""
@@ -229,8 +261,9 @@ public static class DependencyInjectionSourceProvider
                  {
                      /// <summary>
                      /// Extension methods for registering all discovered ValiCraft validators.
+                     /// This class is internal to avoid conflicts when multiple projects each generate their own version.
                      /// </summary>
-                     public static class ValiCraftServiceCollectionExtensions
+                     internal static class ValiCraftServiceCollectionExtensions
                      {
                          /// <summary>
                          /// Registers all ValiCraft validators discovered at compile time, including validators
@@ -240,7 +273,7 @@ public static class DependencyInjectionSourceProvider
                          /// <param name="services">The service collection.</param>
                          /// <param name="lifetime">The service lifetime for all validators. Defaults to <see cref="global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient"/>.</param>
                          /// <returns>The service collection for chaining.</returns>
-                         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValiCraft(
+                         internal static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValiCraft(
                              this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services,
                              global::Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime = global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient)
                          {
@@ -285,4 +318,5 @@ public static class DependencyInjectionSourceProvider
 /// </summary>
 public record DiContext(
     string AssemblyName,
+    bool HasDependencyInjection,
     EquatableArray<string> ReferencedModuleTypes);

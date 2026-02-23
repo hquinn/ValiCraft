@@ -1089,15 +1089,11 @@ builder.Ensure(x => x.Username)
 
 ## Dependency Injection
 
-ValiCraft provides AOT-friendly dependency injection support through a separate package. The source generator automatically discovers all your validators at compile time and generates registration code — no reflection required.
+ValiCraft provides AOT-friendly dependency injection support. The source generator automatically discovers all your validators at compile time and generates registration code — no reflection required.
 
-### Installing the DI Package
+### Prerequisite
 
-```bash
-dotnet add package ValiCraft.DependencyInjection
-```
-
-This package includes ValiCraft, the source generator, and the DI extensions. You do not need to install `ValiCraft` separately.
+The only prerequisite is to reference `Microsoft.Extensions.DependencyInjection.Abstractions` in your project.
 
 ### Registering All Validators
 
@@ -1168,17 +1164,14 @@ Cross-project discovery works entirely at compile time. The generator emits an a
 
 ### Manual Registration
 
-For one-off registrations or validators from external libraries, use the manual helper methods:
+For one-off registrations or validators from external libraries, you can add validators using the following patterns:
 
 ```csharp
 // Register a sync validator
-builder.Services.AddValidator<OrderValidator, Order>();
+builder.Services.AddTransient<IValidator<Order>, OrderValidator>();
 
 // Register an async validator
-builder.Services.AddAsyncValidator<CustomerAsyncValidator, Customer>();
-
-// With a specific lifetime
-builder.Services.AddValidator<OrderValidator, Order>(ServiceLifetime.Singleton);
+builder.Services.AddTransient<IAsyncValidator<Customer>, CustomerValidator>();
 ```
 
 ## Diagnostics

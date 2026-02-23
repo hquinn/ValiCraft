@@ -17,9 +17,11 @@ public class ValiCraftGenerator : IIncrementalGenerator
                 ValidatorSyntaxProvider.Transform)
             .WithTrackingName(TrackingSteps.ValidatorResultTrackingName);
 
+        var validatorsValueProvider = validatorsValuesProvider.Collect();
+        
         // Emit validators
         context.RegisterSourceOutput(
-            validatorsValuesProvider.Collect(),
+            validatorsValueProvider,
             static (spc, source) => { ValidatorSourceProvider.EmitSourceCode(source, spc); });
 
         // Extract DI context from compilation (cacheable value type, avoids passing Compilation directly)
@@ -27,9 +29,7 @@ public class ValiCraftGenerator : IIncrementalGenerator
             static (compilation, _) =>
                 DependencyInjectionSourceProvider.ExtractDiContext(compilation));
 
-        var validatorsWithDiContext = validatorsValuesProvider
-            .Collect()
-            .Combine(diContext);
+        var validatorsWithDiContext = validatorsValueProvider.Combine(diContext);
 
         context.RegisterSourceOutput(
             validatorsWithDiContext,

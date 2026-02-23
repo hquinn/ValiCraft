@@ -1,4 +1,4 @@
-namespace ValiCraft.DependencyInjection;
+namespace ValiCraft;
 
 /// <summary>
 /// Marks an assembly as containing ValiCraft validators and specifies the module registrar type.

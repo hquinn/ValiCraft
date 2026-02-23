@@ -152,23 +152,35 @@ public class GeneratorPipeline<T> where T : IIncrementalGenerator, new()
     ///     Final Step: Extracts the diagnostics and generated source strings from the result.
     ///     Requires <see cref="RunGenerator" /> to have been called.
     /// </summary>
+    /// <param name="errorCodePrefix">The prefix used for retrieving custom diagnostics.</param>
+    /// <param name="excludeHintNameSuffixes">Optional hint name suffixes to exclude from output.</param>
     /// <returns>A tuple containing the final diagnostics and generated output.</returns>
-    public (ImmutableArray<Diagnostic> Diagnostics, string[] Output) GetResult(string? errorCodePrefix)
+    public (ImmutableArray<Diagnostic> Diagnostics, string[] Output) GetResult(
+        string? errorCodePrefix,
+        string[]? excludeHintNameSuffixes = null)
     {
         if (_firstRunResult is null || _finalCompilation is null)
         {
             throw new InvalidOperationException(
                 "Cannot get the result before running the generator. Call RunGenerator() first.");
         }
-        
-        // Get diagnostics from the first compilation (only our custom diagnostics) and the final compilation 
+
+        // Get diagnostics from the first compilation (only our custom diagnostics) and the final compilation
         var allDiagnostics = _firstRunResult.Diagnostics
             .Where(x => errorCodePrefix is not null && x.Id.StartsWith(errorCodePrefix))
             .Concat(_finalCompilation.GetDiagnostics()
                     .Where(x => x.Severity >= DiagnosticSeverity.Error))
             .ToImmutableArray();
 
-        var output = _firstRunResult.GeneratedTrees.Select(x => x.ToString()).ToArray();
+        IEnumerable<GeneratedSourceResult> generatedSources = _firstRunResult.Results[0].GeneratedSources;
+
+        if (excludeHintNameSuffixes is { Length: > 0 })
+        {
+            generatedSources = generatedSources.Where(gs =>
+                !excludeHintNameSuffixes.Any(suffix => gs.HintName.EndsWith(suffix)));
+        }
+
+        var output = generatedSources.Select(x => x.SourceText.ToString()).ToArray();
 
         return (allDiagnostics, output);
     }

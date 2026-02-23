@@ -7,6 +7,17 @@ namespace ValiCraft.Generator.Tests.Helpers;
 
 public abstract class IncrementalGeneratorTestBase<TGenerator> where TGenerator : IIncrementalGenerator, new()
 {
+    /// <summary>
+    /// Hint name suffixes for DI-generated files that are excluded from validator output assertions.
+    /// </summary>
+    private static readonly string[] DiGeneratedHintNameSuffixes =
+    [
+        "ValiCraftModuleRegistrar.g.cs",
+        "ValiCraftModuleAttribute.g.cs",
+        "ValiCraftServiceCollectionExtensions.g.cs",
+        "ValiCraftExtensions.g.cs"
+    ];
+
     protected void AssertGenerator(
         string[] inputs,
         string[]? outputs,
@@ -30,9 +41,10 @@ public abstract class IncrementalGeneratorTestBase<TGenerator> where TGenerator 
                 trackingSteps,
                 errorCodePrefix,
                 assertInitialCompilation,
-                assertTrackingSteps)
+                assertTrackingSteps,
+                DiGeneratedHintNameSuffixes)
             .AssertDiagnostics(diagnostics);
-        
+
         // Only assert outputs if explicitly provided
         if (outputs is not null)
         {
