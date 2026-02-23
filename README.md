@@ -29,7 +29,7 @@ A high-performance validation library for .NET that uses source generators to cr
   - [Static Validators](#static-validators)
   - [Custom Validation Rules](#custom-validation-rules)
 - [Dependency Injection](#dependency-injection)
-  - [Installing the DI Package](#installing-the-di-package)
+  - [Prerequisite](#prerequisite)
   - [Registering All Validators](#registering-all-validators)
   - [Service Lifetime](#service-lifetime)
   - [Multi-Project Solutions](#multi-project-solutions)
