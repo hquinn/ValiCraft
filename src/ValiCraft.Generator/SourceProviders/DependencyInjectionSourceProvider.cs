@@ -95,13 +95,13 @@ public static class DependencyInjectionSourceProvider
 
     private static List<string> DiscoverReferencedModules(Compilation compilation)
     {
-        var moduleRegistrarTypes = new List<string>();
+        var moduleRegistrarTypes = new HashSet<string>();
 
         var moduleAttributeType = compilation.GetTypeByMetadataName(ValiCraftModuleAttributeMetadataName);
 
         if (moduleAttributeType is null)
         {
-            return moduleRegistrarTypes;
+            return moduleRegistrarTypes.ToList();
         }
 
         foreach (var reference in compilation.References)
@@ -134,7 +134,7 @@ public static class DependencyInjectionSourceProvider
             }
         }
 
-        return moduleRegistrarTypes;
+        return moduleRegistrarTypes.ToList();
     }
 
     private static string GenerateModuleRegistrar(
