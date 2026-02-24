@@ -29,11 +29,9 @@ A high-performance validation library for .NET that uses source generators to cr
   - [Static Validators](#static-validators)
   - [Custom Validation Rules](#custom-validation-rules)
 - [Dependency Injection](#dependency-injection)
-  - [Prerequisite](#prerequisite)
   - [Registering All Validators](#registering-all-validators)
   - [Service Lifetime](#service-lifetime)
   - [Multi-Project Solutions](#multi-project-solutions)
-  - [Manual Registration](#manual-registration)
 - [Diagnostics](#diagnostics)
 - [Requirements](#requirements)
 - [License](#license)
@@ -1089,11 +1087,7 @@ builder.Ensure(x => x.Username)
 
 ## Dependency Injection
 
-ValiCraft provides AOT-friendly dependency injection support. The source generator automatically discovers all your validators at compile time and generates registration code — no reflection required.
-
-### Prerequisite
-
-The only prerequisite is to reference `Microsoft.Extensions.DependencyInjection.Abstractions` in your project.
+ValiCraft provides AOT-friendly dependency injection support built directly into the source generator. When your project references `Microsoft.Extensions.DependencyInjection`, the generator automatically discovers all your validators at compile time and generates registration code — no additional packages or reflection required.
 
 ### Registering All Validators
 
@@ -1142,7 +1136,7 @@ Transient is the safest default because validators may accept other validators t
 
 ### Multi-Project Solutions
 
-In solutions with multiple projects, the source generator runs per-project. Each project that contains validators gets its own generated registrar.
+In solutions with multiple projects, the source generator runs per-project. Each project that contains validators gets its own generated registrar. Module projects only need a reference to ValiCraft — they do not need to reference `Microsoft.Extensions.DependencyInjection`.
 
 **Host-level registration** — A single `AddValiCraft()` call in your host project registers all validators from the current project **and** all referenced projects:
 
@@ -1161,18 +1155,6 @@ builder.Services.AddMyAppOrdersValiCraft();
 The method name is derived from the assembly name: `Add{AssemblyName}ValiCraft()`.
 
 Cross-project discovery works entirely at compile time. The generator emits an assembly-level attribute for each project with validators, and the host project's generator discovers these attributes when it compiles. No runtime reflection is involved.
-
-### Manual Registration
-
-For one-off registrations or validators from external libraries, you can add validators using the following patterns:
-
-```csharp
-// Register a sync validator
-builder.Services.AddTransient<IValidator<Order>, OrderValidator>();
-
-// Register an async validator
-builder.Services.AddTransient<IAsyncValidator<Customer>, CustomerValidator>();
-```
 
 ## Diagnostics
 
