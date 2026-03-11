@@ -10,7 +10,7 @@ namespace ValiCraft.BuilderTypes;
 /// This builder type enables nested validation within collections, where each item
 /// is validated according to the rules defined in the builder callback.
 /// </remarks>
-public interface IEnsureEachBuilderType<TRequest, TTarget> 
+public interface IEnsureEachBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
     where TRequest : class
 {
     /// <summary>

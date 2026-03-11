@@ -16,6 +16,7 @@ public enum RuleChainKind
     TargetValidateWith,
     TargetStaticValidate,
     Collection,
+    CollectionTarget,
     CollectionValidateWith,
     CollectionStaticValidate,
     WithOnFailure,
@@ -49,6 +50,7 @@ public static class RuleChainFactory
             [RuleChainKind.TargetValidateWith] = new TargetValidateWithRuleChainFactory(),
             [RuleChainKind.TargetStaticValidate] = new TargetStaticValidateRuleChainFactory(),
             [RuleChainKind.Collection] = new CollectionRuleChainFactory(),
+            [RuleChainKind.CollectionTarget] = new CollectionTargetRuleChainFactory(),
             [RuleChainKind.CollectionValidateWith] = new CollectionValidateWithRuleChainFactory(),
             [RuleChainKind.CollectionStaticValidate] = new CollectionStaticValidateRuleChainFactory(),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
@@ -206,11 +208,11 @@ public static class RuleChainFactory
                         : RuleChainKind.Target 
                 : null,
             KnownNames.Methods.EnsureEach => invocationChain.Count > 1
-                ? secondInvocationIsValidateWith 
-                    ? RuleChainKind.CollectionValidateWith 
+                ? secondInvocationIsValidateWith
+                    ? RuleChainKind.CollectionValidateWith
                     : secondInvocationIsStaticValidate
                         ? RuleChainKind.CollectionStaticValidate
-                        : null
+                        : RuleChainKind.CollectionTarget
                 : RuleChainKind.Collection,
             KnownNames.Methods.WithOnFailure => RuleChainKind.WithOnFailure,
             KnownNames.Methods.If => RuleChainKind.If,

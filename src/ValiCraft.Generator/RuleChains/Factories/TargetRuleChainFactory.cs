@@ -58,7 +58,7 @@ public class TargetRuleChainFactory : IRuleChainFactory
             rules.ToEquatableImmutableArray());
     }
     
-    private static RuleBuilder? ProcessNextInChain(
+    internal static RuleBuilder? ProcessNextInChain(
         bool isAsyncValidator,
         RuleBuilder? ruleBuilder,
         InvocationExpressionSyntax invocation,

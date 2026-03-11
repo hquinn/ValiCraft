@@ -23,6 +23,8 @@ A high-performance validation library for .NET that uses source generators to cr
   - [Grouped Failure Modes](#grouped-failure-modes)
   - [Conditional Validation](#conditional-validation)
   - [Collection Validation](#collection-validation)
+    - [Direct Rules on Collection Elements](#direct-rules-on-collection-elements)
+    - [Nested Builder for Complex Types](#nested-builder-for-complex-types)
   - [Nested Object Validation](#nested-object-validation)
   - [Polymorphic Validation](#polymorphic-validation)
   - [Async Validation](#async-validation)
@@ -219,7 +221,7 @@ public partial class OrderValidator : Validator<Order>
 The two key rule chain builders are:
 
 - **`Ensure(x => x.Property)`** — Validates a single property
-- **`EnsureEach(x => x.Collection, ...)`** — Validates each item in a collection
+- **`EnsureEach(x => x.Collection)`** — Validates each item in a collection (chain rules directly for simple types, or use a builder callback for complex types)
 
 ### Running Validation
 
@@ -551,7 +553,43 @@ builder.Ensure(x => x.ShippingAddress)
 
 ### Collection Validation
 
-Validate each item in a collection:
+#### Direct Rules on Collection Elements
+
+For collections of simple types (`List<string>`, `List<int>`, etc.), chain rules directly on `EnsureEach` — no nested builder needed:
+
+```csharp
+builder.EnsureEach(p => p.Tags)
+    .IsNotNullOrWhiteSpace()
+    .HasMinLength(3);
+```
+
+All rule types work with direct chaining, including `Is()` with all its variants:
+
+```csharp
+// Custom lambda
+builder.EnsureEach(p => p.Tags)
+    .Is(t => !string.IsNullOrEmpty(t));
+
+// Method reference
+builder.EnsureEach(p => p.Amounts)
+    .Is(Rules.GreaterThan, 0M);
+
+// Error overrides
+builder.EnsureEach(p => p.Tags)
+    .IsNotNullOrWhiteSpace()
+        .WithMessage("Tag must not be empty")
+        .WithErrorCode("TagRequired")
+        .WithSeverity(ErrorSeverity.Warning);
+
+// Halt on first failure
+builder.EnsureEach(p => p.Tags, OnFailureMode.Halt)
+    .IsNotNullOrWhiteSpace()
+    .HasMinLength(3);
+```
+
+#### Nested Builder for Complex Types
+
+For collections of complex objects, use a builder callback to validate individual properties:
 
 ```csharp
 builder.EnsureEach(x => x.OrderItems, itemBuilder =>
@@ -561,7 +599,7 @@ builder.EnsureEach(x => x.OrderItems, itemBuilder =>
 
     itemBuilder.Ensure(item => item.Quantity)
         .IsGreaterThan(0);
-        
+
     itemBuilder.Ensure(item => item.Price)
         .IsPositive();
 });
