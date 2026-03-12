@@ -87,32 +87,36 @@ public class PolymorphicRuleChain_NullBehaviorFailTest : IncrementalGeneratorTes
                                                                            public partial class CreditCardPaymentValidator : global::ValiCraft.IStaticValidator<global::Test.Requests.CreditCardPayment>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public static global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.CreditCardPayment> Validate(global::Test.Requests.CreditCardPayment request)
+                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.CreditCardPayment request)
                                                                                {
                                                                                    var errors = RunValidationLogic(request, null);
 
-                                                                                   return errors is not null
-                                                                                       ? global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.CreditCardPayment>.Failure(new global::ErrorCraft.ValidationErrors
-                                                                                       {
-                                                                                           Code = "CreditCardPaymentErrors",
-                                                                                           Message = "One or more validation errors occurred.",
-                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Errors = errors
-                                                                                       })
-                                                                                       : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.CreditCardPayment>.Success(request);
-                                                                               }
+                                                                                   if (errors is null) return null;
 
-                                                                               /// <inheritdoc />
-                                                                               public static global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError> ValidateToList(global::Test.Requests.CreditCardPayment request)
-                                                                               {
-                                                                                   return RunValidationLogic(request, null) ?? [];
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "CreditCardPaymentErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                /// <inheritdoc />
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError> ValidateToList(global::Test.Requests.CreditCardPayment request, string? inheritedTargetPath)
+                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.CreditCardPayment request, string? inheritedTargetPath)
                                                                                {
-                                                                                   return RunValidationLogic(request, inheritedTargetPath) ?? [];
+                                                                                   var errors = RunValidationLogic(request, inheritedTargetPath);
+
+                                                                                   if (errors is null) return null;
+
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "CreditCardPaymentErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                private static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.CreditCardPayment request, string? inheritedTargetPath)
@@ -157,32 +161,36 @@ public class PolymorphicRuleChain_NullBehaviorFailTest : IncrementalGeneratorTes
                                                                            public partial class OrderValidator : global::ValiCraft.IStaticValidator<global::Test.Requests.Order>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public static global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order> Validate(global::Test.Requests.Order request)
+                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request)
                                                                                {
                                                                                    var errors = RunValidationLogic(request, null);
 
-                                                                                   return errors is not null
-                                                                                       ? global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Failure(new global::ErrorCraft.ValidationErrors
-                                                                                       {
-                                                                                           Code = "OrderErrors",
-                                                                                           Message = "One or more validation errors occurred.",
-                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Errors = errors
-                                                                                       })
-                                                                                       : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Success(request);
-                                                                               }
+                                                                                   if (errors is null) return null;
 
-                                                                               /// <inheritdoc />
-                                                                               public static global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError> ValidateToList(global::Test.Requests.Order request)
-                                                                               {
-                                                                                   return RunValidationLogic(request, null) ?? [];
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "OrderErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                /// <inheritdoc />
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError> ValidateToList(global::Test.Requests.Order request, string? inheritedTargetPath)
+                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
-                                                                                   return RunValidationLogic(request, inheritedTargetPath) ?? [];
+                                                                                   var errors = RunValidationLogic(request, inheritedTargetPath);
+
+                                                                                   if (errors is null) return null;
+
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "OrderErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                private static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Order request, string? inheritedTargetPath)
@@ -204,16 +212,16 @@ public class PolymorphicRuleChain_NullBehaviorFailTest : IncrementalGeneratorTes
                                                                        
                                                                                    if (request.Payment is global::Test.Requests.CreditCardPayment typedCreditCardPayment)
                                                                                    {
-                                                                                       var errors1 = global::Test.Validators.CreditCardPaymentValidator.ValidateToList(typedCreditCardPayment, $"{inheritedTargetPath}Payment.");
-                                                                                       if (errors1.Count != 0)
+                                                                                       var errors1 = global::Test.Validators.CreditCardPaymentValidator.Validate(typedCreditCardPayment, $"{inheritedTargetPath}Payment.");
+                                                                                       if (errors1 is not null)
                                                                                        {
                                                                                            if (errors is null)
                                                                                            {
-                                                                                               errors = new(errors1);
+                                                                                               errors = new(errors1.Errors);
                                                                                            }
                                                                                            else
                                                                                            {
-                                                                                               errors.AddRange(errors1);
+                                                                                               errors.AddRange(errors1.Errors);
                                                                                            }
                                                                                        }
                                                                                    }

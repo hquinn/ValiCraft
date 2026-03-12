@@ -60,32 +60,36 @@ public class SingleEnsureRuleChain_StructTarget_MultipleRulesTest : IncrementalG
                                                                            public partial class DimensionsValidator : global::ValiCraft.IValidator<global::Test.Requests.Dimensions>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Dimensions> Validate(global::Test.Requests.Dimensions request)
+                                                                               public global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Dimensions request)
                                                                                {
                                                                                    var errors = RunValidationLogic(request, null);
 
-                                                                                   return errors is not null
-                                                                                       ? global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Dimensions>.Failure(new global::ErrorCraft.ValidationErrors
-                                                                                       {
-                                                                                           Code = "DimensionsErrors",
-                                                                                           Message = "One or more validation errors occurred.",
-                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Errors = errors
-                                                                                       })
-                                                                                       : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Dimensions>.Success(request);
-                                                                               }
+                                                                                   if (errors is null) return null;
 
-                                                                               /// <inheritdoc />
-                                                                               public global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError> ValidateToList(global::Test.Requests.Dimensions request)
-                                                                               {
-                                                                                   return RunValidationLogic(request, null) ?? [];
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "DimensionsErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                /// <inheritdoc />
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError> ValidateToList(global::Test.Requests.Dimensions request, string? inheritedTargetPath)
+                                                                               public global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Dimensions request, string? inheritedTargetPath)
                                                                                {
-                                                                                   return RunValidationLogic(request, inheritedTargetPath) ?? [];
+                                                                                   var errors = RunValidationLogic(request, inheritedTargetPath);
+
+                                                                                   if (errors is null) return null;
+
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "DimensionsErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                private global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Dimensions request, string? inheritedTargetPath)

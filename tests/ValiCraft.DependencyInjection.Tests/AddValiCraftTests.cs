@@ -97,7 +97,7 @@ public class AddValiCraftTests
             }
         });
 
-        result.IsSuccess.Should().BeTrue();
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class AddValiCraftTests
             OrderTotal = 0M
         });
 
-        result.IsFailure.Should().BeTrue();
+        result.Should().NotBeNull();
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class AddValiCraftTests
             Email = "john@example.com"
         });
 
-        result.IsSuccess.Should().BeTrue();
+        result.Should().BeNull();
     }
 
     [Fact]

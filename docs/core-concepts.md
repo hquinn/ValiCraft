@@ -22,35 +22,32 @@ The two key rule chain builders are:
 
 ## Running Validation
 
-ValiCraft validators implement `IValidator<T>`, which provides two methods:
+ValiCraft validators implement `IValidator<T>`:
 
 ```csharp
 public interface IValidator<TRequest>
 {
-    // Returns a Result type for functional error handling
-    Result<IValidationErrors, TRequest> Validate(TRequest request);
-
-    // Returns errors as a list (empty if valid)
-    IReadOnlyList<IValidationError> ValidateToList(TRequest request);
+    ValidationErrors? Validate(TRequest request);
+    [EditorBrowsable(Never)] ValidationErrors? Validate(TRequest request, string? inheritedTargetPath);
 }
 ```
 
 ## Working with Results
 
-The `Validate` method returns a `Result<IValidationErrors, TRequest>` which can be pattern matched:
+The `Validate` method returns `ValidationErrors?` — `null` means the model is valid, non-null means there are errors:
 
 ```csharp
 var result = validator.Validate(user);
 
-// Using Match for exhaustive handling
-var output = result.Match(
-    success: user => ProcessUser(user),
-    failure: errors => HandleErrors(errors));
-
-// Check success/failure
-if (result.IsSuccess)
+if (result is null)
 {
-    var validUser = result.Value;
+    // Model is valid
+    ProcessUser(user);
+}
+else
+{
+    // result.Errors contains the list of validation errors
+    HandleErrors(result);
 }
 ```
 

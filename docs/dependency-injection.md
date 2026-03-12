@@ -30,9 +30,12 @@ public class OrderController(IValidator<Order> orderValidator)
     {
         var result = orderValidator.Validate(order);
 
-        return result.Match(
-            success: o => Ok(o),
-            failure: errors => BadRequest(errors));
+        if (result is null)
+        {
+            return Ok(order);
+        }
+
+        return BadRequest(result);
     }
 }
 ```

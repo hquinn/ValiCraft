@@ -337,8 +337,7 @@ public partial class UserValidator : AsyncValidator<User>
 
 // Usage
 var validator = new UserValidator(repository);
-var result = await validator.ValidateAsync(user, cancellationToken);
-var errors = await validator.ValidateToListAsync(user, cancellationToken);
+ValidationErrors? result = await validator.ValidateAsync(user, cancellationToken);
 ```
 
 Async validators implement `IAsyncValidator<T>`:
@@ -346,12 +345,13 @@ Async validators implement `IAsyncValidator<T>`:
 ```csharp
 public interface IAsyncValidator<TRequest>
 {
-    Task<Result<IValidationErrors, TRequest>> ValidateAsync(
+    Task<ValidationErrors?> ValidateAsync(
         TRequest request,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<IValidationError>> ValidateToListAsync(
+    [EditorBrowsable(Never)] Task<ValidationErrors?> ValidateAsync(
         TRequest request,
+        string? inheritedTargetPath,
         CancellationToken cancellationToken = default);
 }
 ```
@@ -378,8 +378,7 @@ public partial class AddressValidator : StaticValidator<Address>
 }
 
 // Usage - no instantiation needed!
-var result = AddressValidator.Validate(address);
-var errors = AddressValidator.ValidateToList(address);
+ValidationErrors? result = AddressValidator.Validate(address);
 ```
 
 **When to use static validators:**
@@ -411,7 +410,7 @@ public partial class OrderValidator : StaticAsyncValidator<Order>
 }
 
 // Usage
-var result = await OrderValidator.ValidateAsync(order, cancellationToken);
+ValidationErrors? result = await OrderValidator.ValidateAsync(order, cancellationToken);
 ```
 
 ### Composing Static Validators

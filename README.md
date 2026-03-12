@@ -81,18 +81,15 @@ public partial class UserValidator : Validator<User>
 var validator = new UserValidator();
 var user = new User { Username = "john", Email = "john@example.com", Age = 30 };
 
-// Option 1: Get a Result<IValidationErrors, User>
-var result = validator.Validate(user);
+ValidationErrors? result = validator.Validate(user);
 
-string message = result.Match(
-    success: u => $"Welcome, {u.Username}!",
-    failure: errors => $"Validation failed: {errors.Message}");
-
-// Option 2: Get errors as a list
-IReadOnlyList<IValidationError> errors = validator.ValidateToList(user);
-if (errors.Count == 0)
+if (result is null)
 {
     Console.WriteLine("User is valid!");
+}
+else
+{
+    Console.WriteLine($"Validation failed: {result.Message}");
 }
 ```
 
@@ -122,8 +119,7 @@ ValiCraft delivers exceptional performance compared to traditional validation li
 dotnet add package ValiCraft
 ```
 
-This also installs the required dependencies:
-- **MonadCraft** — Provides the `Result<TError, TValue>` type for functional error handling
+This also installs the required dependency:
 - **ErrorCraft** — Provides `IValidationError` and `ValidationError` types
 
 ## Documentation

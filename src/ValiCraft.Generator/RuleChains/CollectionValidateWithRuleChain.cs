@@ -28,28 +28,28 @@ public record CollectionValidateWithRuleChain(
         string methodCall;
         if (IsAsync && IsAsyncValidatorCall)
         {
-            methodCall = $"await {ValidatorExpression}.ValidateToListAsync({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\", cancellationToken)";
+            methodCall = $"await {ValidatorExpression}.ValidateAsync({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\", cancellationToken)";
         }
         else
         {
-            methodCall = $"{ValidatorExpression}.ValidateToList({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\")";
+            methodCall = $"{ValidatorExpression}.Validate({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\")";
         }
-        
+
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple ValidateWith calls exist
         var code = $$"""
                      {{Indent}}var {{index}} = 0;
                      {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
                      {{Indent}}{
                      {{Indent}}    var errors{{context.Counter}} = {{methodCall}};
-                     {{Indent}}    if (errors{{context.Counter}}.Count != 0)
+                     {{Indent}}    if (errors{{context.Counter}} is not null)
                      {{Indent}}    {
                      {{Indent}}        if (errors is null)
                      {{Indent}}        {
-                     {{Indent}}            errors = new(errors{{context.Counter}});
+                     {{Indent}}            errors = new(errors{{context.Counter}}.Errors);
                      {{GetGotoLabelIfNeeded(context)}}{{Indent}}        }
                      {{Indent}}        else
                      {{Indent}}        {
-                     {{Indent}}            errors.AddRange(errors{{context.Counter}});
+                     {{Indent}}            errors.AddRange(errors{{context.Counter}}.Errors);
                      {{GetGotoLabelIfNeeded(context)}}{{Indent}}        }
                      {{Indent}}    }
                      {{Indent}}    {{index}}++;

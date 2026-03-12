@@ -157,36 +157,36 @@ public record PolymorphicRuleChain(
         
         if (branch.IsStaticValidator)
         {
-            // Static validator - call ValidateToList or ValidateToListAsync statically
+            // Static validator - call Validate or ValidateAsync statically
             if (IsAsync && branch.IsAsyncValidatorCall)
             {
-                methodCall = $"await {branch.StaticValidatorTypeName}.ValidateToListAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
+                methodCall = $"await {branch.StaticValidatorTypeName}.ValidateAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
             }
             else
             {
-                methodCall = $"{branch.StaticValidatorTypeName}.ValidateToList({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
+                methodCall = $"{branch.StaticValidatorTypeName}.Validate({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
             }
         }
         else if (IsAsync && branch.IsAsyncValidatorCall)
         {
-            methodCall = $"await {branch.ValidatorExpression}.ValidateToListAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
+            methodCall = $"await {branch.ValidatorExpression}.ValidateAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
         }
         else
         {
-            methodCall = $"{branch.ValidatorExpression}.ValidateToList({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
+            methodCall = $"{branch.ValidatorExpression}.Validate({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
         }
 
         return $$"""
                  {{childIndent}}var errors{{context.Counter}} = {{methodCall}};
-                 {{childIndent}}if (errors{{context.Counter}}.Count != 0)
+                 {{childIndent}}if (errors{{context.Counter}} is not null)
                  {{childIndent}}{
                  {{childIndent}}    if (errors is null)
                  {{childIndent}}    {
-                 {{childIndent}}        errors = new(errors{{context.Counter}});
+                 {{childIndent}}        errors = new(errors{{context.Counter}}.Errors);
                  {{GetGotoLabelIfNeeded(childIndent, context)}}{{childIndent}}    }
                  {{childIndent}}    else
                  {{childIndent}}    {
-                 {{childIndent}}        errors.AddRange(errors{{context.Counter}});
+                 {{childIndent}}        errors.AddRange(errors{{context.Counter}}.Errors);
                  {{GetGotoLabelIfNeeded(childIndent, context)}}{{childIndent}}    }
                  {{childIndent}}}
 

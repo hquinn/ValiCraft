@@ -59,32 +59,36 @@ public class SingleEnsureRuleChain_MethodTarget_MultipleRulesTest : IncrementalG
                                                                            public partial class UserValidator : global::ValiCraft.IAsyncValidator<global::Test.Requests.User>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public async global::System.Threading.Tasks.Task<global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.User>> ValidateAsync(global::Test.Requests.User request, global::System.Threading.CancellationToken cancellationToken = default)
+                                                                               public async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.User request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
                                                                                    var errors = await RunValidationLogicAsync(request, null, cancellationToken);
 
-                                                                                   return errors is not null
-                                                                                       ? global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.User>.Failure(new global::ErrorCraft.ValidationErrors
-                                                                                       {
-                                                                                           Code = "UserErrors",
-                                                                                           Message = "One or more validation errors occurred.",
-                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Errors = errors
-                                                                                       })
-                                                                                       : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.User>.Success(request);
-                                                                               }
+                                                                                   if (errors is null) return null;
 
-                                                                               /// <inheritdoc />
-                                                                               public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError>> ValidateToListAsync(global::Test.Requests.User request, global::System.Threading.CancellationToken cancellationToken = default)
-                                                                               {
-                                                                                   return await RunValidationLogicAsync(request, null, cancellationToken) ?? [];
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "UserErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                /// <inheritdoc />
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError>> ValidateToListAsync(global::Test.Requests.User request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
+                                                                               public async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.User request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
-                                                                                   return await RunValidationLogicAsync(request, inheritedTargetPath, cancellationToken) ?? [];
+                                                                                   var errors = await RunValidationLogicAsync(request, inheritedTargetPath, cancellationToken);
+
+                                                                                   if (errors is null) return null;
+
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "UserErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                private async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationLogicAsync(global::Test.Requests.User request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)

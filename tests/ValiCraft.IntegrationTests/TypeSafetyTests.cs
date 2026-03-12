@@ -15,9 +15,9 @@ public class StructValidationTests
         var validator = new CoordinateValidator();
         var model = new Coordinate { Latitude = 45.0, Longitude = -93.0 };
 
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
-        errors.Should().BeEmpty();
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -26,9 +26,10 @@ public class StructValidationTests
         var validator = new CoordinateValidator();
         var model = new Coordinate { Latitude = 100.0, Longitude = -200.0 };
 
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
-        errors.Should().HaveCountGreaterThanOrEqualTo(2);
+        result.Should().NotBeNull();
+        result!.Errors.Should().HaveCountGreaterThanOrEqualTo(2);
     }
 
     [Fact]
@@ -37,9 +38,9 @@ public class StructValidationTests
         var validator = new RectangleValidator();
         var model = new Rectangle { Width = 5.0, Height = 3.0 };
 
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
-        errors.Should().BeEmpty();
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -48,9 +49,10 @@ public class StructValidationTests
         var validator = new RectangleValidator();
         var model = new Rectangle { Width = 0.0, Height = 0.0 };
 
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
-        errors.Should().HaveCountGreaterThanOrEqualTo(2);
+        result.Should().NotBeNull();
+        result!.Errors.Should().HaveCountGreaterThanOrEqualTo(2);
     }
 }
 
@@ -65,9 +67,9 @@ public class MethodTargetValidationTests
         var validator = new CustomerValidator();
         var model = new Customer { FirstName = "John", LastName = "Doe", Balance = 100m };
 
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
-        errors.Should().BeEmpty();
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -76,9 +78,10 @@ public class MethodTargetValidationTests
         var validator = new CustomerValidator();
         var model = new Customer { FirstName = null, LastName = null, Balance = 0m };
 
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
-        errors.Should().HaveCountGreaterThanOrEqualTo(1);
+        result.Should().NotBeNull();
+        result!.Errors.Should().HaveCountGreaterThanOrEqualTo(1);
     }
 
     [Fact]
@@ -87,9 +90,9 @@ public class MethodTargetValidationTests
         var validator = new CustomerValidator();
         var model = new Customer { FirstName = "Jane", LastName = "Smith", Balance = 1000m };
 
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
-        errors.Should().BeEmpty();
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -98,9 +101,10 @@ public class MethodTargetValidationTests
         var validator = new CustomerValidator();
         var model = new Customer { FirstName = "Jane", LastName = "Smith", Balance = -50m };
 
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
-        errors.Should().NotBeEmpty();
+        result.Should().NotBeNull();
+        result!.Errors.Should().NotBeEmpty();
     }
 }
 
@@ -123,10 +127,10 @@ public class TypeSafetyTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().BeEmpty();
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -142,10 +146,11 @@ public class TypeSafetyTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().HaveCountGreaterThan(0);
+        result.Should().NotBeNull();
+        result!.Errors.Should().HaveCountGreaterThan(0);
     }
 
     [Fact]
@@ -161,11 +166,12 @@ public class TypeSafetyTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().NotBeEmpty();
-        errors.Should().Contain(e => e.TargetName == "Name");
+        result.Should().NotBeNull();
+        result!.Errors.Should().NotBeEmpty();
+        result.Errors.Should().Contain(e => e.TargetName == "Name");
     }
 
     [Fact]
@@ -181,10 +187,11 @@ public class TypeSafetyTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().NotBeEmpty();
+        result.Should().NotBeNull();
+        result!.Errors.Should().NotBeEmpty();
     }
 }
 
@@ -209,10 +216,10 @@ public class NestedValidationTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().BeEmpty();
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -231,10 +238,11 @@ public class NestedValidationTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().HaveCountGreaterThanOrEqualTo(2);
+        result.Should().NotBeNull();
+        result!.Errors.Should().HaveCountGreaterThanOrEqualTo(2);
     }
 
     [Fact]
@@ -253,10 +261,11 @@ public class NestedValidationTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().HaveCountGreaterThanOrEqualTo(3);
+        result.Should().NotBeNull();
+        result!.Errors.Should().HaveCountGreaterThanOrEqualTo(3);
     }
 }
 
@@ -281,10 +290,10 @@ public class CollectionValidationTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().BeEmpty();
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -299,10 +308,11 @@ public class CollectionValidationTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().NotBeEmpty();
+        result.Should().NotBeNull();
+        result!.Errors.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -321,10 +331,11 @@ public class CollectionValidationTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().NotBeEmpty();
+        result.Should().NotBeNull();
+        result!.Errors.Should().NotBeEmpty();
     }
 }
 
@@ -347,10 +358,10 @@ public class NullableStringTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().BeEmpty();
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -366,11 +377,12 @@ public class NullableStringTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().NotBeEmpty();
-        errors.Should().Contain(e => e.TargetName == "Name");
+        result.Should().NotBeNull();
+        result!.Errors.Should().NotBeEmpty();
+        result.Errors.Should().Contain(e => e.TargetName == "Name");
     }
 
     [Fact]
@@ -386,10 +398,11 @@ public class NullableStringTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().NotBeEmpty();
+        result.Should().NotBeNull();
+        result!.Errors.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -405,10 +418,11 @@ public class NullableStringTests
         };
 
         // Act
-        var errors = validator.ValidateToList(model);
+        var result = validator.Validate(model);
 
         // Assert
-        errors.Should().NotBeEmpty();
-        errors.Should().Contain(e => e.TargetName == "Email");
+        result.Should().NotBeNull();
+        result!.Errors.Should().NotBeEmpty();
+        result.Errors.Should().Contain(e => e.TargetName == "Email");
     }
 }

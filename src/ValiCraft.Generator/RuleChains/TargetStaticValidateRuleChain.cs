@@ -26,25 +26,25 @@ public record TargetStaticValidateRuleChain(
         string methodCall;
         if (IsAsync && IsAsyncValidatorCall)
         {
-            methodCall = $"await {ValidatorTypeName}.ValidateToListAsync({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\", cancellationToken)";
+            methodCall = $"await {ValidatorTypeName}.ValidateAsync({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\", cancellationToken)";
         }
         else
         {
-            methodCall = $"{ValidatorTypeName}.ValidateToList({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\")";
+            methodCall = $"{ValidatorTypeName}.Validate({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\")";
         }
-        
+
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple Validate calls exist
         var code = $$"""
                      {{Indent}}var errors{{context.Counter}} = {{methodCall}};
-                     {{Indent}}{{context.GetIfElseIfKeyword()}} (errors{{context.Counter}}.Count != 0)
+                     {{Indent}}{{context.GetIfElseIfKeyword()}} (errors{{context.Counter}} is not null)
                      {{Indent}}{
                      {{Indent}}    if (errors is null)
                      {{Indent}}    {
-                     {{Indent}}        errors = new(errors{{context.Counter}});
+                     {{Indent}}        errors = new(errors{{context.Counter}}.Errors);
                      {{GetGotoLabelIfNeeded(context)}}{{Indent}}    }
                      {{Indent}}    else
                      {{Indent}}    {
-                     {{Indent}}        errors.AddRange(errors{{context.Counter}});
+                     {{Indent}}        errors.AddRange(errors{{context.Counter}}.Errors);
                      {{GetGotoLabelIfNeeded(context)}}{{Indent}}    }
                      {{Indent}}}
                      """;

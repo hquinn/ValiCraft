@@ -82,32 +82,36 @@ public class SingleEnsureRuleChain_StaticValidateTest : IncrementalGeneratorTest
                                                                            public partial class CustomerValidator : global::ValiCraft.IStaticValidator<global::Test.Requests.Customer>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public static global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Customer> Validate(global::Test.Requests.Customer request)
+                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Customer request)
                                                                                {
                                                                                    var errors = RunValidationLogic(request, null);
 
-                                                                                   return errors is not null
-                                                                                       ? global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Customer>.Failure(new global::ErrorCraft.ValidationErrors
-                                                                                       {
-                                                                                           Code = "CustomerErrors",
-                                                                                           Message = "One or more validation errors occurred.",
-                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Errors = errors
-                                                                                       })
-                                                                                       : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Customer>.Success(request);
-                                                                               }
+                                                                                   if (errors is null) return null;
 
-                                                                               /// <inheritdoc />
-                                                                               public static global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError> ValidateToList(global::Test.Requests.Customer request)
-                                                                               {
-                                                                                   return RunValidationLogic(request, null) ?? [];
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "CustomerErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                /// <inheritdoc />
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError> ValidateToList(global::Test.Requests.Customer request, string? inheritedTargetPath)
+                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Customer request, string? inheritedTargetPath)
                                                                                {
-                                                                                   return RunValidationLogic(request, inheritedTargetPath) ?? [];
+                                                                                   var errors = RunValidationLogic(request, inheritedTargetPath);
+
+                                                                                   if (errors is null) return null;
+
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "CustomerErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                private static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Customer request, string? inheritedTargetPath)
@@ -152,48 +156,52 @@ public class SingleEnsureRuleChain_StaticValidateTest : IncrementalGeneratorTest
                                                                            public partial class OrderValidator : global::ValiCraft.IStaticValidator<global::Test.Requests.Order>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public static global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order> Validate(global::Test.Requests.Order request)
+                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request)
                                                                                {
                                                                                    var errors = RunValidationLogic(request, null);
 
-                                                                                   return errors is not null
-                                                                                       ? global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Failure(new global::ErrorCraft.ValidationErrors
-                                                                                       {
-                                                                                           Code = "OrderErrors",
-                                                                                           Message = "One or more validation errors occurred.",
-                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                           Errors = errors
-                                                                                       })
-                                                                                       : global::MonadCraft.Result<global::ErrorCraft.IValidationErrors, global::Test.Requests.Order>.Success(request);
-                                                                               }
+                                                                                   if (errors is null) return null;
 
-                                                                               /// <inheritdoc />
-                                                                               public static global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError> ValidateToList(global::Test.Requests.Order request)
-                                                                               {
-                                                                                   return RunValidationLogic(request, null) ?? [];
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "OrderErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                /// <inheritdoc />
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static global::System.Collections.Generic.IReadOnlyList<global::ErrorCraft.IValidationError> ValidateToList(global::Test.Requests.Order request, string? inheritedTargetPath)
+                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
-                                                                                   return RunValidationLogic(request, inheritedTargetPath) ?? [];
+                                                                                   var errors = RunValidationLogic(request, inheritedTargetPath);
+
+                                                                                   if (errors is null) return null;
+
+                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   {
+                                                                                       Code = "OrderErrors",
+                                                                                       Message = "One or more validation errors occurred.",
+                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Errors = errors
+                                                                                   };
                                                                                }
 
                                                                                private static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
                                                                        
-                                                                                   var errors1 = global::Test.Validators.CustomerValidator.ValidateToList(request.Customer, $"{inheritedTargetPath}Customer.");
-                                                                                   if (errors1.Count != 0)
+                                                                                   var errors1 = global::Test.Validators.CustomerValidator.Validate(request.Customer, $"{inheritedTargetPath}Customer.");
+                                                                                   if (errors1 is not null)
                                                                                    {
                                                                                        if (errors is null)
                                                                                        {
-                                                                                           errors = new(errors1);
+                                                                                           errors = new(errors1.Errors);
                                                                                        }
                                                                                        else
                                                                                        {
-                                                                                           errors.AddRange(errors1);
+                                                                                           errors.AddRange(errors1.Errors);
                                                                                        }
                                                                                    }
 

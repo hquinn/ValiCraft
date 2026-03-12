@@ -51,7 +51,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MonadCraft" Version="0.15.0" />
       <PackageReference Include="ErrorCraft" Version="0.15.0" />
     </ItemGroup>
 

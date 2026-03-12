@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using ErrorCraft;
-using MonadCraft;
 
 namespace ValiCraft;
 
@@ -12,24 +11,15 @@ namespace ValiCraft;
 public interface IStaticAsyncValidator<TRequest> where TRequest : notnull
 {
     /// <summary>
-    /// Validates the specified request and returns a Result type.
+    /// Validates the specified request asynchronously.
     /// </summary>
     /// <param name="request">The object to validate.</param>
     /// <param name="cancellationToken">The cancellation token</param>
     /// <returns>
-    /// A <see cref="Result{TError, TValue}"/> containing either the validation errors
-    /// or the validated request on success.
+    /// A <see cref="ValidationErrors"/> if validation fails; otherwise, <c>null</c>.
     /// </returns>
-    static abstract Task<Result<IValidationErrors, TRequest>> ValidateAsync(TRequest request, CancellationToken cancellationToken = default);
-    
-    /// <summary>
-    /// Validates the specified request and returns validation errors as a list.
-    /// </summary>
-    /// <param name="request">The object to validate.</param>
-    /// <param name="cancellationToken">The cancellation token</param>
-    /// <returns>A list of validation errors. Empty if validation succeeds.</returns>
-    static abstract Task<IReadOnlyList<IValidationError>> ValidateToListAsync(TRequest request, CancellationToken cancellationToken = default);
-    
+    static abstract Task<ValidationErrors?> ValidateAsync(TRequest request, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Validates the specified request with an inherited target path for nested validation.
     /// This method is intended for internal use by nested validators.
@@ -37,7 +27,9 @@ public interface IStaticAsyncValidator<TRequest> where TRequest : notnull
     /// <param name="request">The object to validate.</param>
     /// <param name="inheritedTargetPath">The path prefix from parent validators.</param>
     /// <param name="cancellationToken">The cancellation token</param>
-    /// <returns>A list of validation errors. Empty if validation succeeds.</returns>
+    /// <returns>
+    /// A <see cref="ValidationErrors"/> if validation fails; otherwise, <c>null</c>.
+    /// </returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    static abstract Task<IReadOnlyList<IValidationError>> ValidateToListAsync(TRequest request, string? inheritedTargetPath, CancellationToken cancellationToken = default);
+    static abstract Task<ValidationErrors?> ValidateAsync(TRequest request, string? inheritedTargetPath, CancellationToken cancellationToken = default);
 }

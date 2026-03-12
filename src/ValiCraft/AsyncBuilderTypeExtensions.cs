@@ -51,7 +51,7 @@ public static class AsyncBuilderTypeExtensions
 
     /// <summary>
     /// Delegates validation of each item in a collection to an async validator.
-    /// The generator will call ValidateToListAsync on the async validator.
+    /// The generator will call ValidateAsync on the async validator.
     /// </summary>
     /// <typeparam name="TRequest">The type of the collection item being validated.</typeparam>
     /// <typeparam name="TTarget">The type of the nested object property to validate.</typeparam>
@@ -73,7 +73,7 @@ public static class AsyncBuilderTypeExtensions
 
     /// <summary>
     /// Delegates validation of a nested object to an async validator.
-    /// The generator will call ValidateToListAsync on the async validator.
+    /// The generator will call ValidateAsync on the async validator.
     /// </summary>
     /// <typeparam name="TRequest">The type of the parent object being validated.</typeparam>
     /// <typeparam name="TTarget">The type of the nested object to validate.</typeparam>

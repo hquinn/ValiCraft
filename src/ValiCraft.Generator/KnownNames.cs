@@ -8,7 +8,6 @@ public static class KnownNames
         public const string Attributes =  $"{Base}.Attributes";
         public const string BuilderTypes =  $"{Base}.BuilderTypes";
         public const string AsyncBuilderTypes =  $"{Base}.AsyncBuilderTypes";
-        public const string MonadCraft = "MonadCraft";
         public const string ErrorCraft = "ErrorCraft";
     }
 
@@ -51,7 +50,6 @@ public static class KnownNames
 
     public static class Types
     {
-        public const string Result = $"{Namespaces.MonadCraft}.Result";
         public const string ValidationError = $"{Namespaces.ErrorCraft}.ValidationError";
         public const string ValidationErrors = $"{Namespaces.ErrorCraft}.ValidationErrors";
     }

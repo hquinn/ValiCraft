@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using ErrorCraft;
-using MonadCraft;
 
 namespace ValiCraft;
 
@@ -12,29 +11,23 @@ namespace ValiCraft;
 public interface IStaticValidator<TRequest> where TRequest : notnull
 {
     /// <summary>
-    /// Validates the specified request and returns a Result type.
+    /// Validates the specified request.
     /// </summary>
     /// <param name="request">The object to validate.</param>
     /// <returns>
-    /// A <see cref="Result{TError, TValue}"/> containing either the validation errors
-    /// or the validated request on success.
+    /// A <see cref="ValidationErrors"/> if validation fails; otherwise, <c>null</c>.
     /// </returns>
-    static abstract Result<IValidationErrors, TRequest> Validate(TRequest request);
-    
-    /// <summary>
-    /// Validates the specified request and returns validation errors as a list.
-    /// </summary>
-    /// <param name="request">The object to validate.</param>
-    /// <returns>A list of validation errors. Empty if validation succeeds.</returns>
-    static abstract IReadOnlyList<IValidationError> ValidateToList(TRequest request);
-    
+    static abstract ValidationErrors? Validate(TRequest request);
+
     /// <summary>
     /// Validates the specified request with an inherited target path for nested validation.
     /// This method is intended for internal use by nested validators.
     /// </summary>
     /// <param name="request">The object to validate.</param>
     /// <param name="inheritedTargetPath">The path prefix from parent validators.</param>
-    /// <returns>A list of validation errors. Empty if validation succeeds.</returns>
+    /// <returns>
+    /// A <see cref="ValidationErrors"/> if validation fails; otherwise, <c>null</c>.
+    /// </returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    static abstract IReadOnlyList<IValidationError> ValidateToList(TRequest request, string? inheritedTargetPath);
+    static abstract ValidationErrors? Validate(TRequest request, string? inheritedTargetPath);
 }
