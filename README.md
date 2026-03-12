@@ -59,7 +59,7 @@ public partial class UserValidator : Validator<User>
 }
 ```
 
-The `[GenerateValidator]` attribute tells the source generator to create the validation implementation. The `partial` keyword is required to allow the generated code to extend your class.
+The `[GenerateValidator]` attribute tells the source generator to create the validation implementation. The `partial` keyword is required to allow the generated code to extend your type.
 
 **Optional Configuration:**
 

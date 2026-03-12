@@ -14,7 +14,7 @@ namespace ValiCraft.BuilderTypes;
 /// such as custom messages and error codes for the conditional rule.
 /// </remarks>
 public interface IIfBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
-    where TRequest : class
+    where TRequest : notnull
 {
     /// <summary>
     /// Sets a custom error message for the validation rule.

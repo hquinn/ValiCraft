@@ -7,7 +7,7 @@ namespace ValiCraft;
 /// Provides a fluent API for defining validation rules on properties of <typeparamref name="TRequest"/>.
 /// </summary>
 /// <typeparam name="TRequest">The type of object being validated.</typeparam>
-public interface IValidationRuleBuilder<TRequest> where TRequest : class
+public interface IValidationRuleBuilder<TRequest> where TRequest : notnull
 {
     /// <summary>
     /// Starts a polymorphic validation rule chain for a property that may have different runtime types.

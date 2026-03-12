@@ -11,4 +11,4 @@ namespace ValiCraft.BuilderTypes;
 /// multiple validators without requiring instance creation.
 /// </remarks>
 public interface IStaticValidateBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
-    where TRequest : class;
+    where TRequest : notnull;

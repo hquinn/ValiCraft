@@ -19,7 +19,7 @@ namespace ValiCraft.BuilderTypes;
 /// </list>
 /// </remarks>
 public interface IValidationRuleBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
-    where TRequest : class
+    where TRequest : notnull
 {
     /// <summary>
     /// Sets a custom error message for the validation rule.

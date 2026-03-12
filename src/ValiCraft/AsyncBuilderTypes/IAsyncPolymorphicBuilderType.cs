@@ -7,7 +7,7 @@ namespace ValiCraft.AsyncBuilderTypes;
 /// <typeparam name="TRequest">The type of the object being validated.</typeparam>
 /// <typeparam name="TTarget">The base type of the property being validated.</typeparam>
 public interface IAsyncPolymorphicBuilderType<TRequest, TTarget>
-    where TRequest : class
+    where TRequest : notnull
     where TTarget : class
 {
     /// <summary>

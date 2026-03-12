@@ -10,7 +10,7 @@ namespace ValiCraft.AsyncBuilderTypes;
 /// validation via Is.
 /// </remarks>
 public interface IAsyncBuilderType<TRequest, TTarget>
-    where TRequest : class
+    where TRequest : notnull
 {
     /// <summary>
     /// Adds a validation rule for the target based on a specified condition.

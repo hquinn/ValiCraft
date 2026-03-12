@@ -11,7 +11,7 @@ namespace ValiCraft.BuilderTypes;
 /// is validated according to the rules defined in the builder callback.
 /// </remarks>
 public interface IEnsureEachBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
-    where TRequest : class
+    where TRequest : notnull
 {
     /// <summary>
     /// Delegates validation of each item in the collection to a static validator.

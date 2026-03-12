@@ -14,7 +14,7 @@ namespace ValiCraft.AsyncBuilderTypes;
 /// such as custom messages and error codes for the conditional rule.
 /// </remarks>
 public interface IAsyncIfBuilderType<TRequest, TTarget> : IAsyncBuilderType<TRequest, TTarget>
-    where TRequest : class
+    where TRequest : notnull
 {
     /// <summary>
     /// Sets a custom error message for the validation rule.

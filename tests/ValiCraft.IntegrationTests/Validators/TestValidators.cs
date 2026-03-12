@@ -4,6 +4,59 @@ using ValiCraft.IntegrationTests.Models;
 namespace ValiCraft.IntegrationTests.Validators;
 
 /// <summary>
+/// Validator for struct type.
+/// </summary>
+[GenerateValidator]
+public partial class CoordinateValidator : Validator<Coordinate>
+{
+    protected override void DefineRules(IValidationRuleBuilder<Coordinate> builder)
+    {
+        builder.Ensure(x => x.Latitude)
+            .IsGreaterThan(-90.0)
+            .IsLessThan(90.0);
+
+        builder.Ensure(x => x.Longitude)
+            .IsGreaterThan(-180.0)
+            .IsLessThan(180.0);
+    }
+}
+
+/// <summary>
+/// Validator for struct with method target.
+/// </summary>
+[GenerateValidator]
+public partial class RectangleValidator : Validator<Rectangle>
+{
+    protected override void DefineRules(IValidationRuleBuilder<Rectangle> builder)
+    {
+        builder.Ensure(x => x.Width)
+            .IsGreaterThan(0.0);
+
+        builder.Ensure(x => x.Height)
+            .IsGreaterThan(0.0);
+
+        builder.Ensure(x => x.GetArea())
+            .IsGreaterThan(0.0);
+    }
+}
+
+/// <summary>
+/// Validator for class with method targets.
+/// </summary>
+[GenerateValidator]
+public partial class CustomerValidator : Validator<Customer>
+{
+    protected override void DefineRules(IValidationRuleBuilder<Customer> builder)
+    {
+        builder.Ensure(x => x.GetFullName())
+            .IsNotNullOrWhiteSpace();
+
+        builder.Ensure(x => x.GetDiscountedBalance(0.1m))
+            .IsGreaterThan(0);
+    }
+}
+
+/// <summary>
 /// Validator for non-nullable string model.
 /// This should compile without warnings thanks to the nullability fixes.
 /// </summary>

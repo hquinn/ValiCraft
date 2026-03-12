@@ -11,7 +11,7 @@ namespace ValiCraft.AsyncBuilderTypes;
 /// Chain validation rules and configure error messages, codes, and conditions.
 /// </remarks>
 public interface IAsyncEnsureBuilderType<TRequest, TTarget> : IAsyncBuilderType<TRequest, TTarget>
-    where TRequest : class
+    where TRequest : notnull
 {
     /// <summary>
     /// Delegates validation of the target property to a static validator synchronously.

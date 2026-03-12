@@ -17,7 +17,7 @@ namespace ValiCraft;
 /// }
 /// </code>
 /// </example>
-public abstract class AsyncValidator<TRequest> where TRequest : class
+public abstract class AsyncValidator<TRequest> where TRequest : notnull
 {
     /// <summary>
     /// Defines the validation rules for <typeparamref name="TRequest"/>.

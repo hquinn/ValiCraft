@@ -5,7 +5,8 @@ namespace ValiCraft.Generator.Models;
 public enum AccessorType
 {
     Property,
-    Object
+    Object,
+    Method
 }
 
 public record ValidationTarget(

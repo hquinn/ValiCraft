@@ -7,7 +7,7 @@ namespace ValiCraft.BuilderTypes;
 /// <typeparam name="TRequest">The type of the object being validated.</typeparam>
 /// <typeparam name="TTarget">The type of the property being validated.</typeparam>
 public interface IWithSeverityBuilderType<TRequest, TTarget> : IBuilderType<TRequest, TTarget>
-    where TRequest : class
+    where TRequest : notnull
 {
     /// <summary>
     /// Sets a custom error message for the validation rule.

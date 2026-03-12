@@ -266,11 +266,22 @@ public static class RuleChainFactory
                 ref validationObject,
                 ref validationTarget,
                 lambda,
-                identifierAccess, 
-                startingChainInvocation, 
+                identifierAccess,
+                startingChainInvocation,
                 context);
         }
-        
+
+        // We also need to handle the case where we're trying to do method validation (e.g., x => x.GetName() or x => x.Calculate(42))
+        if (lambda.Body is InvocationExpressionSyntax methodInvocation)
+        {
+            return HandleMethodInvocationValidationTarget(
+                ref validationObject,
+                ref validationTarget,
+                startingChainInvocation,
+                methodInvocation,
+                context);
+        }
+
         return false;
     }
 
@@ -330,6 +341,49 @@ public static class RuleChainFactory
             context,
             out validationObject,
             out validationTarget);
+    }
+
+    private static bool HandleMethodInvocationValidationTarget(
+        ref ValidationTarget? validationObject,
+        ref ValidationTarget? validationTarget,
+        InvocationExpressionSyntax startingChainInvocation,
+        InvocationExpressionSyntax methodInvocation,
+        GeneratorAttributeSyntaxContext context)
+    {
+        if (context.SemanticModel.GetSymbolInfo(methodInvocation).Symbol is not IMethodSymbol methodSymbol)
+        {
+            return false;
+        }
+
+        if (!GetValidationTargetFromBuilder(
+                startingChainInvocation,
+                context,
+                out validationObject,
+                out validationTarget))
+        {
+            return false;
+        }
+
+        // Extract the method name from the invocation expression
+        var methodName = methodSymbol.Name;
+
+        // Reconstruct the invocation with arguments as source text
+        var arguments = methodInvocation.ArgumentList.Arguments;
+        var argsText = string.Join(", ", arguments.Select(a => a.ToString()));
+        var invocationText = $"{methodName}({argsText})";
+
+        string humanizedMethodName = Humanize(methodName);
+
+        validationTarget = new ValidationTarget(
+            AccessorType: AccessorType.Method,
+            AccessorExpressionFormat: $"{{0}}.{invocationText}",
+            Type: new TypeInfo(
+                methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                methodSymbol.ReturnType.NullableAnnotation == NullableAnnotation.Annotated),
+            DefaultTargetName: new MessageInfo(humanizedMethodName, true),
+            TargetPath: new MessageInfo(methodName, true));
+
+        return true;
     }
 
     private static bool GetValidationTargetFromBuilder(

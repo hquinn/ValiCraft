@@ -24,7 +24,7 @@ public static class AsyncBuilderTypeExtensions
     public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
         this IAsyncEnsureEachBuilderType<TRequest, TTarget> builder,
         IValidator<TTarget> validator)
-        where TRequest : class
+        where TRequest : notnull
         where TTarget : class
         => throw new NotImplementedException("Never gets called");
 
@@ -45,7 +45,7 @@ public static class AsyncBuilderTypeExtensions
     public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
         this IAsyncEnsureBuilderType<TRequest, TTarget> builder,
         IValidator<TTarget> validator)
-        where TRequest : class
+        where TRequest : notnull
         where TTarget : class
         => throw new NotImplementedException("Never gets called");
 
@@ -67,7 +67,7 @@ public static class AsyncBuilderTypeExtensions
     public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
         this IAsyncEnsureEachBuilderType<TRequest, TTarget> builder,
         IAsyncValidator<TTarget> validator)
-        where TRequest : class
+        where TRequest : notnull
         where TTarget : class
         => throw new NotImplementedException("Never gets called");
 
@@ -89,7 +89,7 @@ public static class AsyncBuilderTypeExtensions
     public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
         this IAsyncEnsureBuilderType<TRequest, TTarget> builder,
         IAsyncValidator<TTarget> validator)
-        where TRequest : class
+        where TRequest : notnull
         where TTarget : class
         => throw new NotImplementedException("Never gets called");
 }

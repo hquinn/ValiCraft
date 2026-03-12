@@ -8,7 +8,7 @@ namespace ValiCraft;
 /// Defines an async validator that validates instances of <typeparamref name="TRequest"/>.
 /// </summary>
 /// <typeparam name="TRequest">The type of object to validate.</typeparam>
-public interface IAsyncValidator<TRequest> where TRequest : class
+public interface IAsyncValidator<TRequest> where TRequest : notnull
 {
     /// <summary>
     /// Validates the specified request and returns a Result type.

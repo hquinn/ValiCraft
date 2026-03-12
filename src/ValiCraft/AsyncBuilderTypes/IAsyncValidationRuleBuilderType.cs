@@ -19,7 +19,7 @@ namespace ValiCraft.AsyncBuilderTypes;
 /// </list>
 /// </remarks>
 public interface IAsyncValidationRuleBuilderType<TRequest, TTarget> : IAsyncBuilderType<TRequest, TTarget>
-    where TRequest : class
+    where TRequest : notnull
 {
     /// <summary>
     /// Sets a custom error message for the validation rule.

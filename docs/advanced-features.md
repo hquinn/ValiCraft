@@ -652,7 +652,7 @@ public static class MyRuleExtensions
     [MapToValidationRule(typeof(MyRules), nameof(MyRules.UsPostalCode))]
     public static IValidationRuleBuilderType<TRequest, string?> IsUsPostalCode<TRequest>(
         this IBuilderType<TRequest, string?> builder)
-        where TRequest : class
+        where TRequest : notnull
     {
         return builder.Is(MyRules.UsPostalCode);
     }
@@ -666,7 +666,7 @@ public static class MyRuleExtensions
     public static IValidationRuleBuilderType<TRequest, int> IsDivisibleBy<TRequest>(
         this IBuilderType<TRequest, int> builder,
         int divisor)
-        where TRequest : class
+        where TRequest : notnull
     {
         return builder.Is(MyRules.DivisibleBy, divisor);
     }
@@ -724,7 +724,7 @@ The extension method pattern follows this structure:
 public static IValidationRuleBuilderType<TRequest, TTarget> RuleName<TRequest>(
     this IBuilderType<TRequest, TTarget> builder,
     /* optional parameters */)
-    where TRequest : class
+    where TRequest : notnull
 {
     return builder.Is(RulesClass.MethodName /* , parameters */);
 }

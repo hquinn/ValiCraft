@@ -9,7 +9,7 @@ namespace ValiCraft.AsyncBuilderTypes;
 /// <typeparam name="TRequest">The type of the object being validated.</typeparam>
 /// <typeparam name="TTarget">The type of the property being validated.</typeparam>
 public interface IAsyncWithMetadataBuilderType<TRequest, TTarget> : IAsyncBuilderType<TRequest, TTarget>
-    where TRequest : class
+    where TRequest : notnull
 {
     /// <summary>
     /// Adds additional metadata to the validation error.

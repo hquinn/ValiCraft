@@ -9,7 +9,7 @@ namespace ValiCraft;
 /// Static validators are stateless and their validation methods can be called without instantiation.
 /// </summary>
 /// <typeparam name="TRequest">The type of object to validate.</typeparam>
-public interface IStaticAsyncValidator<TRequest> where TRequest : class
+public interface IStaticAsyncValidator<TRequest> where TRequest : notnull
 {
     /// <summary>
     /// Validates the specified request and returns a Result type.

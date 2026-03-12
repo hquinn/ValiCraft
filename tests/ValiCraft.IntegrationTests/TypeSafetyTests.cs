@@ -5,6 +5,106 @@ using ValiCraft.IntegrationTests.Validators;
 namespace ValiCraft.IntegrationTests;
 
 /// <summary>
+/// Integration tests for struct validation.
+/// </summary>
+public class StructValidationTests
+{
+    [Fact]
+    public void Struct_ValidData_ReturnsNoErrors()
+    {
+        var validator = new CoordinateValidator();
+        var model = new Coordinate { Latitude = 45.0, Longitude = -93.0 };
+
+        var errors = validator.ValidateToList(model);
+
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Struct_InvalidData_ReturnsErrors()
+    {
+        var validator = new CoordinateValidator();
+        var model = new Coordinate { Latitude = 100.0, Longitude = -200.0 };
+
+        var errors = validator.ValidateToList(model);
+
+        errors.Should().HaveCountGreaterThanOrEqualTo(2);
+    }
+
+    [Fact]
+    public void Struct_MethodTarget_ValidData_ReturnsNoErrors()
+    {
+        var validator = new RectangleValidator();
+        var model = new Rectangle { Width = 5.0, Height = 3.0 };
+
+        var errors = validator.ValidateToList(model);
+
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Struct_MethodTarget_InvalidData_ReturnsErrors()
+    {
+        var validator = new RectangleValidator();
+        var model = new Rectangle { Width = 0.0, Height = 0.0 };
+
+        var errors = validator.ValidateToList(model);
+
+        errors.Should().HaveCountGreaterThanOrEqualTo(2);
+    }
+}
+
+/// <summary>
+/// Integration tests for method target validation.
+/// </summary>
+public class MethodTargetValidationTests
+{
+    [Fact]
+    public void MethodTarget_ValidData_ReturnsNoErrors()
+    {
+        var validator = new CustomerValidator();
+        var model = new Customer { FirstName = "John", LastName = "Doe", Balance = 100m };
+
+        var errors = validator.ValidateToList(model);
+
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void MethodTarget_InvalidMethodResult_ReturnsErrors()
+    {
+        var validator = new CustomerValidator();
+        var model = new Customer { FirstName = null, LastName = null, Balance = 0m };
+
+        var errors = validator.ValidateToList(model);
+
+        errors.Should().HaveCountGreaterThanOrEqualTo(1);
+    }
+
+    [Fact]
+    public void MethodTarget_WithParameters_ValidData_ReturnsNoErrors()
+    {
+        var validator = new CustomerValidator();
+        var model = new Customer { FirstName = "Jane", LastName = "Smith", Balance = 1000m };
+
+        var errors = validator.ValidateToList(model);
+
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void MethodTarget_WithParameters_InvalidResult_ReturnsErrors()
+    {
+        var validator = new CustomerValidator();
+        var model = new Customer { FirstName = "Jane", LastName = "Smith", Balance = -50m };
+
+        var errors = validator.ValidateToList(model);
+
+        errors.Should().NotBeEmpty();
+    }
+}
+
+/// <summary>
 /// Integration tests for type safety with non-nullable string properties.
 /// These tests verify that the nullability fixes work correctly.
 /// </summary>

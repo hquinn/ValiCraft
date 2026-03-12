@@ -8,7 +8,7 @@ namespace ValiCraft.AsyncBuilderTypes;
 /// <typeparam name="TTarget">The base type of the property being validated.</typeparam>
 /// <typeparam name="TDerived">The derived type being matched.</typeparam>
 public interface IAsyncPolymorphicWhenBuilderType<TRequest, TTarget, TDerived>
-    where TRequest : class
+    where TRequest : notnull
     where TTarget : class
     where TDerived : class, TTarget
 {

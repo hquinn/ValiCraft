@@ -11,4 +11,4 @@ namespace ValiCraft.AsyncBuilderTypes;
 /// multiple validators.
 /// </remarks>
 public interface IAsyncValidateWithBuilderType<TRequest, TTarget> : IAsyncBuilderType<TRequest, TTarget>
-    where TRequest : class;
+    where TRequest : notnull;

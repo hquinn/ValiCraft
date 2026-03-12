@@ -24,7 +24,7 @@ public static class BuilderTypeExtensions
     public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
         this IEnsureEachBuilderType<TRequest, TTarget> builder,
         IValidator<TTarget> validator)
-        where TRequest : class
+        where TRequest : notnull
         where TTarget : class
         => throw new NotImplementedException("Never gets called");
 
@@ -45,7 +45,7 @@ public static class BuilderTypeExtensions
     public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
         this IEnsureBuilderType<TRequest, TTarget> builder,
         IValidator<TTarget> validator)
-        where TRequest : class
+        where TRequest : notnull
         where TTarget : class
         => throw new NotImplementedException("Never gets called");
 }

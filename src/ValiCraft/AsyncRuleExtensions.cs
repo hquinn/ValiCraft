@@ -24,7 +24,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, DateTime> IsAfter<TRequest>(
       this IAsyncBuilderType<TRequest, DateTime> builder,
       DateTime referenceDate)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.After, referenceDate);
    }
@@ -41,7 +41,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.AlphaNumeric))]
    public static IAsyncValidationRuleBuilderType<TRequest, string> IsAlphaNumeric<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.AlphaNumeric);
    }
@@ -61,7 +61,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, DateTime> IsAtOrAfter<TRequest>(
       this IAsyncBuilderType<TRequest, DateTime> builder,
       DateTime referenceDate)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.AtOrAfter, referenceDate);
    }
@@ -80,7 +80,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, DateTime> IsAtOrBefore<TRequest>(
       this IAsyncBuilderType<TRequest, DateTime> builder,
       DateTime referenceDate)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.AtOrBefore, referenceDate);
    }
@@ -99,7 +99,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, DateTime> IsBefore<TRequest>(
       this IAsyncBuilderType<TRequest, DateTime> builder,
       DateTime referenceDate)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.Before, referenceDate);
    }
@@ -120,7 +120,7 @@ public static class AsyncRuleExtensions
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       TTargetType min,
       TTargetType max) 
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IComparable
    {
       return builder.Is(Rules.Between, min, max);
@@ -142,7 +142,7 @@ public static class AsyncRuleExtensions
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       TTargetType min,
       TTargetType max)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IComparable
    {
       return builder.Is(Rules.BetweenExclusive, min, max);
@@ -163,7 +163,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TCollectionType> CollectionContains<TRequest, TCollectionType, TItemType>(
       this IAsyncBuilderType<TRequest, TCollectionType> builder,
       TItemType parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TCollectionType : IEnumerable<TItemType>?
       where TItemType : IEquatable<TItemType>
    {
@@ -187,7 +187,7 @@ public static class AsyncRuleExtensions
       this IAsyncBuilderType<TRequest, TCollectionType> builder,
       TItemType parameter,
       IEqualityComparer<TItemType> comparer)
-      where TRequest : class
+      where TRequest : notnull
    {
       return null!;
    }
@@ -207,7 +207,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TCollectionType> CollectionNotContains<TRequest, TCollectionType, TItemType>(
       this IAsyncBuilderType<TRequest, TCollectionType> builder,
       TItemType parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TCollectionType : IEnumerable<TItemType>?
       where TItemType : IEquatable<TItemType>
    {
@@ -231,7 +231,7 @@ public static class AsyncRuleExtensions
       this IAsyncBuilderType<TRequest, TCollectionType> builder,
       TItemType parameter,
       IEqualityComparer<TItemType> comparer)
-      where TRequest : class
+      where TRequest : notnull
    {
       return null!;
    }
@@ -250,7 +250,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, string> Contains<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder,
       string parameter)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.Contains, parameter);
    }
@@ -270,7 +270,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TCollectionType> HasCount<TRequest, TCollectionType>(
       this IAsyncBuilderType<TRequest, TCollectionType> builder,
       int parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TCollectionType : IEnumerable
    {
       return null!;
@@ -292,7 +292,7 @@ public static class AsyncRuleExtensions
       this IAsyncBuilderType<TRequest, TCollectionType> builder,
       int minCount,
       int maxCount)
-      where TRequest : class
+      where TRequest : notnull
       where TCollectionType : IEnumerable
    {
       return null!;
@@ -313,7 +313,7 @@ public static class AsyncRuleExtensions
       this IAsyncBuilderType<TRequest, DateTime> builder,
       DateTime startDate,
       DateTime endDate)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.DateBetween, startDate, endDate);
    }
@@ -331,7 +331,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.EmailAddress))]
    public static IAsyncValidationRuleBuilderType<TRequest, string> IsEmailAddress<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.EmailAddress);
    }
@@ -349,7 +349,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.Empty))]
    public static IAsyncValidationRuleBuilderType<TRequest, TCollectionType> IsEmpty<TRequest, TCollectionType>(
       this IAsyncBuilderType<TRequest, TCollectionType> builder)
-      where TRequest : class
+      where TRequest : notnull
       where TCollectionType : IEnumerable
    {
       return null!;
@@ -369,7 +369,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, string> EndsWith<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder,
       string parameter)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.EndsWith, parameter);
    }
@@ -389,7 +389,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsEqualTo<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       TTargetType parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IEquatable<TTargetType>
    {
       return builder.Is(Rules.Equal, parameter);
@@ -411,7 +411,7 @@ public static class AsyncRuleExtensions
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       TTargetType value,
       IEqualityComparer<TTargetType> comparer)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.Equal, value, comparer);
    }
@@ -430,7 +430,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsGreaterOrEqualThan<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       TTargetType parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IComparable
    {
       return builder.Is(Rules.GreaterOrEqualThan, parameter);
@@ -450,7 +450,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsGreaterThan<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       TTargetType parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IComparable
    {
       return builder.Is(Rules.GreaterThan, parameter);
@@ -468,7 +468,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.HasItems))]
    public static IAsyncValidationRuleBuilderType<TRequest, TCollectionType> HasItems<TRequest, TCollectionType>(
       this IAsyncBuilderType<TRequest, TCollectionType> builder)
-      where TRequest : class
+      where TRequest : notnull
       where TCollectionType : IEnumerable
    {
       return null!;
@@ -488,7 +488,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsIn<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       IEnumerable<TTargetType> allowedValues)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IEquatable<TTargetType>
    {
       return builder.Is(Rules.In, allowedValues);
@@ -505,7 +505,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.InFuture))]
    public static IAsyncValidationRuleBuilderType<TRequest, DateTime> IsInFuture<TRequest>(
       this IAsyncBuilderType<TRequest, DateTime> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.InFuture);
    }
@@ -521,7 +521,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.InFutureOrPresent))]
    public static IAsyncValidationRuleBuilderType<TRequest, DateTime> IsInFutureOrPresent<TRequest>(
       this IAsyncBuilderType<TRequest, DateTime> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.InFutureOrPresent);
    }
@@ -537,7 +537,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.InPast))]
    public static IAsyncValidationRuleBuilderType<TRequest, DateTime> IsInPast<TRequest>(
       this IAsyncBuilderType<TRequest, DateTime> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.InPast);
    }
@@ -553,7 +553,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.InPastOrPresent))]
    public static IAsyncValidationRuleBuilderType<TRequest, DateTime> IsInPastOrPresent<TRequest>(
       this IAsyncBuilderType<TRequest, DateTime> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.InPastOrPresent);
    }
@@ -573,7 +573,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsInValues<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       params TTargetType[] allowedValues)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IEquatable<TTargetType>
    {
       return builder.Is(Rules.InValues, allowedValues);
@@ -593,7 +593,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, string> HasLength<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder,
       int parameter)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.Length, parameter);
    }
@@ -615,7 +615,7 @@ public static class AsyncRuleExtensions
       this IAsyncBuilderType<TRequest, string> builder,
       int minLength,
       int maxLength)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.LengthBetween, minLength, maxLength);
    }
@@ -635,7 +635,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsLessOrEqualThan<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       TTargetType parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IComparable
    {
       return builder.Is(Rules.LessOrEqualThan, parameter);
@@ -655,7 +655,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsLessThan<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       TTargetType parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IComparable
    {
       return builder.Is(Rules.LessThan, parameter);
@@ -679,7 +679,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, string> Matches<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder,
       string pattern)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.Matches, pattern);
    }
@@ -699,7 +699,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, string> MatchesRegex<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder,
       Regex regex)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.MatchesRegex, regex);
    }
@@ -718,7 +718,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, DateTime> HasMaxAge<TRequest>(
       this IAsyncBuilderType<TRequest, DateTime> builder,
       int parameter)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.MaxAge, parameter);
    }
@@ -737,7 +737,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> HasMaxCount<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       int parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IEnumerable
    {
       return null!;
@@ -758,7 +758,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, string> HasMaxLength<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder,
       int parameter)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.MaxLength, parameter);
    }
@@ -777,7 +777,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, DateTime> HasMinAge<TRequest>(
       this IAsyncBuilderType<TRequest, DateTime> builder,
       int parameter)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.MinAge, parameter);
    }
@@ -796,7 +796,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> HasMinCount<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       int parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IEnumerable
    {
       return null!;
@@ -816,7 +816,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, string> HasMinLength<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder,
       int parameter)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.MinLength, parameter);
    }
@@ -834,7 +834,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.Negative))]
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNegative<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IComparable<TTargetType>
    {
       return builder.Is(Rules.Negative);
@@ -852,7 +852,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.NegativeOrZero))]
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNegativeOrZero<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IComparable<TTargetType>
    {
       return builder.Is(Rules.NegativeOrZero);
@@ -870,7 +870,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.NotDefault))]
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotDefault<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.NotDefault);
    }
@@ -889,7 +889,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotEqualTo<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       TTargetType parameter)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IEquatable<TTargetType>
    {
       return builder.Is(Rules.NotEqual, parameter);
@@ -911,7 +911,7 @@ public static class AsyncRuleExtensions
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       TTargetType value,
       IEqualityComparer<TTargetType> comparer)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.NotEqual, value, comparer);
    }
@@ -930,7 +930,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotIn<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       IEnumerable<TTargetType> forbiddenValues)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IEquatable<TTargetType>
    {
       return builder.Is(Rules.NotIn, forbiddenValues);
@@ -951,7 +951,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotInValues<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder,
       params TTargetType[] forbiddenValues)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IEquatable<TTargetType>
    {
       return builder.Is(Rules.NotInValues, forbiddenValues);
@@ -969,7 +969,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.NotNull))]
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsNotNull<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.NotNull);
    }
@@ -986,7 +986,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.NotNullOrEmpty))]
    public static IAsyncValidationRuleBuilderType<TRequest, string> IsNotNullOrEmpty<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.NotNullOrEmpty);
    }
@@ -1004,7 +1004,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.NotNullOrWhiteSpace))]
    public static IAsyncValidationRuleBuilderType<TRequest, string> IsNotNullOrWhiteSpace<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.NotNullOrWhiteSpace);
    }
@@ -1022,7 +1022,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.Positive))]
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsPositive<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IComparable<TTargetType>
    {
       return builder.Is(Rules.Positive);
@@ -1040,7 +1040,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.PositiveOrZero))]
    public static IAsyncValidationRuleBuilderType<TRequest, TTargetType> IsPositiveOrZero<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, TTargetType> builder)
-      where TRequest : class
+      where TRequest : notnull
       where TTargetType : IComparable<TTargetType>
    {
       return builder.Is(Rules.PositiveOrZero);
@@ -1060,7 +1060,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, string> StartsWith<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder,
       string parameter)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.StartsWith, parameter);
    }
@@ -1078,7 +1078,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.Unique))]
    public static IAsyncValidationRuleBuilderType<TRequest, IEnumerable<TTargetType>?> IsUnique<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, IEnumerable<TTargetType>?> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.Unique);
    }
@@ -1097,7 +1097,7 @@ public static class AsyncRuleExtensions
    public static IAsyncValidationRuleBuilderType<TRequest, IEnumerable<TTargetType>?> IsUnique<TRequest, TTargetType>(
       this IAsyncBuilderType<TRequest, IEnumerable<TTargetType>?> builder,
       IEqualityComparer<TTargetType> comparer)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.Unique, comparer);
    }
@@ -1114,7 +1114,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.Url))]
    public static IAsyncValidationRuleBuilderType<TRequest, string> IsUrl<TRequest>(
       this IAsyncBuilderType<TRequest, string> builder)
-      where TRequest : class
+      where TRequest : notnull
    {
       return builder.Is(Rules.Url);
    }
@@ -1131,7 +1131,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.ValidEnumName))]
    public static IAsyncValidationRuleBuilderType<TRequest, string> IsValidEnumName<TRequest, TEnum>(
       this IAsyncBuilderType<TRequest, string> builder)
-      where TRequest : class
+      where TRequest : notnull
       where TEnum : struct, Enum
    {
       return builder.Is(Rules.ValidEnumName<TEnum>);
@@ -1151,7 +1151,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.ValidEnumValue))]
    public static IAsyncValidationRuleBuilderType<TRequest, TValue> IsValidEnumValue<TRequest, TEnum, TValue>(
       this IAsyncBuilderType<TRequest, TValue> builder)
-      where TRequest : class
+      where TRequest : notnull
       where TEnum : struct, Enum
       where TValue : struct
    {
@@ -1171,7 +1171,7 @@ public static class AsyncRuleExtensions
    [MapToValidationRule(typeof(Rules), nameof(Rules.ValidEnum))]
    public static IAsyncValidationRuleBuilderType<TRequest, TEnum> IsValidEnum<TRequest, TEnum>(
       this IAsyncBuilderType<TRequest, TEnum> builder)
-      where TRequest : class
+      where TRequest : notnull
       where TEnum : struct, Enum
    {
       return builder.Is(Rules.ValidEnum);
