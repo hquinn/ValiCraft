@@ -191,4 +191,12 @@ public static class DefinedDiagnostics
                 true),
             location);
     }
+
+    public static readonly DiagnosticDescriptor DisallowedValidateOverload = new(
+        "VALC401",
+        "Disallowed Validate overload",
+        "The Validate overload with 'inheritedTargetPath' is for internal use only and should not be called directly",
+        KnownNames.Namespaces.Base,
+        DiagnosticSeverity.Error,
+        true);
 }
