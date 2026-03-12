@@ -70,7 +70,7 @@ public class PolymorphicRuleChain_FailWithPlaceholderTest : IncrementalGenerator
                                                                                /// <inheritdoc />
                                                                                public global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request)
                                                                                {
-                                                                                   var errors = RunValidationLogic(request, null);
+                                                                                   var errors = RunValidation(request, null);
 
                                                                                    if (errors is null) return null;
 
@@ -87,7 +87,7 @@ public class PolymorphicRuleChain_FailWithPlaceholderTest : IncrementalGenerator
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
-                                                                                   var errors = RunValidationLogic(request, inheritedTargetPath);
+                                                                                   var errors = RunValidation(request, inheritedTargetPath);
 
                                                                                    if (errors is null) return null;
 
@@ -100,22 +100,26 @@ public class PolymorphicRuleChain_FailWithPlaceholderTest : IncrementalGenerator
                                                                                    };
                                                                                }
 
-                                                                               private global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Order request, string? inheritedTargetPath)
+                                                                               /// <summary>
+                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                               /// </summary>
+                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                               public global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
                                                                        
                                                                                    if (request.Payment is global::Test.Requests.CreditCardPayment typedCreditCardPayment)
                                                                                    {
-                                                                                       var errors1 = creditCardValidator.Validate(typedCreditCardPayment, $"{inheritedTargetPath}Payment.");
+                                                                                       var errors1 = creditCardValidator.RunValidation(typedCreditCardPayment, $"{inheritedTargetPath}Payment.");
                                                                                        if (errors1 is not null)
                                                                                        {
                                                                                            if (errors is null)
                                                                                            {
-                                                                                               errors = new(errors1.Errors);
+                                                                                               errors = errors1;
                                                                                            }
                                                                                            else
                                                                                            {
-                                                                                               errors.AddRange(errors1.Errors);
+                                                                                               errors.AddRange(errors1);
                                                                                            }
                                                                                        }
                                                                                    }

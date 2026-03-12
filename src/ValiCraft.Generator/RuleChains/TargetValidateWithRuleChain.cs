@@ -15,7 +15,8 @@ public record TargetValidateWithRuleChain(
 {
     public override bool NeedsGotoLabels()
     {
-        return false;
+        // The var declaration breaks any if/else chain, so goto labels are required for halt semantics
+        return true;
     }
 
     protected override string HandleCodeGeneration(RuleChainContext context)
@@ -26,25 +27,26 @@ public record TargetValidateWithRuleChain(
         string methodCall;
         if (IsAsync && IsAsyncValidatorCall)
         {
-            methodCall = $"await {ValidatorExpression}.ValidateAsync({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\", cancellationToken)";
+            methodCall = $"await {ValidatorExpression}.RunValidationAsync({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\", cancellationToken)";
         }
         else
         {
-            methodCall = $"{ValidatorExpression}.Validate({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\")";
+            methodCall = $"{ValidatorExpression}.RunValidation({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\")";
         }
 
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple ValidateWith calls exist
+        // Always use 'if' here because the var declaration above breaks any if/else chain
         var code = $$"""
                      {{Indent}}var errors{{context.Counter}} = {{methodCall}};
-                     {{Indent}}{{context.GetIfElseIfKeyword()}} (errors{{context.Counter}} is not null)
+                     {{Indent}}if (errors{{context.Counter}} is not null)
                      {{Indent}}{
                      {{Indent}}    if (errors is null)
                      {{Indent}}    {
-                     {{Indent}}        errors = new(errors{{context.Counter}}.Errors);
+                     {{Indent}}        errors = errors{{context.Counter}};
                      {{GetGotoLabelIfNeeded(context)}}{{Indent}}    }
                      {{Indent}}    else
                      {{Indent}}    {
-                     {{Indent}}        errors.AddRange(errors{{context.Counter}}.Errors);
+                     {{Indent}}        errors.AddRange(errors{{context.Counter}});
                      {{GetGotoLabelIfNeeded(context)}}{{Indent}}    }
                      {{Indent}}}
                      """;

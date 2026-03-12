@@ -32,4 +32,17 @@ public interface IStaticAsyncValidator<TRequest> where TRequest : notnull
     /// </returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
     static abstract Task<ValidationErrors?> ValidateAsync(TRequest request, string? inheritedTargetPath, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Runs the validation logic and returns the raw error list.
+    /// This method is intended for internal use by generated code for efficient nested validation.
+    /// </summary>
+    /// <param name="request">The object to validate.</param>
+    /// <param name="inheritedTargetPath">The path prefix from parent validators.</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>
+    /// A list of validation errors if validation fails; otherwise, <c>null</c>.
+    /// </returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    static abstract Task<List<IValidationError>?> RunValidationAsync(TRequest request, string? inheritedTargetPath, CancellationToken cancellationToken);
 }

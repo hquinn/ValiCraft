@@ -19,7 +19,8 @@ public record PolymorphicRuleChain(
 {
     public override bool NeedsGotoLabels()
     {
-        return false;
+        // The internal if/else type-switch breaks any halt-level if/else chain, so goto labels are required
+        return true;
     }
 
     protected override string HandleCodeGeneration(RuleChainContext context)
@@ -49,7 +50,7 @@ public record PolymorphicRuleChain(
             code.AppendLine($"{Indent}{{");
             code.Append(GenerateBranchBody(branch, typedVarName, childIndent, doubleChildIndent, context));
             code.AppendLine($"{Indent}}}");
-            
+
             isFirst = false;
         }
 
@@ -68,6 +69,8 @@ public record PolymorphicRuleChain(
         }
 
         context.DecrementCountdown();
+        // Reset because the polymorphic if/else type-switch breaks any halt-level if/else chain
+        context.ResetIfElseMode();
         return code.ToString().TrimEnd('\r', '\n');
     }
 
@@ -154,26 +157,26 @@ public record PolymorphicRuleChain(
         RuleChainContext context)
     {
         string methodCall;
-        
+
         if (branch.IsStaticValidator)
         {
-            // Static validator - call Validate or ValidateAsync statically
+            // Static validator - call RunValidation or RunValidationAsync statically
             if (IsAsync && branch.IsAsyncValidatorCall)
             {
-                methodCall = $"await {branch.StaticValidatorTypeName}.ValidateAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
+                methodCall = $"await {branch.StaticValidatorTypeName}.RunValidationAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
             }
             else
             {
-                methodCall = $"{branch.StaticValidatorTypeName}.Validate({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
+                methodCall = $"{branch.StaticValidatorTypeName}.RunValidation({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
             }
         }
         else if (IsAsync && branch.IsAsyncValidatorCall)
         {
-            methodCall = $"await {branch.ValidatorExpression}.ValidateAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
+            methodCall = $"await {branch.ValidatorExpression}.RunValidationAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
         }
         else
         {
-            methodCall = $"{branch.ValidatorExpression}.Validate({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
+            methodCall = $"{branch.ValidatorExpression}.RunValidation({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
         }
 
         return $$"""
@@ -182,11 +185,11 @@ public record PolymorphicRuleChain(
                  {{childIndent}}{
                  {{childIndent}}    if (errors is null)
                  {{childIndent}}    {
-                 {{childIndent}}        errors = new(errors{{context.Counter}}.Errors);
+                 {{childIndent}}        errors = errors{{context.Counter}};
                  {{GetGotoLabelIfNeeded(childIndent, context)}}{{childIndent}}    }
                  {{childIndent}}    else
                  {{childIndent}}    {
-                 {{childIndent}}        errors.AddRange(errors{{context.Counter}}.Errors);
+                 {{childIndent}}        errors.AddRange(errors{{context.Counter}});
                  {{GetGotoLabelIfNeeded(childIndent, context)}}{{childIndent}}    }
                  {{childIndent}}}
 

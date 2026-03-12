@@ -28,11 +28,11 @@ public record CollectionStaticValidateRuleChain(
         string methodCall;
         if (IsAsync && IsAsyncValidatorCall)
         {
-            methodCall = $"await {ValidatorTypeName}.ValidateAsync({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\", cancellationToken)";
+            methodCall = $"await {ValidatorTypeName}.RunValidationAsync({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\", cancellationToken)";
         }
         else
         {
-            methodCall = $"{ValidatorTypeName}.Validate({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\")";
+            methodCall = $"{ValidatorTypeName}.RunValidation({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\")";
         }
 
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple Validate calls exist
@@ -45,11 +45,11 @@ public record CollectionStaticValidateRuleChain(
                      {{Indent}}    {
                      {{Indent}}        if (errors is null)
                      {{Indent}}        {
-                     {{Indent}}            errors = new(errors{{context.Counter}}.Errors);
+                     {{Indent}}            errors = errors{{context.Counter}};
                      {{GetGotoLabelIfNeeded(context)}}{{Indent}}        }
                      {{Indent}}        else
                      {{Indent}}        {
-                     {{Indent}}            errors.AddRange(errors{{context.Counter}}.Errors);
+                     {{Indent}}            errors.AddRange(errors{{context.Counter}});
                      {{GetGotoLabelIfNeeded(context)}}{{Indent}}        }
                      {{Indent}}    }
                      {{Indent}}    {{index}}++;
@@ -57,7 +57,8 @@ public record CollectionStaticValidateRuleChain(
                      """;
 
         context.DecrementCountdown();
-        context.UpdateIfElseMode();
+        // Reset because the foreach block breaks any if/else chain — the next chain cannot use 'else if'
+        context.ResetIfElseMode();
         return code;
     }
 

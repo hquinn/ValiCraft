@@ -57,7 +57,7 @@ public class SingleEnsureEachRuleChain_DirectRule_MultipleRulesTest : Incrementa
                                                                                /// <inheritdoc />
                                                                                public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Request request)
                                                                                {
-                                                                                   var errors = RunValidationLogic(request, null);
+                                                                                   var errors = RunValidation(request, null);
 
                                                                                    if (errors is null) return null;
 
@@ -74,7 +74,7 @@ public class SingleEnsureEachRuleChain_DirectRule_MultipleRulesTest : Incrementa
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Request request, string? inheritedTargetPath)
                                                                                {
-                                                                                   var errors = RunValidationLogic(request, inheritedTargetPath);
+                                                                                   var errors = RunValidation(request, inheritedTargetPath);
 
                                                                                    if (errors is null) return null;
 
@@ -87,7 +87,11 @@ public class SingleEnsureEachRuleChain_DirectRule_MultipleRulesTest : Incrementa
                                                                                    };
                                                                                }
 
-                                                                               private static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Request request, string? inheritedTargetPath)
+                                                                               /// <summary>
+                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                               /// </summary>
+                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                               public static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.Request request, string? inheritedTargetPath)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
 

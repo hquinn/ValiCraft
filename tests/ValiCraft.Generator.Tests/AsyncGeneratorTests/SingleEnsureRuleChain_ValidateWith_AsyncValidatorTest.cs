@@ -68,7 +68,7 @@ public class SingleEnsureRuleChain_ValidateWith_AsyncValidatorTest : Incremental
                                                                                /// <inheritdoc />
                                                                                public async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
-                                                                                   var errors = await RunValidationLogicAsync(request, null, cancellationToken);
+                                                                                   var errors = await RunValidationAsync(request, null, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
@@ -85,7 +85,7 @@ public class SingleEnsureRuleChain_ValidateWith_AsyncValidatorTest : Incremental
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
-                                                                                   var errors = await RunValidationLogicAsync(request, inheritedTargetPath, cancellationToken);
+                                                                                   var errors = await RunValidationAsync(request, inheritedTargetPath, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
@@ -98,20 +98,24 @@ public class SingleEnsureRuleChain_ValidateWith_AsyncValidatorTest : Incremental
                                                                                    };
                                                                                }
 
-                                                                               private async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationLogicAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                               /// <summary>
+                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                               /// </summary>
+                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                               public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
                                                                        
-                                                                                   var errors1 = await customerValidator.ValidateAsync(request.Customer, $"{inheritedTargetPath}Customer.", cancellationToken);
+                                                                                   var errors1 = await customerValidator.RunValidationAsync(request.Customer, $"{inheritedTargetPath}Customer.", cancellationToken);
                                                                                    if (errors1 is not null)
                                                                                    {
                                                                                        if (errors is null)
                                                                                        {
-                                                                                           errors = new(errors1.Errors);
+                                                                                           errors = errors1;
                                                                                        }
                                                                                        else
                                                                                        {
-                                                                                           errors.AddRange(errors1.Errors);
+                                                                                           errors.AddRange(errors1);
                                                                                        }
                                                                                    }
 

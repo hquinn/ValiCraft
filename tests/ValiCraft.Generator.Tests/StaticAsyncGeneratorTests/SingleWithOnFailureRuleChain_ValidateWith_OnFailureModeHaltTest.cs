@@ -68,7 +68,7 @@ public class SingleWithOnFailureRuleChain_ValidateWith_OnFailureModeHaltTest : I
                                                                                /// <inheritdoc />
                                                                                public static async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
-                                                                                   var errors = await RunValidationLogicAsync(request, null, cancellationToken);
+                                                                                   var errors = await RunValidationAsync(request, null, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
@@ -85,7 +85,7 @@ public class SingleWithOnFailureRuleChain_ValidateWith_OnFailureModeHaltTest : I
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public static async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
-                                                                                   var errors = await RunValidationLogicAsync(request, inheritedTargetPath, cancellationToken);
+                                                                                   var errors = await RunValidationAsync(request, inheritedTargetPath, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
@@ -98,24 +98,29 @@ public class SingleWithOnFailureRuleChain_ValidateWith_OnFailureModeHaltTest : I
                                                                                    };
                                                                                }
 
-                                                                               private static async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationLogicAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                               /// <summary>
+                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                               /// </summary>
+                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                               public static async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
                                                                        
+                                                                                   var validator1 = _lineItemValidator;
                                                                                    var index1 = 0;
                                                                                    foreach (var element in request.LineItems)
                                                                                    {
-                                                                                       var errors1 = _lineItemValidator.Validate(element, $"{inheritedTargetPath}LineItems[{index1}].");
+                                                                                       var errors1 = validator1.RunValidation(element, $"{inheritedTargetPath}LineItems[{index1}].");
                                                                                        if (errors1 is not null)
                                                                                        {
                                                                                            if (errors is null)
                                                                                            {
-                                                                                               errors = new(errors1.Errors);
+                                                                                               errors = errors1;
                                                                                                goto HaltValidation_1;
                                                                                            }
                                                                                            else
                                                                                            {
-                                                                                               errors.AddRange(errors1.Errors);
+                                                                                               errors.AddRange(errors1);
                                                                                                goto HaltValidation_1;
                                                                                            }
                                                                                        }

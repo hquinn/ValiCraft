@@ -66,7 +66,7 @@ public class SingleEnsureEachRuleChain_ValidateWithTest : IncrementalGeneratorTe
                                                                                /// <inheritdoc />
                                                                                public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request)
                                                                                {
-                                                                                   var errors = RunValidationLogic(request, null);
+                                                                                   var errors = RunValidation(request, null);
 
                                                                                    if (errors is null) return null;
 
@@ -83,7 +83,7 @@ public class SingleEnsureEachRuleChain_ValidateWithTest : IncrementalGeneratorTe
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
-                                                                                   var errors = RunValidationLogic(request, inheritedTargetPath);
+                                                                                   var errors = RunValidation(request, inheritedTargetPath);
 
                                                                                    if (errors is null) return null;
 
@@ -96,23 +96,28 @@ public class SingleEnsureEachRuleChain_ValidateWithTest : IncrementalGeneratorTe
                                                                                    };
                                                                                }
 
-                                                                               private static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Order request, string? inheritedTargetPath)
+                                                                               /// <summary>
+                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                               /// </summary>
+                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                               public static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
                                                                        
+                                                                                   var validator1 = _lineItemValidator;
                                                                                    var index1 = 0;
                                                                                    foreach (var element in request.LineItems)
                                                                                    {
-                                                                                       var errors1 = _lineItemValidator.Validate(element, $"{inheritedTargetPath}LineItems[{index1}].");
+                                                                                       var errors1 = validator1.RunValidation(element, $"{inheritedTargetPath}LineItems[{index1}].");
                                                                                        if (errors1 is not null)
                                                                                        {
                                                                                            if (errors is null)
                                                                                            {
-                                                                                               errors = new(errors1.Errors);
+                                                                                               errors = errors1;
                                                                                            }
                                                                                            else
                                                                                            {
-                                                                                               errors.AddRange(errors1.Errors);
+                                                                                               errors.AddRange(errors1);
                                                                                            }
                                                                                        }
                                                                                        index1++;

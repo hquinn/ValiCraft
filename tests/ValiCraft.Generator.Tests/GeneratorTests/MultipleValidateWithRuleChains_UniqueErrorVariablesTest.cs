@@ -72,7 +72,7 @@ public class MultipleValidateWithRuleChains_UniqueErrorVariablesTest : Increment
                                                                                /// <inheritdoc />
                                                                                public global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request)
                                                                                {
-                                                                                   var errors = RunValidationLogic(request, null);
+                                                                                   var errors = RunValidation(request, null);
 
                                                                                    if (errors is null) return null;
 
@@ -89,7 +89,7 @@ public class MultipleValidateWithRuleChains_UniqueErrorVariablesTest : Increment
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
-                                                                                   var errors = RunValidationLogic(request, inheritedTargetPath);
+                                                                                   var errors = RunValidation(request, inheritedTargetPath);
 
                                                                                    if (errors is null) return null;
 
@@ -102,36 +102,41 @@ public class MultipleValidateWithRuleChains_UniqueErrorVariablesTest : Increment
                                                                                    };
                                                                                }
 
-                                                                               private global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Order request, string? inheritedTargetPath)
+                                                                               /// <summary>
+                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                               /// </summary>
+                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                               public global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
                                                                        
-                                                                                   var errors2 = customerValidator.Validate(request.Customer, $"{inheritedTargetPath}Customer.");
+                                                                                   var errors2 = customerValidator.RunValidation(request.Customer, $"{inheritedTargetPath}Customer.");
                                                                                    if (errors2 is not null)
                                                                                    {
                                                                                        if (errors is null)
                                                                                        {
-                                                                                           errors = new(errors2.Errors);
+                                                                                           errors = errors2;
                                                                                        }
                                                                                        else
                                                                                        {
-                                                                                           errors.AddRange(errors2.Errors);
+                                                                                           errors.AddRange(errors2);
                                                                                        }
                                                                                    }
 
+                                                                                   var validator1 = lineItemValidator;
                                                                                    var index1 = 0;
                                                                                    foreach (var element in request.LineItems)
                                                                                    {
-                                                                                       var errors1 = lineItemValidator.Validate(element, $"{inheritedTargetPath}LineItems[{index1}].");
+                                                                                       var errors1 = validator1.RunValidation(element, $"{inheritedTargetPath}LineItems[{index1}].");
                                                                                        if (errors1 is not null)
                                                                                        {
                                                                                            if (errors is null)
                                                                                            {
-                                                                                               errors = new(errors1.Errors);
+                                                                                               errors = errors1;
                                                                                            }
                                                                                            else
                                                                                            {
-                                                                                               errors.AddRange(errors1.Errors);
+                                                                                               errors.AddRange(errors1);
                                                                                            }
                                                                                        }
                                                                                        index1++;

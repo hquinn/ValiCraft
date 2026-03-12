@@ -60,7 +60,7 @@ public class SingleEnsureRuleChain_StructTarget_MethodTargetTest : IncrementalGe
                                                                                /// <inheritdoc />
                                                                                public global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Rectangle request)
                                                                                {
-                                                                                   var errors = RunValidationLogic(request, null);
+                                                                                   var errors = RunValidation(request, null);
 
                                                                                    if (errors is null) return null;
 
@@ -77,7 +77,7 @@ public class SingleEnsureRuleChain_StructTarget_MethodTargetTest : IncrementalGe
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Rectangle request, string? inheritedTargetPath)
                                                                                {
-                                                                                   var errors = RunValidationLogic(request, inheritedTargetPath);
+                                                                                   var errors = RunValidation(request, inheritedTargetPath);
 
                                                                                    if (errors is null) return null;
 
@@ -90,7 +90,11 @@ public class SingleEnsureRuleChain_StructTarget_MethodTargetTest : IncrementalGe
                                                                                    };
                                                                                }
 
-                                                                               private global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Rectangle request, string? inheritedTargetPath)
+                                                                               /// <summary>
+                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                               /// </summary>
+                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                               public global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.Rectangle request, string? inheritedTargetPath)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
 

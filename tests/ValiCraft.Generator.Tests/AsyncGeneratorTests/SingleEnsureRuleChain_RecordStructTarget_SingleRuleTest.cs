@@ -55,7 +55,7 @@ public class SingleEnsureRuleChain_RecordStructTarget_SingleRuleTest : Increment
                                                                                /// <inheritdoc />
                                                                                public async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Temperature request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
-                                                                                   var errors = await RunValidationLogicAsync(request, null, cancellationToken);
+                                                                                   var errors = await RunValidationAsync(request, null, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
@@ -72,7 +72,7 @@ public class SingleEnsureRuleChain_RecordStructTarget_SingleRuleTest : Increment
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Temperature request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
-                                                                                   var errors = await RunValidationLogicAsync(request, inheritedTargetPath, cancellationToken);
+                                                                                   var errors = await RunValidationAsync(request, inheritedTargetPath, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
@@ -85,7 +85,11 @@ public class SingleEnsureRuleChain_RecordStructTarget_SingleRuleTest : Increment
                                                                                    };
                                                                                }
 
-                                                                               private async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationLogicAsync(global::Test.Requests.Temperature request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                               /// <summary>
+                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                               /// </summary>
+                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                               public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationAsync(global::Test.Requests.Temperature request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
 

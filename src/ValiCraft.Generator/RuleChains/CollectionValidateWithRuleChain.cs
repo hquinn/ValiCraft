@@ -21,6 +21,7 @@ public record CollectionValidateWithRuleChain(
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         var index = $"index{context.Counter}";
+        var validatorVar = $"validator{context.Counter}";
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
         var itemRequestName = GetItemRequestParameterName();
@@ -28,15 +29,17 @@ public record CollectionValidateWithRuleChain(
         string methodCall;
         if (IsAsync && IsAsyncValidatorCall)
         {
-            methodCall = $"await {ValidatorExpression}.ValidateAsync({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\", cancellationToken)";
+            methodCall = $"await {validatorVar}.RunValidationAsync({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\", cancellationToken)";
         }
         else
         {
-            methodCall = $"{ValidatorExpression}.Validate({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\")";
+            methodCall = $"{validatorVar}.RunValidation({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\")";
         }
 
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple ValidateWith calls exist
+        // Hoist the validator expression before the loop to avoid repeated allocations
         var code = $$"""
+                     {{Indent}}var {{validatorVar}} = {{ValidatorExpression}};
                      {{Indent}}var {{index}} = 0;
                      {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
                      {{Indent}}{
@@ -45,11 +48,11 @@ public record CollectionValidateWithRuleChain(
                      {{Indent}}    {
                      {{Indent}}        if (errors is null)
                      {{Indent}}        {
-                     {{Indent}}            errors = new(errors{{context.Counter}}.Errors);
+                     {{Indent}}            errors = errors{{context.Counter}};
                      {{GetGotoLabelIfNeeded(context)}}{{Indent}}        }
                      {{Indent}}        else
                      {{Indent}}        {
-                     {{Indent}}            errors.AddRange(errors{{context.Counter}}.Errors);
+                     {{Indent}}            errors.AddRange(errors{{context.Counter}});
                      {{GetGotoLabelIfNeeded(context)}}{{Indent}}        }
                      {{Indent}}    }
                      {{Indent}}    {{index}}++;
@@ -57,7 +60,8 @@ public record CollectionValidateWithRuleChain(
                      """;
 
         context.DecrementCountdown();
-        context.UpdateIfElseMode();
+        // Reset because the foreach block breaks any if/else chain — the next chain cannot use 'else if'
+        context.ResetIfElseMode();
         return code;
     }
 

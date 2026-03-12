@@ -69,7 +69,7 @@ public class NestedClass_MultipleLevelsTest : IncrementalGeneratorTestBase<ValiC
                                                                                        /// <inheritdoc />
                                                                                        public static async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                        {
-                                                                                           var errors = await RunValidationLogicAsync(request, null, cancellationToken);
+                                                                                           var errors = await RunValidationAsync(request, null, cancellationToken);
 
                                                                                            if (errors is null) return null;
 
@@ -86,7 +86,7 @@ public class NestedClass_MultipleLevelsTest : IncrementalGeneratorTestBase<ValiC
                                                                                        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                        public static async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                        {
-                                                                                           var errors = await RunValidationLogicAsync(request, inheritedTargetPath, cancellationToken);
+                                                                                           var errors = await RunValidationAsync(request, inheritedTargetPath, cancellationToken);
 
                                                                                            if (errors is null) return null;
 
@@ -99,7 +99,11 @@ public class NestedClass_MultipleLevelsTest : IncrementalGeneratorTestBase<ValiC
                                                                                            };
                                                                                        }
 
-                                                                                       private static async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationLogicAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                                       /// <summary>
+                                                                                       /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                                       /// </summary>
+                                                                                       [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                                       public static async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
                                                                                        {
                                                                                            global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
                                                                        

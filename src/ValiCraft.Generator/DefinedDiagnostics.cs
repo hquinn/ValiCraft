@@ -199,4 +199,12 @@ public static class DefinedDiagnostics
         KnownNames.Namespaces.Base,
         DiagnosticSeverity.Error,
         true);
+
+    public static readonly DiagnosticDescriptor DisallowedRunValidationCall = new(
+        "VALC402",
+        "Disallowed RunValidation call",
+        "RunValidation is for internal use by generated code only and should not be called directly",
+        KnownNames.Namespaces.Base,
+        DiagnosticSeverity.Error,
+        true);
 }

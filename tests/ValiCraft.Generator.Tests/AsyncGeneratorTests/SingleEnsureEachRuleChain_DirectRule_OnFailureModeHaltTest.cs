@@ -57,7 +57,7 @@ public class SingleEnsureEachRuleChain_DirectRule_OnFailureModeHaltTest : Increm
                                                                                /// <inheritdoc />
                                                                                public async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Request request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
-                                                                                   var errors = await RunValidationLogicAsync(request, null, cancellationToken);
+                                                                                   var errors = await RunValidationAsync(request, null, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
@@ -74,7 +74,7 @@ public class SingleEnsureEachRuleChain_DirectRule_OnFailureModeHaltTest : Increm
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Request request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
-                                                                                   var errors = await RunValidationLogicAsync(request, inheritedTargetPath, cancellationToken);
+                                                                                   var errors = await RunValidationAsync(request, inheritedTargetPath, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
@@ -87,7 +87,11 @@ public class SingleEnsureEachRuleChain_DirectRule_OnFailureModeHaltTest : Increm
                                                                                    };
                                                                                }
 
-                                                                               private async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationLogicAsync(global::Test.Requests.Request request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                               /// <summary>
+                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                               /// </summary>
+                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                               public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationAsync(global::Test.Requests.Request request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
 

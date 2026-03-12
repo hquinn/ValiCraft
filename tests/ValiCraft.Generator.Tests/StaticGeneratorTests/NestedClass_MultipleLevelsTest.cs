@@ -71,7 +71,7 @@ public class NestedClass_MultipleLevelsTest : IncrementalGeneratorTestBase<ValiC
                                                                                        /// <inheritdoc />
                                                                                        public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request)
                                                                                        {
-                                                                                           var errors = RunValidationLogic(request, null);
+                                                                                           var errors = RunValidation(request, null);
 
                                                                                            if (errors is null) return null;
 
@@ -88,7 +88,7 @@ public class NestedClass_MultipleLevelsTest : IncrementalGeneratorTestBase<ValiC
                                                                                        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                        public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                        {
-                                                                                           var errors = RunValidationLogic(request, inheritedTargetPath);
+                                                                                           var errors = RunValidation(request, inheritedTargetPath);
 
                                                                                            if (errors is null) return null;
 
@@ -101,7 +101,11 @@ public class NestedClass_MultipleLevelsTest : IncrementalGeneratorTestBase<ValiC
                                                                                            };
                                                                                        }
 
-                                                                                       private static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidationLogic(global::Test.Requests.Order request, string? inheritedTargetPath)
+                                                                                       /// <summary>
+                                                                                       /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
+                                                                                       /// </summary>
+                                                                                       [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+                                                                                       public static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                        {
                                                                                            global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
                                                                        
