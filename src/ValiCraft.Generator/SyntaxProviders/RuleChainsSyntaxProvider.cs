@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
@@ -29,7 +30,36 @@ public static class RuleChainsSyntaxProvider
 
         var builderArgument = defineRulesMethodSymbol!.Parameters.First().Name;
 
-        var ruleChains = defineRulesMethodSyntax.Body!.Statements
+        var statements = defineRulesMethodSyntax.Body!.Statements;
+
+        foreach (var statement in statements)
+        {
+            if (statement is ExpressionStatementSyntax)
+            {
+                continue;
+            }
+
+            var statementKind = statement switch
+            {
+                LocalDeclarationStatementSyntax => "Local variable declarations",
+                IfStatementSyntax => "If statements",
+                ForStatementSyntax => "For statements",
+                ForEachStatementSyntax => "ForEach statements",
+                WhileStatementSyntax => "While statements",
+                DoStatementSyntax => "Do-while statements",
+                SwitchStatementSyntax => "Switch statements",
+                TryStatementSyntax => "Try statements",
+                ThrowStatementSyntax => "Throw statements",
+                ReturnStatementSyntax => "Return statements",
+                UsingStatementSyntax => "Using statements",
+                LockStatementSyntax => "Lock statements",
+                _ => $"{statement.Kind()} statements"
+            };
+
+            diagnostics.Add(DefinedDiagnostics.InvalidStatementInDefineRules(statementKind, statement.GetLocation()));
+        }
+
+        var ruleChains = statements
             .OfType<ExpressionStatementSyntax>()
             .Select(statement => RuleChainFactory.CreateFromStatement(isAsyncValidator, statement, builderArgument, 0, IndentModel.CreateNew(), diagnostics, context))
             .Where(ruleChain => ruleChain is not null)

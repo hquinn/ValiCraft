@@ -127,6 +127,19 @@ public static class DefinedDiagnostics
             location);
     }
 
+    public static DiagnosticInfo InvalidStatementInDefineRules(string statementKind, Location location)
+    {
+        return new DiagnosticInfo(
+            new DiagnosticDescriptor(
+                "VALC208",
+                "Invalid statement in DefineRules",
+                $"Only builder invocations are allowed inside DefineRules. {statementKind} are not supported.",
+                KnownNames.Namespaces.Base,
+                DiagnosticSeverity.Error,
+                true),
+            location);
+    }
+
     public static DiagnosticInfo StaticValidatorHasInstanceConstructor(Location location)
     {
         return new DiagnosticInfo(

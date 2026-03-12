@@ -149,6 +149,7 @@ ValiCraft emits helpful compiler diagnostics when there are issues with your val
 | `VALC205` | Cannot retrieve parameter name from lambda definition |
 | `VALC206` | Invalid builder argument used in scope |
 | `VALC207` | Missing `[MapToValidationRule]` attribute on extension method |
+| `VALC208` | Invalid statement in `DefineRules` — only builder invocations are allowed |
 | `VALC301` | Static validator has parameterized constructor |
 | `VALC302` | Static validator has instance field |
 | `VALC303` | Static validator has instance property |
