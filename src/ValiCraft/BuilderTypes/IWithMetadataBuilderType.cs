@@ -46,4 +46,12 @@ public interface IWithMetadataBuilderType<TRequest, TTarget> : IBuilderType<TReq
     /// <param name="targetName">The display name for the target property.</param>
     /// <returns>A builder for further configuration.</returns>
     IWithTargetNameBuilderType<TRequest, TTarget> WithTargetName(string targetName);
+
+    /// <summary>
+    /// Delegates validation of the target property to a static validator.
+    /// The validator must implement <see cref="IStaticValidator{T}"/> where T is the target type.
+    /// </summary>
+    /// <typeparam name="TValidator">The static validator type to use for validation.</typeparam>
+    /// <returns>A builder for chaining additional validation rules.</returns>
+    IStaticValidateBuilderType<TRequest, TTarget> Validate<TValidator>();
 }

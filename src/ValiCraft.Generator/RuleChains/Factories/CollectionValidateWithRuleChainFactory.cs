@@ -46,7 +46,7 @@ public class CollectionValidateWithRuleChainFactory : IRuleChainFactory
             isAsyncValidatorCall);
     }
 
-    private static bool IsAsyncValidatorType(ITypeSymbol? typeSymbol)
+    internal static bool IsAsyncValidatorType(ITypeSymbol? typeSymbol)
     {
         if (typeSymbol is not INamedTypeSymbol namedType)
         {

@@ -81,4 +81,18 @@ public interface IAsyncValidationRuleBuilderType<TRequest, TTarget> : IAsyncBuil
     /// </code>
     /// </example>
     IAsyncIfBuilderType<TRequest, TTarget> If(Func<TRequest, bool> condition);
+
+    /// <summary>
+    /// Delegates validation of the target property to a static validator synchronously.
+    /// </summary>
+    /// <typeparam name="TValidator">The static validator type to use for validation.</typeparam>
+    /// <returns>A builder for chaining additional validation rules.</returns>
+    IAsyncStaticValidateBuilderType<TRequest, TTarget> Validate<TValidator>();
+
+    /// <summary>
+    /// Delegates validation of the target property to a static async validator.
+    /// </summary>
+    /// <typeparam name="TValidator">The static async validator type to use for validation.</typeparam>
+    /// <returns>A builder for chaining additional validation rules.</returns>
+    IAsyncStaticValidateBuilderType<TRequest, TTarget> ValidateAsync<TValidator>();
 }

@@ -51,4 +51,18 @@ public interface IAsyncIfBuilderType<TRequest, TTarget> : IAsyncBuilderType<TReq
     /// <param name="value">The metadata value.</param>
     /// <returns>A builder for further configuration.</returns>
     IAsyncWithMetadataBuilderType<TRequest, TTarget> WithMetadata(string key, object value);
+
+    /// <summary>
+    /// Delegates validation of the target property to a static validator synchronously.
+    /// </summary>
+    /// <typeparam name="TValidator">The static validator type to use for validation.</typeparam>
+    /// <returns>A builder for chaining additional validation rules.</returns>
+    IAsyncStaticValidateBuilderType<TRequest, TTarget> Validate<TValidator>();
+
+    /// <summary>
+    /// Delegates validation of the target property to a static async validator.
+    /// </summary>
+    /// <typeparam name="TValidator">The static async validator type to use for validation.</typeparam>
+    /// <returns>A builder for chaining additional validation rules.</returns>
+    IAsyncStaticValidateBuilderType<TRequest, TTarget> ValidateAsync<TValidator>();
 }

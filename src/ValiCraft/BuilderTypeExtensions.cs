@@ -48,4 +48,74 @@ public static class BuilderTypeExtensions
         where TRequest : notnull
         where TTarget : class
         => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to another validator, after applying preceding rules.
+    /// </summary>
+    public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IValidationRuleBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to another validator, after applying preceding rules.
+    /// </summary>
+    public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IWithMessageBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to another validator, after applying preceding rules.
+    /// </summary>
+    public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IWithTargetNameBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to another validator, after applying preceding rules.
+    /// </summary>
+    public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IWithErrorCodeBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to another validator, after applying preceding rules.
+    /// </summary>
+    public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IWithSeverityBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to another validator, after applying preceding rules.
+    /// </summary>
+    public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IWithMetadataBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to another validator, after applying preceding rules.
+    /// </summary>
+    public static IValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IIfBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
 }

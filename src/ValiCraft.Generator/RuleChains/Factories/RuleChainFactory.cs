@@ -15,10 +15,14 @@ public enum RuleChainKind
     Target,
     TargetValidateWith,
     TargetStaticValidate,
+    TargetWithRulesValidateWith,
+    TargetWithRulesStaticValidate,
     Collection,
     CollectionTarget,
     CollectionValidateWith,
     CollectionStaticValidate,
+    CollectionWithRulesValidateWith,
+    CollectionWithRulesStaticValidate,
     WithOnFailure,
     If,
     Polymorphic
@@ -49,10 +53,14 @@ public static class RuleChainFactory
             [RuleChainKind.Target] = new TargetRuleChainFactory(),
             [RuleChainKind.TargetValidateWith] = new TargetValidateWithRuleChainFactory(),
             [RuleChainKind.TargetStaticValidate] = new TargetStaticValidateRuleChainFactory(),
+            [RuleChainKind.TargetWithRulesValidateWith] = new TargetWithRulesValidateWithRuleChainFactory(),
+            [RuleChainKind.TargetWithRulesStaticValidate] = new TargetWithRulesStaticValidateRuleChainFactory(),
             [RuleChainKind.Collection] = new CollectionRuleChainFactory(),
             [RuleChainKind.CollectionTarget] = new CollectionTargetRuleChainFactory(),
             [RuleChainKind.CollectionValidateWith] = new CollectionValidateWithRuleChainFactory(),
             [RuleChainKind.CollectionStaticValidate] = new CollectionStaticValidateRuleChainFactory(),
+            [RuleChainKind.CollectionWithRulesValidateWith] = new CollectionWithRulesValidateWithRuleChainFactory(),
+            [RuleChainKind.CollectionWithRulesStaticValidate] = new CollectionWithRulesStaticValidateRuleChainFactory(),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
             [RuleChainKind.If] = new IfRuleChainFactory(),
             [RuleChainKind.Polymorphic] = new PolymorphicRuleChainFactory(),
@@ -196,23 +204,51 @@ public static class RuleChainFactory
             }
         };
 
+        // Check if the last invocation is ValidateWith or Validate<T> (for hybrid chains with rules before validate)
+        var lastInvocation = invocationChain.LastOrDefault();
+        var lastInvocationIsValidateWith = lastInvocation is
+        {
+            Expression: MemberAccessExpressionSyntax
+            {
+                Name.Identifier.ValueText: KnownNames.Methods.ValidateWith
+            }
+        };
+        var lastInvocationIsStaticValidate = lastInvocation is
+        {
+            Expression: MemberAccessExpressionSyntax
+            {
+                Name: GenericNameSyntax
+                {
+                    Identifier.ValueText: KnownNames.Methods.Validate or KnownNames.Methods.ValidateAsync
+                }
+            }
+        };
+
         return firstMethodName switch
         {
             // We don't have a valid rule chain if we have zero or one method invocations
             // As the first invocation should be the Ensure method.
-            KnownNames.Methods.Ensure => invocationChain.Count > 1 
-                ? secondInvocationIsValidateWith 
-                    ? RuleChainKind.TargetValidateWith 
-                    : secondInvocationIsStaticValidate 
-                        ? RuleChainKind.TargetStaticValidate 
-                        : RuleChainKind.Target 
+            KnownNames.Methods.Ensure => invocationChain.Count > 1
+                ? secondInvocationIsValidateWith
+                    ? RuleChainKind.TargetValidateWith
+                    : secondInvocationIsStaticValidate
+                        ? RuleChainKind.TargetStaticValidate
+                        : lastInvocationIsValidateWith
+                            ? RuleChainKind.TargetWithRulesValidateWith
+                            : lastInvocationIsStaticValidate
+                                ? RuleChainKind.TargetWithRulesStaticValidate
+                                : RuleChainKind.Target
                 : null,
             KnownNames.Methods.EnsureEach => invocationChain.Count > 1
                 ? secondInvocationIsValidateWith
                     ? RuleChainKind.CollectionValidateWith
                     : secondInvocationIsStaticValidate
                         ? RuleChainKind.CollectionStaticValidate
-                        : RuleChainKind.CollectionTarget
+                        : lastInvocationIsValidateWith
+                            ? RuleChainKind.CollectionWithRulesValidateWith
+                            : lastInvocationIsStaticValidate
+                                ? RuleChainKind.CollectionWithRulesStaticValidate
+                                : RuleChainKind.CollectionTarget
                 : RuleChainKind.Collection,
             KnownNames.Methods.WithOnFailure => RuleChainKind.WithOnFailure,
             KnownNames.Methods.If => RuleChainKind.If,

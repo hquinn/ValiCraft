@@ -92,4 +92,148 @@ public static class AsyncBuilderTypeExtensions
         where TRequest : notnull
         where TTarget : class
         => throw new NotImplementedException("Never gets called");
+
+    // ValidateWith extensions for rule chain builder types (sync validator overloads)
+
+    /// <summary>
+    /// Delegates validation of a nested object to a sync validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncValidationRuleBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to a sync validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncWithMessageBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to a sync validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncWithTargetNameBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to a sync validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncWithErrorCodeBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to a sync validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncWithSeverityBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to a sync validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncWithMetadataBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to a sync validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncIfBuilderType<TRequest, TTarget> builder,
+        IValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    // ValidateWith extensions for rule chain builder types (async validator overloads)
+
+    /// <summary>
+    /// Delegates validation of a nested object to an async validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncValidationRuleBuilderType<TRequest, TTarget> builder,
+        IAsyncValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to an async validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncWithMessageBuilderType<TRequest, TTarget> builder,
+        IAsyncValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to an async validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncWithTargetNameBuilderType<TRequest, TTarget> builder,
+        IAsyncValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to an async validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncWithErrorCodeBuilderType<TRequest, TTarget> builder,
+        IAsyncValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to an async validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncWithSeverityBuilderType<TRequest, TTarget> builder,
+        IAsyncValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to an async validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncWithMetadataBuilderType<TRequest, TTarget> builder,
+        IAsyncValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
+
+    /// <summary>
+    /// Delegates validation of a nested object to an async validator, after applying preceding rules.
+    /// </summary>
+    public static IAsyncValidateWithBuilderType<TRequest, TTarget> ValidateWith<TRequest, TTarget>(
+        this IAsyncIfBuilderType<TRequest, TTarget> builder,
+        IAsyncValidator<TTarget> validator)
+        where TRequest : notnull
+        where TTarget : class
+        => throw new NotImplementedException("Never gets called");
 }

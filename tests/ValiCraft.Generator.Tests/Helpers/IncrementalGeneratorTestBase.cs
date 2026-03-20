@@ -19,7 +19,7 @@ public abstract class IncrementalGeneratorTestBase<TGenerator> where TGenerator 
 
     protected void AssertGenerator(
         string[] inputs,
-        string[]? outputs,
+        string[] outputs,
         string[] diagnostics,
         bool assertInitialCompilation = false,
         bool assertTrackingSteps = true)
@@ -44,10 +44,6 @@ public abstract class IncrementalGeneratorTestBase<TGenerator> where TGenerator 
                 DiGeneratedHintNameSuffixes)
             .AssertDiagnostics(diagnostics);
 
-        // Only assert outputs if explicitly provided
-        if (outputs is not null)
-        {
-            result.AssertOutputs(outputs);
-        }
+        result.AssertOutputs(outputs);
     }
 }

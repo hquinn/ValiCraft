@@ -39,4 +39,12 @@ public interface IWithMessageBuilderType<TRequest, TTarget> : IBuilderType<TRequ
     /// <param name="value">The metadata value.</param>
     /// <returns>A builder for further configuration.</returns>
     IWithMetadataBuilderType<TRequest, TTarget> WithMetadata(string key, object value);
+
+    /// <summary>
+    /// Delegates validation of the target property to a static validator.
+    /// The validator must implement <see cref="IStaticValidator{T}"/> where T is the target type.
+    /// </summary>
+    /// <typeparam name="TValidator">The static validator type to use for validation.</typeparam>
+    /// <returns>A builder for chaining additional validation rules.</returns>
+    IStaticValidateBuilderType<TRequest, TTarget> Validate<TValidator>();
 }
