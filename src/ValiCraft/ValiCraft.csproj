@@ -11,7 +11,6 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         
         <PackageId>ValiCraft</PackageId>
-        <Version>0.30.0</Version>
         <Authors>Hayden Quinn</Authors>
         <Company>hquinn</Company>
         <Copyright>Copyright © 2026 Hayden Quinn</Copyright>
