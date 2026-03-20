@@ -34,7 +34,6 @@ public class VALC402Tests : AnalyzerTestBase<RunValidationOverloadAnalyzer>
 
     [StringSyntax("CSharp")] private const string InputCallsRunValidation = """
                                                                             using System.Collections.Generic;
-                                                                            using ErrorCraft;
                                                                             using Test.Requests;
                                                                             using ValiCraft;
 
@@ -68,7 +67,6 @@ public class VALC402Tests : AnalyzerTestBase<RunValidationOverloadAnalyzer>
                                                                                  using System.Collections.Generic;
                                                                                  using System.Threading;
                                                                                  using System.Threading.Tasks;
-                                                                                 using ErrorCraft;
                                                                                  using Test.Requests;
                                                                                  using ValiCraft;
 

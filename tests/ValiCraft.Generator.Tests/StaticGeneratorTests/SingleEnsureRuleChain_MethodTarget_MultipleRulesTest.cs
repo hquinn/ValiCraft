@@ -25,7 +25,6 @@ public class SingleEnsureRuleChain_MethodTarget_MultipleRulesTest : IncrementalG
                                                                          using ValiCraft;
                                                                          using ValiCraft.Attributes;
                                                                          using ValiCraft.BuilderTypes;
-                                                                         using ErrorCraft;
 
                                                                          namespace Test.Validators;
 
@@ -49,7 +48,6 @@ public class SingleEnsureRuleChain_MethodTarget_MultipleRulesTest : IncrementalG
                                                                        using ValiCraft;
                                                                        using ValiCraft.Attributes;
                                                                        using ValiCraft.BuilderTypes;
-                                                                       using ErrorCraft;
 
                                                                        namespace Test.Validators
                                                                        {
@@ -59,34 +57,17 @@ public class SingleEnsureRuleChain_MethodTarget_MultipleRulesTest : IncrementalG
                                                                            public partial class UserValidator : global::ValiCraft.IStaticValidator<global::Test.Requests.User>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.User request)
+                                                                               public static global::ValiCraft.ValidationErrors? Validate(global::Test.Requests.User request)
                                                                                {
                                                                                    var errors = RunValidation(request, null);
 
                                                                                    if (errors is null) return null;
 
-                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   return new global::ValiCraft.ValidationErrors
                                                                                    {
                                                                                        Code = "UserErrors",
                                                                                        Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                       Errors = errors
-                                                                                   };
-                                                                               }
-
-                                                                               /// <inheritdoc />
-                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.User request, string? inheritedTargetPath)
-                                                                               {
-                                                                                   var errors = RunValidation(request, inheritedTargetPath);
-
-                                                                                   if (errors is null) return null;
-
-                                                                                   return new global::ErrorCraft.ValidationErrors
-                                                                                   {
-                                                                                       Code = "UserErrors",
-                                                                                       Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                        Errors = errors
                                                                                    };
                                                                                }
@@ -95,18 +76,18 @@ public class SingleEnsureRuleChain_MethodTarget_MultipleRulesTest : IncrementalG
                                                                                /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                                                                                /// </summary>
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.User request, string? inheritedTargetPath)
+                                                                               public static global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? RunValidation(global::Test.Requests.User request, string? inheritedTargetPath)
                                                                                {
-                                                                                   global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
+                                                                                   global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
 
                                                                                    if (!global::ValiCraft.Rules.NotNullOrWhiteSpace(request.GetDisplayName()))
                                                                                    {
                                                                                        errors ??= new(2);
-                                                                                       errors.Add(new global::ErrorCraft.ValidationError<string>
+                                                                                       errors.Add(new global::ValiCraft.ValidationError
                                                                                        {
                                                                                            Code = nameof(global::ValiCraft.Rules.NotNullOrWhiteSpace),
                                                                                            Message = $"Get Display Name must not be null or contain only whitespace.",
-                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Get Display Name",
                                                                                            TargetPath = $"{inheritedTargetPath}GetDisplayName",
                                                                                            AttemptedValue = request.GetDisplayName(),
@@ -115,11 +96,11 @@ public class SingleEnsureRuleChain_MethodTarget_MultipleRulesTest : IncrementalG
                                                                                    if (!global::ValiCraft.Rules.MinLength(request.GetDisplayName(), 2))
                                                                                    {
                                                                                        errors ??= new(1);
-                                                                                       errors.Add(new global::ErrorCraft.ValidationError<string>
+                                                                                       errors.Add(new global::ValiCraft.ValidationError
                                                                                        {
                                                                                            Code = nameof(global::ValiCraft.Rules.MinLength),
                                                                                            Message = $"Get Display Name must have a minimum length of 2",
-                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Get Display Name",
                                                                                            TargetPath = $"{inheritedTargetPath}GetDisplayName",
                                                                                            AttemptedValue = request.GetDisplayName(),

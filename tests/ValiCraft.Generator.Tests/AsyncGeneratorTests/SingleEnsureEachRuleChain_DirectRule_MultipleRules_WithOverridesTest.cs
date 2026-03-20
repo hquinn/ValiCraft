@@ -21,7 +21,6 @@ public class SingleEnsureEachRuleChain_DirectRule_MultipleRules_WithOverridesTes
                                                                         using ValiCraft;
                                                                         using ValiCraft.Attributes;
                                                                         using ValiCraft.AsyncBuilderTypes;
-                                                                        using ErrorCraft;
 
                                                                         namespace Test.Validators;
 
@@ -48,7 +47,6 @@ public class SingleEnsureEachRuleChain_DirectRule_MultipleRules_WithOverridesTes
                                                                        using ValiCraft;
                                                                        using ValiCraft.Attributes;
                                                                        using ValiCraft.AsyncBuilderTypes;
-                                                                       using ErrorCraft;
 
                                                                        namespace Test.Validators
                                                                        {
@@ -58,34 +56,17 @@ public class SingleEnsureEachRuleChain_DirectRule_MultipleRules_WithOverridesTes
                                                                            public partial class RequestValidator : global::ValiCraft.IAsyncValidator<global::Test.Requests.Request>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Request request, global::System.Threading.CancellationToken cancellationToken = default)
+                                                                               public async global::System.Threading.Tasks.Task<global::ValiCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Request request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
                                                                                    var errors = await RunValidationAsync(request, null, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
-                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   return new global::ValiCraft.ValidationErrors
                                                                                    {
                                                                                        Code = "RequestErrors",
                                                                                        Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                       Errors = errors
-                                                                                   };
-                                                                               }
-
-                                                                               /// <inheritdoc />
-                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Request request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
-                                                                               {
-                                                                                   var errors = await RunValidationAsync(request, inheritedTargetPath, cancellationToken);
-
-                                                                                   if (errors is null) return null;
-
-                                                                                   return new global::ErrorCraft.ValidationErrors
-                                                                                   {
-                                                                                       Code = "RequestErrors",
-                                                                                       Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                        Errors = errors
                                                                                    };
                                                                                }
@@ -94,9 +75,9 @@ public class SingleEnsureEachRuleChain_DirectRule_MultipleRules_WithOverridesTes
                                                                                /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                                                                                /// </summary>
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationAsync(global::Test.Requests.Request request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                               public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ValiCraft.ValidationError>?> RunValidationAsync(global::Test.Requests.Request request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
                                                                                {
-                                                                                   global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
+                                                                                   global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
 
                                                                                    var index2 = 0;
                                                                                    foreach (var element in request.Tags)
@@ -104,11 +85,11 @@ public class SingleEnsureEachRuleChain_DirectRule_MultipleRules_WithOverridesTes
                                                                                        if (!global::ValiCraft.Rules.NotNullOrWhiteSpace(element))
                                                                                        {
                                                                                            errors ??= new(2);
-                                                                                           errors.Add(new global::ErrorCraft.ValidationError<string>
+                                                                                           errors.Add(new global::ValiCraft.ValidationError
                                                                                            {
                                                                                                Code = "TAG_REQUIRED",
                                                                                                Message = $"Tag must be provided",
-                                                                                               Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                TargetName = "Tag",
                                                                                                TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Tags[{index2}]" : null)}",
                                                                                                AttemptedValue = element,
@@ -117,11 +98,11 @@ public class SingleEnsureEachRuleChain_DirectRule_MultipleRules_WithOverridesTes
                                                                                        if (!global::ValiCraft.Rules.MinLength(element, 3))
                                                                                        {
                                                                                            errors ??= new(1);
-                                                                                           errors.Add(new global::ErrorCraft.ValidationError<string>
+                                                                                           errors.Add(new global::ValiCraft.ValidationError
                                                                                            {
                                                                                                Code = nameof(global::ValiCraft.Rules.MinLength),
                                                                                                Message = $"Tags must have a minimum length of 3",
-                                                                                               Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                TargetName = "Tags",
                                                                                                TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "Tags[{index2}]" : null)}",
                                                                                                AttemptedValue = element,

@@ -25,7 +25,6 @@ public class SingleEnsureEachRuleChain_MethodTarget_CollectionReturnTest : Incre
                                                                          using ValiCraft;
                                                                          using ValiCraft.Attributes;
                                                                          using ValiCraft.BuilderTypes;
-                                                                         using ErrorCraft;
 
                                                                          namespace Test.Validators;
 
@@ -48,7 +47,6 @@ public class SingleEnsureEachRuleChain_MethodTarget_CollectionReturnTest : Incre
                                                                        using ValiCraft;
                                                                        using ValiCraft.Attributes;
                                                                        using ValiCraft.BuilderTypes;
-                                                                       using ErrorCraft;
 
                                                                        namespace Test.Validators
                                                                        {
@@ -58,34 +56,17 @@ public class SingleEnsureEachRuleChain_MethodTarget_CollectionReturnTest : Incre
                                                                            public partial class InventoryValidator : global::ValiCraft.IStaticValidator<global::Test.Requests.Inventory>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Inventory request)
+                                                                               public static global::ValiCraft.ValidationErrors? Validate(global::Test.Requests.Inventory request)
                                                                                {
                                                                                    var errors = RunValidation(request, null);
 
                                                                                    if (errors is null) return null;
 
-                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   return new global::ValiCraft.ValidationErrors
                                                                                    {
                                                                                        Code = "InventoryErrors",
                                                                                        Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                       Errors = errors
-                                                                                   };
-                                                                               }
-
-                                                                               /// <inheritdoc />
-                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Inventory request, string? inheritedTargetPath)
-                                                                               {
-                                                                                   var errors = RunValidation(request, inheritedTargetPath);
-
-                                                                                   if (errors is null) return null;
-
-                                                                                   return new global::ErrorCraft.ValidationErrors
-                                                                                   {
-                                                                                       Code = "InventoryErrors",
-                                                                                       Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                        Errors = errors
                                                                                    };
                                                                                }
@@ -94,9 +75,9 @@ public class SingleEnsureEachRuleChain_MethodTarget_CollectionReturnTest : Incre
                                                                                /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                                                                                /// </summary>
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.Inventory request, string? inheritedTargetPath)
+                                                                               public static global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? RunValidation(global::Test.Requests.Inventory request, string? inheritedTargetPath)
                                                                                {
-                                                                                   global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
+                                                                                   global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
 
                                                                                    var index1 = 0;
                                                                                    foreach (var element in request.GetItems())
@@ -104,11 +85,11 @@ public class SingleEnsureEachRuleChain_MethodTarget_CollectionReturnTest : Incre
                                                                                        if (!global::ValiCraft.Rules.NotNullOrWhiteSpace(element))
                                                                                        {
                                                                                            errors ??= new(1);
-                                                                                           errors.Add(new global::ErrorCraft.ValidationError<string>
+                                                                                           errors.Add(new global::ValiCraft.ValidationError
                                                                                            {
                                                                                                Code = nameof(global::ValiCraft.Rules.NotNullOrWhiteSpace),
                                                                                                Message = $"Get Items must not be null or contain only whitespace.",
-                                                                                               Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                               Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                TargetName = "Get Items",
                                                                                                TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "GetItems[{index1}]" : null)}",
                                                                                                AttemptedValue = element,

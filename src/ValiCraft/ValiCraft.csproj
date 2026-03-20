@@ -50,8 +50,5 @@
               Visible="false" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="ErrorCraft" Version="0.15.0" />
-    </ItemGroup>
 
 </Project>

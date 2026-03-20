@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using ErrorCraft;
 
 namespace ValiCraft.Tests;
 
@@ -9,7 +8,7 @@ public class ValidationErrorTests
     public void ValidationError_CanBeCreated_WithRequiredProperties()
     {
         // Arrange & Act
-        var error = new ValidationError<string>
+        var error = new ValidationError
         {
             Code = "TEST_ERROR",
             Message = "Test message",
@@ -31,7 +30,7 @@ public class ValidationErrorTests
     public void ValidationError_CanBeCreated_WithOptionalProperties()
     {
         // Act
-        var error = new ValidationError<int>
+        var error = new ValidationError
         {
             Code = "TEST_ERROR",
             Message = "Test message",
@@ -46,10 +45,10 @@ public class ValidationErrorTests
     }
 
     [Fact]
-    public void ValidationError_AttemptedValue_ReturnsGenericValue()
+    public void ValidationError_AttemptedValue_ReturnsValue()
     {
         // Arrange
-        var error = new ValidationError<string>
+        var error = new ValidationError
         {
             Code = "TEST_ERROR",
             Message = "Test message",
@@ -63,30 +62,10 @@ public class ValidationErrorTests
     }
 
     [Fact]
-    public void ValidationError_IValidationError_AttemptedValue_ReturnsAsObject()
-    {
-        // Arrange
-        var error = new ValidationError<int>
-        {
-            Code = "TEST_ERROR",
-            Message = "Test message",
-            TargetName = "TestProperty",
-            TargetPath = "Root.TestProperty",
-            AttemptedValue = 42
-        };
-
-        // Act
-        IValidationError errorInterface = error;
-
-        // Assert
-        errorInterface.AttemptedValue.Should().Be(42);
-    }
-
-    [Fact]
-    public void ValidationError_WithNullableType_CanHaveNullAttemptedValue()
+    public void ValidationError_AttemptedValue_CanBeNull()
     {
         // Arrange & Act
-        var error = new ValidationError<string?>
+        var error = new ValidationError
         {
             Code = "TEST_ERROR",
             Message = "Test message",
@@ -103,7 +82,7 @@ public class ValidationErrorTests
     public void ValidationError_Equality_WorksCorrectly()
     {
         // Arrange
-        var error1 = new ValidationError<string>
+        var error1 = new ValidationError
         {
             Code = "TEST_ERROR",
             Message = "Test message",
@@ -112,7 +91,7 @@ public class ValidationErrorTests
             AttemptedValue = "test"
         };
 
-        var error2 = new ValidationError<string>
+        var error2 = new ValidationError
         {
             Code = "TEST_ERROR",
             Message = "Test message",
@@ -129,7 +108,7 @@ public class ValidationErrorTests
     public void ValidationError_Inequality_WorksCorrectly()
     {
         // Arrange
-        var error1 = new ValidationError<string>
+        var error1 = new ValidationError
         {
             Code = "TEST_ERROR",
             Message = "Test message",
@@ -138,7 +117,7 @@ public class ValidationErrorTests
             AttemptedValue = "test"
         };
 
-        var error2 = new ValidationError<string>
+        var error2 = new ValidationError
         {
             Code = "DIFFERENT_ERROR",
             Message = "Test message",
@@ -152,44 +131,10 @@ public class ValidationErrorTests
     }
 
     [Fact]
-    public void ValidationError_ImplementsIValidationError()
-    {
-        // Arrange & Act
-        var error = new ValidationError<string>
-        {
-            Code = "TEST_ERROR",
-            Message = "Test message",
-            TargetName = "TestProperty",
-            TargetPath = "Root.TestProperty",
-            AttemptedValue = "test"
-        };
-
-        // Assert
-        error.Should().BeAssignableTo<IValidationError>();
-    }
-
-    [Fact]
-    public void ValidationError_ImplementsIError()
-    {
-        // Arrange & Act
-        var error = new ValidationError<string>
-        {
-            Code = "TEST_ERROR",
-            Message = "Test message",
-            TargetName = "TestProperty",
-            TargetPath = "Root.TestProperty",
-            AttemptedValue = "test"
-        };
-
-        // Assert
-        error.Should().BeAssignableTo<IValidationError>();
-    }
-
-    [Fact]
     public void ValidationError_Metadata_IsNullByDefault()
     {
         // Arrange & Act
-        var error = new ValidationError<string>
+        var error = new ValidationError
         {
             Code = "TEST_ERROR",
             Message = "Test message",
@@ -214,7 +159,7 @@ public class ValidationErrorTests
         };
 
         // Act
-        var error = new ValidationError<string>
+        var error = new ValidationError
         {
             Code = "TEST_ERROR",
             Message = "Test message",
@@ -229,28 +174,5 @@ public class ValidationErrorTests
         error.Metadata!["MinLength"].Should().Be(5);
         error.Metadata["MaxLength"].Should().Be(10);
         error.Metadata["CustomKey"].Should().Be("CustomValue");
-    }
-
-    [Fact]
-    public void ValidationError_IValidationError_Metadata_ReturnsValue()
-    {
-        // Arrange
-        var metadata = new Dictionary<string, object?> { { "Key", "Value" } };
-        var error = new ValidationError<string>
-        {
-            Code = "TEST_ERROR",
-            Message = "Test message",
-            TargetName = "TestProperty",
-            TargetPath = "Root.TestProperty",
-            AttemptedValue = "test",
-            Metadata = metadata
-        };
-
-        // Act
-        IValidationError errorInterface = error;
-
-        // Assert
-        errorInterface.Metadata.Should().NotBeNull();
-        errorInterface.Metadata!["Key"].Should().Be("Value");
     }
 }

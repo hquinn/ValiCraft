@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace ValiCraft.Benchmarks.Models;
 
 public class CollectionModel

@@ -23,7 +23,6 @@ public class SingleEnsureRuleChain_MethodTarget_WithParametersTest : Incremental
                                                                          using ValiCraft;
                                                                          using ValiCraft.Attributes;
                                                                          using ValiCraft.AsyncBuilderTypes;
-                                                                         using ErrorCraft;
 
                                                                          namespace Test.Validators;
 
@@ -46,7 +45,6 @@ public class SingleEnsureRuleChain_MethodTarget_WithParametersTest : Incremental
                                                                        using ValiCraft;
                                                                        using ValiCraft.Attributes;
                                                                        using ValiCraft.AsyncBuilderTypes;
-                                                                       using ErrorCraft;
 
                                                                        namespace Test.Validators
                                                                        {
@@ -56,34 +54,17 @@ public class SingleEnsureRuleChain_MethodTarget_WithParametersTest : Incremental
                                                                            public partial class ProductValidator : global::ValiCraft.IStaticAsyncValidator<global::Test.Requests.Product>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public static async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Product request, global::System.Threading.CancellationToken cancellationToken = default)
+                                                                               public static async global::System.Threading.Tasks.Task<global::ValiCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Product request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
                                                                                    var errors = await RunValidationAsync(request, null, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
-                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   return new global::ValiCraft.ValidationErrors
                                                                                    {
                                                                                        Code = "ProductErrors",
                                                                                        Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                       Errors = errors
-                                                                                   };
-                                                                               }
-
-                                                                               /// <inheritdoc />
-                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Product request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
-                                                                               {
-                                                                                   var errors = await RunValidationAsync(request, inheritedTargetPath, cancellationToken);
-
-                                                                                   if (errors is null) return null;
-
-                                                                                   return new global::ErrorCraft.ValidationErrors
-                                                                                   {
-                                                                                       Code = "ProductErrors",
-                                                                                       Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                        Errors = errors
                                                                                    };
                                                                                }
@@ -92,18 +73,18 @@ public class SingleEnsureRuleChain_MethodTarget_WithParametersTest : Incremental
                                                                                /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                                                                                /// </summary>
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationAsync(global::Test.Requests.Product request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                               public static async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ValiCraft.ValidationError>?> RunValidationAsync(global::Test.Requests.Product request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
                                                                                {
-                                                                                   global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
+                                                                                   global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
 
                                                                                    if (!global::ValiCraft.Rules.GreaterThan(request.GetTotal(0.1m), 0))
                                                                                    {
                                                                                        errors ??= new(1);
-                                                                                       errors.Add(new global::ErrorCraft.ValidationError<decimal>
+                                                                                       errors.Add(new global::ValiCraft.ValidationError
                                                                                        {
                                                                                            Code = nameof(global::ValiCraft.Rules.GreaterThan),
                                                                                            Message = $"Get Total must be greater than 0. Value received is {request.GetTotal(0.1m)}",
-                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Get Total",
                                                                                            TargetPath = $"{inheritedTargetPath}GetTotal",
                                                                                            AttemptedValue = request.GetTotal(0.1m),

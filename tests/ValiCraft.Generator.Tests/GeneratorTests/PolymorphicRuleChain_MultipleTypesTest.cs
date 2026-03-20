@@ -43,7 +43,6 @@ public class PolymorphicRuleChain_MultipleTypesTest : IncrementalGeneratorTestBa
                                                                          using ValiCraft;
                                                                          using ValiCraft.Attributes;
                                                                          using ValiCraft.BuilderTypes;
-                                                                         using ErrorCraft;
 
                                                                          namespace Test.Validators;
 
@@ -71,7 +70,6 @@ public class PolymorphicRuleChain_MultipleTypesTest : IncrementalGeneratorTestBa
                                                                        using ValiCraft;
                                                                        using ValiCraft.Attributes;
                                                                        using ValiCraft.BuilderTypes;
-                                                                       using ErrorCraft;
                                                                        
                                                                        namespace Test.Validators
                                                                        {
@@ -81,34 +79,17 @@ public class PolymorphicRuleChain_MultipleTypesTest : IncrementalGeneratorTestBa
                                                                            public partial class OrderValidator : global::ValiCraft.IValidator<global::Test.Requests.Order>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request)
+                                                                               public global::ValiCraft.ValidationErrors? Validate(global::Test.Requests.Order request)
                                                                                {
                                                                                    var errors = RunValidation(request, null);
 
                                                                                    if (errors is null) return null;
 
-                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   return new global::ValiCraft.ValidationErrors
                                                                                    {
                                                                                        Code = "OrderErrors",
                                                                                        Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                       Errors = errors
-                                                                                   };
-                                                                               }
-
-                                                                               /// <inheritdoc />
-                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request, string? inheritedTargetPath)
-                                                                               {
-                                                                                   var errors = RunValidation(request, inheritedTargetPath);
-
-                                                                                   if (errors is null) return null;
-
-                                                                                   return new global::ErrorCraft.ValidationErrors
-                                                                                   {
-                                                                                       Code = "OrderErrors",
-                                                                                       Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                        Errors = errors
                                                                                    };
                                                                                }
@@ -117,9 +98,9 @@ public class PolymorphicRuleChain_MultipleTypesTest : IncrementalGeneratorTestBa
                                                                                /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                                                                                /// </summary>
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.Order request, string? inheritedTargetPath)
+                                                                               public global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? RunValidation(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                                {
-                                                                                   global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
+                                                                                   global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
                                                                        
                                                                                    if (request.Payment is global::Test.Requests.CreditCardPayment typedCreditCardPayment)
                                                                                    {

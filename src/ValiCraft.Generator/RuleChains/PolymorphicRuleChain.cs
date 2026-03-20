@@ -80,7 +80,7 @@ public record PolymorphicRuleChain(
         return $$"""
                  {{Indent}}if ({{requestAccessor}} is null)
                  {{Indent}}{
-                 {{Indent}}    (errors ??= []).Add(new global::{{KnownNames.Types.ValidationError}}<{{Target!.Type.FormattedTypeName}}>
+                 {{Indent}}    (errors ??= []).Add(new global::{{KnownNames.Types.ValidationError}}
                  {{Indent}}    {
                  {{Indent}}        Code = "{{Target!.TargetPath.Value}}IsNull",
                  {{Indent}}        Message = $"{{Target!.DefaultTargetName.Value}} cannot be null.",
@@ -137,7 +137,7 @@ public record PolymorphicRuleChain(
             : message;
 
         return $$"""
-                 {{childIndent}}(errors ??= []).Add(new global::{{KnownNames.Types.ValidationError}}<{{Target!.Type.FormattedTypeName}}>
+                 {{childIndent}}(errors ??= []).Add(new global::{{KnownNames.Types.ValidationError}}
                  {{childIndent}}{
                  {{childIndent}}    Code = "{{Target!.TargetPath.Value}}UnsupportedType",
                  {{childIndent}}    Message = {{messageExpression}},

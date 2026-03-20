@@ -29,7 +29,7 @@ public class StructValidationTests
         var result = validator.Validate(model);
 
         result.Should().NotBeNull();
-        result!.Errors.Should().HaveCountGreaterThanOrEqualTo(2);
+        result.Value.Errors.Should().HaveCountGreaterThanOrEqualTo(2);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class StructValidationTests
         var result = validator.Validate(model);
 
         result.Should().NotBeNull();
-        result!.Errors.Should().HaveCountGreaterThanOrEqualTo(2);
+        result.Value.Errors.Should().HaveCountGreaterThanOrEqualTo(2);
     }
 }
 
@@ -81,7 +81,7 @@ public class MethodTargetValidationTests
         var result = validator.Validate(model);
 
         result.Should().NotBeNull();
-        result!.Errors.Should().HaveCountGreaterThanOrEqualTo(1);
+        result.Value.Errors.Should().HaveCountGreaterThanOrEqualTo(1);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class MethodTargetValidationTests
         var result = validator.Validate(model);
 
         result.Should().NotBeNull();
-        result!.Errors.Should().NotBeEmpty();
+        result.Value.Errors.Should().NotBeEmpty();
     }
 }
 
@@ -150,7 +150,7 @@ public class TypeSafetyTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Errors.Should().HaveCountGreaterThan(0);
+        result.Value.Errors.Should().HaveCountGreaterThan(0);
     }
 
     [Fact]
@@ -170,8 +170,8 @@ public class TypeSafetyTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Errors.Should().NotBeEmpty();
-        result.Errors.Should().Contain(e => e.TargetName == "Name");
+        result.Value.Errors.Should().NotBeEmpty();
+        result.Value.Errors.Should().Contain(e => e.TargetName == "Name");
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class TypeSafetyTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Errors.Should().NotBeEmpty();
+        result.Value.Errors.Should().NotBeEmpty();
     }
 }
 
@@ -242,7 +242,7 @@ public class NestedValidationTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Errors.Should().HaveCountGreaterThanOrEqualTo(2);
+        result.Value.Errors.Should().HaveCountGreaterThanOrEqualTo(2);
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public class NestedValidationTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Errors.Should().HaveCountGreaterThanOrEqualTo(3);
+        result.Value.Errors.Should().HaveCountGreaterThanOrEqualTo(3);
     }
 }
 
@@ -312,7 +312,7 @@ public class CollectionValidationTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Errors.Should().NotBeEmpty();
+        result.Value.Errors.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -335,7 +335,7 @@ public class CollectionValidationTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Errors.Should().NotBeEmpty();
+        result.Value.Errors.Should().NotBeEmpty();
     }
 }
 
@@ -381,8 +381,8 @@ public class NullableStringTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Errors.Should().NotBeEmpty();
-        result.Errors.Should().Contain(e => e.TargetName == "Name");
+        result.Value.Errors.Should().NotBeEmpty();
+        result.Value.Errors.Should().Contain(e => e.TargetName == "Name");
     }
 
     [Fact]
@@ -402,7 +402,7 @@ public class NullableStringTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Errors.Should().NotBeEmpty();
+        result.Value.Errors.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -422,7 +422,7 @@ public class NullableStringTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Errors.Should().NotBeEmpty();
-        result.Errors.Should().Contain(e => e.TargetName == "Email");
+        result.Value.Errors.Should().NotBeEmpty();
+        result.Value.Errors.Should().Contain(e => e.TargetName == "Email");
     }
 }

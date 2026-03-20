@@ -30,7 +30,6 @@ public class SingleEnsureEachRuleChain_SingleRuleWithOverrides_ThenStaticValidat
                                                                         using ValiCraft;
                                                                         using ValiCraft.Attributes;
                                                                         using ValiCraft.BuilderTypes;
-                                                                        using ErrorCraft;
 
                                                                         namespace Test.Validators;
 
@@ -50,7 +49,6 @@ public class SingleEnsureEachRuleChain_SingleRuleWithOverrides_ThenStaticValidat
                                                                         using ValiCraft;
                                                                         using ValiCraft.Attributes;
                                                                         using ValiCraft.AsyncBuilderTypes;
-                                                                        using ErrorCraft;
 
                                                                         namespace Test.Validators;
 
@@ -76,7 +74,6 @@ public class SingleEnsureEachRuleChain_SingleRuleWithOverrides_ThenStaticValidat
                                                                         using ValiCraft;
                                                                         using ValiCraft.Attributes;
                                                                         using ValiCraft.BuilderTypes;
-                                                                        using ErrorCraft;
 
                                                                         namespace Test.Validators
                                                                         {
@@ -86,34 +83,17 @@ public class SingleEnsureEachRuleChain_SingleRuleWithOverrides_ThenStaticValidat
                                                                             public partial class LineItemValidator : global::ValiCraft.IStaticValidator<global::Test.Requests.LineItem>
                                                                             {
                                                                                 /// <inheritdoc />
-                                                                                public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.LineItem request)
+                                                                                public static global::ValiCraft.ValidationErrors? Validate(global::Test.Requests.LineItem request)
                                                                                 {
                                                                                     var errors = RunValidation(request, null);
 
                                                                                     if (errors is null) return null;
 
-                                                                                    return new global::ErrorCraft.ValidationErrors
+                                                                                    return new global::ValiCraft.ValidationErrors
                                                                                     {
                                                                                         Code = "LineItemErrors",
                                                                                         Message = "One or more validation errors occurred.",
-                                                                                        Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                        Errors = errors
-                                                                                    };
-                                                                                }
-
-                                                                                /// <inheritdoc />
-                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                                public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.LineItem request, string? inheritedTargetPath)
-                                                                                {
-                                                                                    var errors = RunValidation(request, inheritedTargetPath);
-
-                                                                                    if (errors is null) return null;
-
-                                                                                    return new global::ErrorCraft.ValidationErrors
-                                                                                    {
-                                                                                        Code = "LineItemErrors",
-                                                                                        Message = "One or more validation errors occurred.",
-                                                                                        Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                        Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                         Errors = errors
                                                                                     };
                                                                                 }
@@ -122,18 +102,18 @@ public class SingleEnsureEachRuleChain_SingleRuleWithOverrides_ThenStaticValidat
                                                                                 /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                                                                                 /// </summary>
                                                                                 [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                                public static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.LineItem request, string? inheritedTargetPath)
+                                                                                public static global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? RunValidation(global::Test.Requests.LineItem request, string? inheritedTargetPath)
                                                                                 {
-                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
+                                                                                    global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
 
                                                                                     if (!global::ValiCraft.Rules.NotNullOrWhiteSpace(request.ProductName))
                                                                                     {
                                                                                         errors ??= new(1);
-                                                                                        errors.Add(new global::ErrorCraft.ValidationError<string>
+                                                                                        errors.Add(new global::ValiCraft.ValidationError
                                                                                         {
                                                                                             Code = nameof(global::ValiCraft.Rules.NotNullOrWhiteSpace),
                                                                                             Message = $"Product Name must not be null or contain only whitespace.",
-                                                                                            Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                            Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                             TargetName = "Product Name",
                                                                                             TargetPath = $"{inheritedTargetPath}ProductName",
                                                                                             AttemptedValue = request.ProductName,
@@ -154,7 +134,6 @@ public class SingleEnsureEachRuleChain_SingleRuleWithOverrides_ThenStaticValidat
                                                                         using ValiCraft;
                                                                         using ValiCraft.Attributes;
                                                                         using ValiCraft.AsyncBuilderTypes;
-                                                                        using ErrorCraft;
 
                                                                         namespace Test.Validators
                                                                         {
@@ -164,34 +143,17 @@ public class SingleEnsureEachRuleChain_SingleRuleWithOverrides_ThenStaticValidat
                                                                             public partial class OrderValidator : global::ValiCraft.IStaticAsyncValidator<global::Test.Requests.Order>
                                                                             {
                                                                                 /// <inheritdoc />
-                                                                                public static async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
+                                                                                public static async global::System.Threading.Tasks.Task<global::ValiCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                 {
                                                                                     var errors = await RunValidationAsync(request, null, cancellationToken);
 
                                                                                     if (errors is null) return null;
 
-                                                                                    return new global::ErrorCraft.ValidationErrors
+                                                                                    return new global::ValiCraft.ValidationErrors
                                                                                     {
                                                                                         Code = "OrderErrors",
                                                                                         Message = "One or more validation errors occurred.",
-                                                                                        Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                        Errors = errors
-                                                                                    };
-                                                                                }
-
-                                                                                /// <inheritdoc />
-                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                                public static async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
-                                                                                {
-                                                                                    var errors = await RunValidationAsync(request, inheritedTargetPath, cancellationToken);
-
-                                                                                    if (errors is null) return null;
-
-                                                                                    return new global::ErrorCraft.ValidationErrors
-                                                                                    {
-                                                                                        Code = "OrderErrors",
-                                                                                        Message = "One or more validation errors occurred.",
-                                                                                        Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                        Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                         Errors = errors
                                                                                     };
                                                                                 }
@@ -200,9 +162,9 @@ public class SingleEnsureEachRuleChain_SingleRuleWithOverrides_ThenStaticValidat
                                                                                 /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                                                                                 /// </summary>
                                                                                 [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                                public static async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                                public static async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ValiCraft.ValidationError>?> RunValidationAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
                                                                                 {
-                                                                                    global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
+                                                                                    global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
 
                                                                                     var index2 = 0;
                                                                                     foreach (var element in request.LineItems)
@@ -210,11 +172,11 @@ public class SingleEnsureEachRuleChain_SingleRuleWithOverrides_ThenStaticValidat
                                                                                         if (!global::ValiCraft.Rules.NotNull(element))
                                                                                         {
                                                                                             errors ??= new(2);
-                                                                                            errors.Add(new global::ErrorCraft.ValidationError<global::Test.Requests.LineItem>
+                                                                                            errors.Add(new global::ValiCraft.ValidationError
                                                                                             {
                                                                                                 Code = "LI_REQ",
                                                                                                 Message = $"Line item is required",
-                                                                                                Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                                Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                                 TargetName = "Line Items",
                                                                                                 TargetPath = $"{inheritedTargetPath}{(inheritedTargetPath is not null ? "LineItems[{index2}]." : null)}",
                                                                                                 AttemptedValue = element,

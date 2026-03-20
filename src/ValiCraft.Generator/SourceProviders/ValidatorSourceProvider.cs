@@ -147,23 +147,6 @@ public static class ValidatorSourceProvider
                         };
                     }
 
-                    /// <inheritdoc />
-                    [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                    public async global::System.Threading.Tasks.Task<global::{{KnownNames.Types.ValidationErrors}}?> {{KnownNames.Methods.GetValidateMethod(validator.IsAsync)}}({{validator.RequestTypeName.FullyQualifiedName}} request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
-                    {
-                        var errors = await {{KnownNames.Methods.GetRunValidationMethod(validator.IsAsync)}}(request, inheritedTargetPath, cancellationToken);
-
-                        if (errors is null) return null;
-
-                        return new global::{{KnownNames.Types.ValidationErrors}}
-                        {
-                            Code = "{{validator.RequestTypeName.Name}}Errors",
-                            Message = "One or more validation errors occurred.",
-                            Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,{{GetMetadataProperty(validator)}}
-                            Errors = errors
-                        };
-                    }
-
                     /// <summary>
                     /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                     /// </summary>
@@ -192,23 +175,6 @@ public static class ValidatorSourceProvider
                     public global::{{KnownNames.Types.ValidationErrors}}? {{KnownNames.Methods.GetValidateMethod(validator.IsAsync)}}({{validator.RequestTypeName.FullyQualifiedName}} request)
                     {
                         var errors = {{KnownNames.Methods.GetRunValidationMethod(validator.IsAsync)}}(request, null);
-
-                        if (errors is null) return null;
-
-                        return new global::{{KnownNames.Types.ValidationErrors}}
-                        {
-                            Code = "{{validator.RequestTypeName.Name}}Errors",
-                            Message = "One or more validation errors occurred.",
-                            Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,{{GetMetadataProperty(validator)}}
-                            Errors = errors
-                        };
-                    }
-
-                    /// <inheritdoc />
-                    [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                    public global::{{KnownNames.Types.ValidationErrors}}? {{KnownNames.Methods.GetValidateMethod(validator.IsAsync)}}({{validator.RequestTypeName.FullyQualifiedName}} request, string? inheritedTargetPath)
-                    {
-                        var errors = {{KnownNames.Methods.GetRunValidationMethod(validator.IsAsync)}}(request, inheritedTargetPath);
 
                         if (errors is null) return null;
 
@@ -261,23 +227,6 @@ public static class ValidatorSourceProvider
                         };
                     }
 
-                    /// <inheritdoc />
-                    [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                    public static global::{{KnownNames.Types.ValidationErrors}}? {{KnownNames.Methods.GetValidateMethod(validator.IsAsync)}}({{validator.RequestTypeName.FullyQualifiedName}} request, string? inheritedTargetPath)
-                    {
-                        var errors = {{KnownNames.Methods.GetRunValidationMethod(validator.IsAsync)}}(request, inheritedTargetPath);
-
-                        if (errors is null) return null;
-
-                        return new global::{{KnownNames.Types.ValidationErrors}}
-                        {
-                            Code = "{{validator.RequestTypeName.Name}}Errors",
-                            Message = "One or more validation errors occurred.",
-                            Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,{{GetMetadataProperty(validator)}}
-                            Errors = errors
-                        };
-                    }
-
                     /// <summary>
                     /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                     /// </summary>
@@ -306,23 +255,6 @@ public static class ValidatorSourceProvider
                     public static async global::System.Threading.Tasks.Task<global::{{KnownNames.Types.ValidationErrors}}?> {{KnownNames.Methods.GetValidateMethod(validator.IsAsync)}}({{validator.RequestTypeName.FullyQualifiedName}} request, global::System.Threading.CancellationToken cancellationToken = default)
                     {
                         var errors = await {{KnownNames.Methods.GetRunValidationMethod(validator.IsAsync)}}(request, null, cancellationToken);
-
-                        if (errors is null) return null;
-
-                        return new global::{{KnownNames.Types.ValidationErrors}}
-                        {
-                            Code = "{{validator.RequestTypeName.Name}}Errors",
-                            Message = "One or more validation errors occurred.",
-                            Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,{{GetMetadataProperty(validator)}}
-                            Errors = errors
-                        };
-                    }
-
-                    /// <inheritdoc />
-                    [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                    public static async global::System.Threading.Tasks.Task<global::{{KnownNames.Types.ValidationErrors}}?> {{KnownNames.Methods.GetValidateMethod(validator.IsAsync)}}({{validator.RequestTypeName.FullyQualifiedName}} request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
-                    {
-                        var errors = await {{KnownNames.Methods.GetRunValidationMethod(validator.IsAsync)}}(request, inheritedTargetPath, cancellationToken);
 
                         if (errors is null) return null;
 

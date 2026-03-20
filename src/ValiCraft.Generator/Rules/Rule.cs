@@ -62,7 +62,7 @@ public abstract record Rule(
         return $$"""
                  {{indent}}{
                  {{indent}}    errors ??= new({{context.Counter}});
-                 {{indent}}    errors.Add(new {{errorTypeName}}<{{target.Type.FormattedTypeName}}>
+                 {{indent}}    errors.Add(new {{errorTypeName}}
                  {{indent}}    {
                  {{indent}}        Code = {{GetErrorCode(validationRuleInvocation)}},
                  {{indent}}        Message = {{GetErrorMessage(requestName, target, targetNameInfo)}},

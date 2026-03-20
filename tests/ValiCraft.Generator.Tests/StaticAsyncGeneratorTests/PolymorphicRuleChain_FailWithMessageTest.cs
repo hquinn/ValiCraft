@@ -38,7 +38,6 @@ public class PolymorphicRuleChain_FailWithMessageTest : IncrementalGeneratorTest
                                                                          using ValiCraft;
                                                                          using ValiCraft.Attributes;
                                                                          using ValiCraft.AsyncBuilderTypes;
-                                                                         using ErrorCraft;
 
                                                                          namespace Test.Validators;
 
@@ -64,7 +63,6 @@ public class PolymorphicRuleChain_FailWithMessageTest : IncrementalGeneratorTest
                                                                        using ValiCraft;
                                                                        using ValiCraft.Attributes;
                                                                        using ValiCraft.AsyncBuilderTypes;
-                                                                       using ErrorCraft;
                                                                        
                                                                        namespace Test.Validators
                                                                        {
@@ -74,34 +72,17 @@ public class PolymorphicRuleChain_FailWithMessageTest : IncrementalGeneratorTest
                                                                            public partial class OrderValidator : global::ValiCraft.IStaticAsyncValidator<global::Test.Requests.Order>
                                                                            {
                                                                                /// <inheritdoc />
-                                                                               public static async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
+                                                                               public static async global::System.Threading.Tasks.Task<global::ValiCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
                                                                                    var errors = await RunValidationAsync(request, null, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
-                                                                                   return new global::ErrorCraft.ValidationErrors
+                                                                                   return new global::ValiCraft.ValidationErrors
                                                                                    {
                                                                                        Code = "OrderErrors",
                                                                                        Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                       Errors = errors
-                                                                                   };
-                                                                               }
-
-                                                                               /// <inheritdoc />
-                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static async global::System.Threading.Tasks.Task<global::ErrorCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken = default)
-                                                                               {
-                                                                                   var errors = await RunValidationAsync(request, inheritedTargetPath, cancellationToken);
-
-                                                                                   if (errors is null) return null;
-
-                                                                                   return new global::ErrorCraft.ValidationErrors
-                                                                                   {
-                                                                                       Code = "OrderErrors",
-                                                                                       Message = "One or more validation errors occurred.",
-                                                                                       Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                       Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                        Errors = errors
                                                                                    };
                                                                                }
@@ -110,9 +91,9 @@ public class PolymorphicRuleChain_FailWithMessageTest : IncrementalGeneratorTest
                                                                                /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                                                                                /// </summary>
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                               public static async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>?> RunValidationAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                               public static async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ValiCraft.ValidationError>?> RunValidationAsync(global::Test.Requests.Order request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
                                                                                {
-                                                                                   global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
+                                                                                   global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
                                                                        
                                                                                    if (request.Payment is global::Test.Requests.CreditCardPayment typedCreditCardPayment)
                                                                                    {
@@ -131,11 +112,11 @@ public class PolymorphicRuleChain_FailWithMessageTest : IncrementalGeneratorTest
                                                                                    }
                                                                                    else
                                                                                    {
-                                                                                       (errors ??= []).Add(new global::ErrorCraft.ValidationError<global::Test.Requests.Payment?>
+                                                                                       (errors ??= []).Add(new global::ValiCraft.ValidationError
                                                                                        {
                                                                                            Code = "PaymentUnsupportedType",
                                                                                            Message = $"Unknown payment type",
-                                                                                           Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                           Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                            TargetName = "Payment",
                                                                                            TargetPath = $"{inheritedTargetPath}Payment",
                                                                                            AttemptedValue = request.Payment

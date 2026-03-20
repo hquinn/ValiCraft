@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using ErrorCraft;
 
 namespace ValiCraft;
 
@@ -21,19 +20,6 @@ public interface IStaticAsyncValidator<TRequest> where TRequest : notnull
     static abstract Task<ValidationErrors?> ValidateAsync(TRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Validates the specified request with an inherited target path for nested validation.
-    /// This method is intended for internal use by nested validators.
-    /// </summary>
-    /// <param name="request">The object to validate.</param>
-    /// <param name="inheritedTargetPath">The path prefix from parent validators.</param>
-    /// <param name="cancellationToken">The cancellation token</param>
-    /// <returns>
-    /// A <see cref="ValidationErrors"/> if validation fails; otherwise, <c>null</c>.
-    /// </returns>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    static abstract Task<ValidationErrors?> ValidateAsync(TRequest request, string? inheritedTargetPath, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Runs the validation logic and returns the raw error list.
     /// This method is intended for internal use by generated code for efficient nested validation.
     /// </summary>
@@ -44,5 +30,5 @@ public interface IStaticAsyncValidator<TRequest> where TRequest : notnull
     /// A list of validation errors if validation fails; otherwise, <c>null</c>.
     /// </returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    static abstract Task<List<IValidationError>?> RunValidationAsync(TRequest request, string? inheritedTargetPath, CancellationToken cancellationToken);
+    static abstract Task<List<ValidationError>?> RunValidationAsync(TRequest request, string? inheritedTargetPath, CancellationToken cancellationToken);
 }

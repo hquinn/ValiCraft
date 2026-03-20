@@ -1,8 +1,6 @@
 using System.Collections.Immutable;
 using AwesomeAssertions;
 using AwesomeAssertions.Execution;
-using ErrorCraft;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -18,7 +16,7 @@ public abstract class AnalyzerTestBase<TAnalyzer> where TAnalyzer : DiagnosticAn
         assertionScope.FormattingOptions.MaxLines = 30000;
         assertionScope.FormattingOptions.MaxDepth = 1000;
 
-        var options = IncrementalGeneratorTestOptions.CreateDefault([typeof(Validator<>), typeof(IValidationError)]);
+        var options = IncrementalGeneratorTestOptions.CreateDefault([typeof(Validator<>), typeof(ValidationError)]);
 
         var syntaxTrees = inputs.Select(x => CSharpSyntaxTree.ParseText(x));
 

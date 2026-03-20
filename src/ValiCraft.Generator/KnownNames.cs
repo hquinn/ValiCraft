@@ -8,7 +8,6 @@ public static class KnownNames
         public const string Attributes =  $"{Base}.Attributes";
         public const string BuilderTypes =  $"{Base}.BuilderTypes";
         public const string AsyncBuilderTypes =  $"{Base}.AsyncBuilderTypes";
-        public const string ErrorCraft = "ErrorCraft";
     }
 
     public static class AttributeNames
@@ -50,8 +49,8 @@ public static class KnownNames
 
     public static class Types
     {
-        public const string ValidationError = $"{Namespaces.ErrorCraft}.ValidationError";
-        public const string ValidationErrors = $"{Namespaces.ErrorCraft}.ValidationErrors";
+        public const string ValidationError = $"{Namespaces.Base}.ValidationError";
+        public const string ValidationErrors = $"{Namespaces.Base}.ValidationErrors";
     }
 
     public static class Interfaces
@@ -65,8 +64,8 @@ public static class KnownNames
         public const string IAsyncValidationRuleBuilderType = $"{Namespaces.AsyncBuilderTypes}.IAsyncValidationRuleBuilderType";
         public const string IBuilderType = $"{Namespaces.BuilderTypes}.IBuilderType";
         public const string IAsyncBuilderType = $"{Namespaces.AsyncBuilderTypes}.IAsyncBuilderType";
-        public const string IValidationError = $"{Namespaces.ErrorCraft}.IValidationError";
-        public const string IValidationErrors = $"{Namespaces.ErrorCraft}.IValidationErrors";
+        public const string IValidationError = $"{Namespaces.Base}.ValidationError";
+        public const string IValidationErrors = $"{Namespaces.Base}.ValidationErrors";
         
         public static string GetValidatorInterface(bool isAsync, bool isStatic)
         {
@@ -133,7 +132,7 @@ public static class KnownNames
     {
         public const string OnFailureMode = "OnFailureMode";
         public const string PolymorphicNullBehavior = "PolymorphicNullBehavior";
-        public const string ErrorSeverity = $"{Namespaces.ErrorCraft}.ErrorSeverity";
+        public const string ErrorSeverity = $"{Namespaces.Base}.ErrorSeverity";
     }
 
     public static class Targets

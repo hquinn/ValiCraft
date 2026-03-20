@@ -29,7 +29,6 @@ public class SingleWithOnFailureRuleChain_SingleRule_ThenStaticValidateTest : In
                                                                         using ValiCraft;
                                                                         using ValiCraft.Attributes;
                                                                         using ValiCraft.BuilderTypes;
-                                                                        using ErrorCraft;
 
                                                                         namespace Test.Validators;
 
@@ -49,7 +48,6 @@ public class SingleWithOnFailureRuleChain_SingleRule_ThenStaticValidateTest : In
                                                                         using ValiCraft;
                                                                         using ValiCraft.Attributes;
                                                                         using ValiCraft.BuilderTypes;
-                                                                        using ErrorCraft;
 
                                                                         namespace Test.Validators;
 
@@ -76,7 +74,6 @@ public class SingleWithOnFailureRuleChain_SingleRule_ThenStaticValidateTest : In
                                                                       using ValiCraft;
                                                                       using ValiCraft.Attributes;
                                                                       using ValiCraft.BuilderTypes;
-                                                                      using ErrorCraft;
 
                                                                       namespace Test.Validators
                                                                       {
@@ -86,34 +83,17 @@ public class SingleWithOnFailureRuleChain_SingleRule_ThenStaticValidateTest : In
                                                                           public partial class CustomerValidator : global::ValiCraft.IStaticValidator<global::Test.Requests.Customer>
                                                                           {
                                                                               /// <inheritdoc />
-                                                                              public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Customer request)
+                                                                              public static global::ValiCraft.ValidationErrors? Validate(global::Test.Requests.Customer request)
                                                                               {
                                                                                   var errors = RunValidation(request, null);
 
                                                                                   if (errors is null) return null;
 
-                                                                                  return new global::ErrorCraft.ValidationErrors
+                                                                                  return new global::ValiCraft.ValidationErrors
                                                                                   {
                                                                                       Code = "CustomerErrors",
                                                                                       Message = "One or more validation errors occurred.",
-                                                                                      Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                      Errors = errors
-                                                                                  };
-                                                                              }
-
-                                                                              /// <inheritdoc />
-                                                                              [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                              public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Customer request, string? inheritedTargetPath)
-                                                                              {
-                                                                                  var errors = RunValidation(request, inheritedTargetPath);
-
-                                                                                  if (errors is null) return null;
-
-                                                                                  return new global::ErrorCraft.ValidationErrors
-                                                                                  {
-                                                                                      Code = "CustomerErrors",
-                                                                                      Message = "One or more validation errors occurred.",
-                                                                                      Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                      Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                       Errors = errors
                                                                                   };
                                                                               }
@@ -122,18 +102,18 @@ public class SingleWithOnFailureRuleChain_SingleRule_ThenStaticValidateTest : In
                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                                                                               /// </summary>
                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                              public static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.Customer request, string? inheritedTargetPath)
+                                                                              public static global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? RunValidation(global::Test.Requests.Customer request, string? inheritedTargetPath)
                                                                               {
-                                                                                  global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
+                                                                                  global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
 
                                                                                   if (!global::ValiCraft.Rules.NotNullOrWhiteSpace(request.Name))
                                                                                   {
                                                                                       errors ??= new(1);
-                                                                                      errors.Add(new global::ErrorCraft.ValidationError<string>
+                                                                                      errors.Add(new global::ValiCraft.ValidationError
                                                                                       {
                                                                                           Code = nameof(global::ValiCraft.Rules.NotNullOrWhiteSpace),
                                                                                           Message = $"Name must not be null or contain only whitespace.",
-                                                                                          Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                          Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                           TargetName = "Name",
                                                                                           TargetPath = $"{inheritedTargetPath}Name",
                                                                                           AttemptedValue = request.Name,
@@ -154,7 +134,6 @@ public class SingleWithOnFailureRuleChain_SingleRule_ThenStaticValidateTest : In
                                                                       using ValiCraft;
                                                                       using ValiCraft.Attributes;
                                                                       using ValiCraft.BuilderTypes;
-                                                                      using ErrorCraft;
 
                                                                       namespace Test.Validators
                                                                       {
@@ -164,34 +143,17 @@ public class SingleWithOnFailureRuleChain_SingleRule_ThenStaticValidateTest : In
                                                                           public partial class OrderValidator : global::ValiCraft.IStaticValidator<global::Test.Requests.Order>
                                                                           {
                                                                               /// <inheritdoc />
-                                                                              public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request)
+                                                                              public static global::ValiCraft.ValidationErrors? Validate(global::Test.Requests.Order request)
                                                                               {
                                                                                   var errors = RunValidation(request, null);
 
                                                                                   if (errors is null) return null;
 
-                                                                                  return new global::ErrorCraft.ValidationErrors
+                                                                                  return new global::ValiCraft.ValidationErrors
                                                                                   {
                                                                                       Code = "OrderErrors",
                                                                                       Message = "One or more validation errors occurred.",
-                                                                                      Severity = global::ErrorCraft.ErrorSeverity.Error,
-                                                                                      Errors = errors
-                                                                                  };
-                                                                              }
-
-                                                                              /// <inheritdoc />
-                                                                              [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                              public static global::ErrorCraft.ValidationErrors? Validate(global::Test.Requests.Order request, string? inheritedTargetPath)
-                                                                              {
-                                                                                  var errors = RunValidation(request, inheritedTargetPath);
-
-                                                                                  if (errors is null) return null;
-
-                                                                                  return new global::ErrorCraft.ValidationErrors
-                                                                                  {
-                                                                                      Code = "OrderErrors",
-                                                                                      Message = "One or more validation errors occurred.",
-                                                                                      Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                      Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                       Errors = errors
                                                                                   };
                                                                               }
@@ -200,18 +162,18 @@ public class SingleWithOnFailureRuleChain_SingleRule_ThenStaticValidateTest : In
                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
                                                                               /// </summary>
                                                                               [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-                                                                              public static global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? RunValidation(global::Test.Requests.Order request, string? inheritedTargetPath)
+                                                                              public static global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? RunValidation(global::Test.Requests.Order request, string? inheritedTargetPath)
                                                                               {
-                                                                                  global::System.Collections.Generic.List<global::ErrorCraft.IValidationError>? errors = null;
+                                                                                  global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
 
                                                                                   if (!global::ValiCraft.Rules.NotNull(request.Customer))
                                                                                   {
                                                                                       errors ??= new(2);
-                                                                                      errors.Add(new global::ErrorCraft.ValidationError<global::Test.Requests.Customer?>
+                                                                                      errors.Add(new global::ValiCraft.ValidationError
                                                                                       {
                                                                                           Code = nameof(global::ValiCraft.Rules.NotNull),
                                                                                           Message = $"Customer is required.",
-                                                                                          Severity = global::ErrorCraft.ErrorSeverity.Error,
+                                                                                          Severity = global::ValiCraft.ErrorSeverity.Error,
                                                                                           TargetName = "Customer",
                                                                                           TargetPath = $"{inheritedTargetPath}Customer",
                                                                                           AttemptedValue = request.Customer,
