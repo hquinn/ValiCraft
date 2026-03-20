@@ -150,7 +150,6 @@ ValiCraft emits helpful compiler diagnostics when there are issues with your val
 | `VALC302` | Static validator has instance field |
 | `VALC303` | Static validator has instance property |
 | `VALC304` | Static validator has instance method |
-| `VALC401` | Disallowed `Validate` overload — the overload with `inheritedTargetPath` is for internal use only |
 | `VALC402` | Disallowed `RunValidation` call — `RunValidation` is for internal use by generated code only |
 
 These diagnostics appear directly in your IDE with exact source locations.
