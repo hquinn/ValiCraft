@@ -22,15 +22,15 @@ The two key rule chain builders are:
 
 ## Running Validation
 
-ValiCraft validators implement `IValidator<T>`:
+ValiCraft validators implement:
+ - `IValidator<T>` if inheriting from `Validator<T>`
+ - `IAsyncValidator<T>` if inheriting from `AsyncValidator<T>`
+ - `IStaticValidator<T>` if inheriting from `StaticValidator<T>`
+ - `IStaticAsyncValidator<T>` if inheriting from `StaticAsyncValidator<T>`
 
-```csharp
-public interface IValidator<TRequest>
-{
-    ValidationErrors? Validate(TRequest request);
-    [EditorBrowsable(Never)] ValidationErrors? Validate(TRequest request, string? inheritedTargetPath);
-}
-```
+Each interface defines a `ValidationError? Validate/ValidateAsync(T request)` method to use (with async providing a `CancellationToken` parameter).
+
+Static validators makes use of static abstract members in the `Validate` methods.
 
 ## Working with Results
 
@@ -48,25 +48,5 @@ else
 {
     // result.Errors contains the list of validation errors
     HandleErrors(result);
-}
-```
-
-Each `IValidationError` contains rich information:
-
-```csharp
-public interface IValidationError
-{
-    string Code { get; }           // Error code (e.g., "IsNotNullOrWhiteSpace")
-    string Message { get; }        // Human-readable message
-    string TargetName { get; }     // Property name (humanized)
-    string TargetPath { get; }     // Full path (e.g., "Orders[0].Total")
-    ErrorSeverity Severity { get; }
-    IReadOnlyDictionary<string, object>? Metadata { get; }
-}
-
-// ValidationError<T> also includes the attempted value
-public interface IValidationError<out T> : IValidationError
-{
-    T AttemptedValue { get; }
 }
 ```
