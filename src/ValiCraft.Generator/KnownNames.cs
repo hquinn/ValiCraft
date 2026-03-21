@@ -101,6 +101,8 @@ public static class KnownNames
         public const string ValidateAsync = "ValidateAsync";
         public const string RunValidation = "RunValidation";
         public const string RunValidationAsync = "RunValidationAsync";
+        public const string RunValidationLogic = "RunValidationLogic";
+        public const string RunValidationLogicAsync = "RunValidationLogicAsync";
         public const string Polymorphic = "Polymorphic";
         public const string WhenType = "WhenType";
         public const string Allow = "Allow";
@@ -125,6 +127,16 @@ public static class KnownNames
             }
 
             return RunValidation;
+        }
+
+        public static string GetRunValidationLogicMethod(bool isAsync)
+        {
+            if (isAsync)
+            {
+                return RunValidationLogicAsync;
+            }
+
+            return RunValidationLogic;
         }
     }
 

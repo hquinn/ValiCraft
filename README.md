@@ -100,27 +100,24 @@ ValiCraft delivers exceptional performance compared to traditional validation li
 ### Simple Validation - Valid Model
 | Method                | Mean          | Gen0   | Allocated |
 |---------------------- |--------------:|-------:|----------:|
-| ValiCraft             |     5.4063 ns |      - |         - |
-| ValiCraftWithMetaData |     5.4166 ns |      - |         - |
-| FluentValidation      |   168.1272 ns | 0.1097 |     688 B |
+| ValiCraft             |    19.1820 ns |      - |         - |
+| ValiCraftWithMetaData |    12.7780 ns |      - |         - |
+| FluentValidation      |   168.0000 ns | 0.1097 |     688 B |
 
 ### Simple Validation - Invalid Model
 | Method                | Mean          | Gen0   | Allocated |
 |---------------------- |--------------:|-------:|----------:|
-| ValiCraft             |    94.5754 ns | 0.0777 |     488 B |
-| ValiCraftWithMetaData |   148.4748 ns | 0.1160 |     728 B |
-| FluentValidation      | 2,561.6943 ns | 1.0681 |    6712 B |
+| ValiCraft             |    62.7240 ns | 0.0854 |     536 B |
+| ValiCraftWithMetaData |    98.6020 ns | 0.1236 |     776 B |
+| FluentValidation      | 2,035.4290 ns | 1.0681 |   6,712 B |
 
-> **Note:** ValiCraft validators have zero instantiation cost because the source generator produces pure static validation code with no runtime initialization. See [full benchmark results](docs/performance.md) for collection, complex, and instantiation benchmarks.
+> **Note:** ValiCraft validators have near-zero instantiation cost (~3ns, 24B for the class instance) because the source generator produces validation logic that requires no runtime initialization. See [full benchmark results](docs/performance.md) for collection, complex, and instantiation benchmarks.
 
 ## Installation
 
 ```bash
 dotnet add package ValiCraft
 ```
-
-This also installs the required dependency:
-- **ErrorCraft** — Provides `IValidationError` and `ValidationError` types
 
 ## Documentation
 

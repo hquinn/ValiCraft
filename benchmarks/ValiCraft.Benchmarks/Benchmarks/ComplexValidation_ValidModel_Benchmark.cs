@@ -37,20 +37,20 @@ public class ComplexValidation_ValidModel_Benchmark
     }
 
     [Benchmark(Baseline = true)]
-    public void ValiCraft()
+    public ValidationErrors? ValiCraft()
     {
-        var result = _valiCraftValidator.Validate(_validModel);
-    }
-    
-    [Benchmark]
-    public void ValiCraftWithMetaData()
-    {
-        var result = _valiCraftValidatorWithMetaData.Validate(_validModel);
+        return _valiCraftValidator.Validate(_validModel);
     }
 
     [Benchmark]
-    public void FluentValidation()
+    public ValidationErrors? ValiCraftWithMetaData()
     {
-        var result = _fluentValidator.Validate(_validModel);
+        return _valiCraftValidatorWithMetaData.Validate(_validModel);
+    }
+
+    [Benchmark]
+    public object? FluentValidation()
+    {
+        return _fluentValidator.Validate(_validModel);
     }
 }

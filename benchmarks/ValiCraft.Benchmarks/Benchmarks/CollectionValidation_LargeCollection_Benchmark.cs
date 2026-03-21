@@ -30,20 +30,20 @@ public class CollectionValidation_LargeCollection_Benchmark
     }
 
     [Benchmark(Baseline = true)]
-    public void ValiCraft()
+    public ValidationErrors? ValiCraft()
     {
-        var result = _valiCraftValidator.Validate(_largeCollectionModel);
+        return _valiCraftValidator.Validate(_largeCollectionModel);
     }
 
     [Benchmark]
-    public void ValiCraftWithMetaData()
+    public ValidationErrors? ValiCraftWithMetaData()
     {
-        var result = _valiCraftValidatorWithMetaData.Validate(_largeCollectionModel);
+        return _valiCraftValidatorWithMetaData.Validate(_largeCollectionModel);
     }
 
     [Benchmark]
-    public void FluentValidation()
+    public object? FluentValidation()
     {
-        var result = _fluentValidator.Validate(_largeCollectionModel);
+        return _fluentValidator.Validate(_largeCollectionModel);
     }
 }

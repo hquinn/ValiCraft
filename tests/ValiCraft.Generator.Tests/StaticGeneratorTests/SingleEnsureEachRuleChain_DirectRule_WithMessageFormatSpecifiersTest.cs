@@ -55,7 +55,7 @@ public class SingleEnsureEachRuleChain_DirectRule_WithMessageFormatSpecifiersTes
                                                                                /// <inheritdoc />
                                                                                public static global::ValiCraft.ValidationErrors? Validate(global::Test.Requests.Request request)
                                                                                {
-                                                                                   var errors = RunValidation(request, null);
+                                                                                   var errors = RunValidationLogic(request, null);
 
                                                                                    if (errors is null) return null;
 
@@ -68,11 +68,14 @@ public class SingleEnsureEachRuleChain_DirectRule_WithMessageFormatSpecifiersTes
                                                                                    };
                                                                                }
 
-                                                                               /// <summary>
-                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
-                                                                               /// </summary>
+                                                                               /// <inheritdoc />
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public static global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? RunValidation(global::Test.Requests.Request request, string? inheritedTargetPath)
+                                                                               {
+                                                                                   return RunValidationLogic(request, inheritedTargetPath);
+                                                                               }
+
+                                                                               private static global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? RunValidationLogic(global::Test.Requests.Request request, string? inheritedTargetPath)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
 

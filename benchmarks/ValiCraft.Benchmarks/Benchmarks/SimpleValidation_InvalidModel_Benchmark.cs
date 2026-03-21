@@ -30,20 +30,20 @@ public class SimpleValidation_InvalidModel_Benchmark
     }
 
     [Benchmark(Baseline = true)]
-    public void ValiCraft()
+    public ValidationErrors? ValiCraft()
     {
-        var result = _valiCraftValidator.Validate(_invalidModel);
+        return _valiCraftValidator.Validate(_invalidModel);
     }
 
     [Benchmark]
-    public void ValiCraftWithMetaData()
+    public ValidationErrors? ValiCraftWithMetaData()
     {
-        var result = _valiCraftValidatorWithMetaData.Validate(_invalidModel);
+        return _valiCraftValidatorWithMetaData.Validate(_invalidModel);
     }
 
     [Benchmark]
-    public void FluentValidation()
+    public object? FluentValidation()
     {
-        var result = _fluentValidator.Validate(_invalidModel);
+        return _fluentValidator.Validate(_invalidModel);
     }
 }

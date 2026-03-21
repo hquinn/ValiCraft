@@ -9,20 +9,20 @@ namespace ValiCraft.Benchmarks.Benchmarks;
 public class ValidatorInstantiation_Complex_Benchmark
 {
     [Benchmark(Baseline = true)]
-    public void ValiCraft()
+    public object? ValiCraft()
     {
-        var validator = new ValiCraftComplexModelValidator();
-    }
-    
-    [Benchmark]
-    public void ValiCraftWithMetaData()
-    {
-        var validator = new ValiCraftComplexModelValidator_WithMetaData();
+        return new ValiCraftComplexModelValidator();
     }
 
     [Benchmark]
-    public void FluentValidation()
+    public object? ValiCraftWithMetaData()
     {
-        var validator = new FluentComplexModelValidator();
+        return new ValiCraftComplexModelValidator_WithMetaData();
+    }
+
+    [Benchmark]
+    public object? FluentValidation()
+    {
+        return new FluentComplexModelValidator();
     }
 }

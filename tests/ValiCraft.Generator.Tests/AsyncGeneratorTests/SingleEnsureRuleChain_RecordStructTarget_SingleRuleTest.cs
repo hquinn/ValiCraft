@@ -53,7 +53,7 @@ public class SingleEnsureRuleChain_RecordStructTarget_SingleRuleTest : Increment
                                                                                /// <inheritdoc />
                                                                                public async global::System.Threading.Tasks.Task<global::ValiCraft.ValidationErrors?> ValidateAsync(global::Test.Requests.Temperature request, global::System.Threading.CancellationToken cancellationToken = default)
                                                                                {
-                                                                                   var errors = await RunValidationAsync(request, null, cancellationToken);
+                                                                                   var errors = await RunValidationLogicAsync(request, null, cancellationToken);
 
                                                                                    if (errors is null) return null;
 
@@ -66,11 +66,14 @@ public class SingleEnsureRuleChain_RecordStructTarget_SingleRuleTest : Increment
                                                                                    };
                                                                                }
 
-                                                                               /// <summary>
-                                                                               /// Runs the validation logic and returns the raw error list. This method is intended for internal use by nested validators.
-                                                                               /// </summary>
+                                                                               /// <inheritdoc />
                                                                                [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
                                                                                public async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ValiCraft.ValidationError>?> RunValidationAsync(global::Test.Requests.Temperature request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
+                                                                               {
+                                                                                   return await RunValidationLogicAsync(request, inheritedTargetPath, cancellationToken);
+                                                                               }
+
+                                                                               private async global::System.Threading.Tasks.Task<global::System.Collections.Generic.List<global::ValiCraft.ValidationError>?> RunValidationLogicAsync(global::Test.Requests.Temperature request, string? inheritedTargetPath, global::System.Threading.CancellationToken cancellationToken)
                                                                                {
                                                                                    global::System.Collections.Generic.List<global::ValiCraft.ValidationError>? errors = null;
 
