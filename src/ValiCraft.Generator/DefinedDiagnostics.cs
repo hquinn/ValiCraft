@@ -84,7 +84,10 @@ public static class DefinedDiagnostics
             location);
     }
 
-    // Not sure how to test this scenario, but is there as a fallback
+    // VALC205: Defensive fallback for when the lambda parameter name cannot be extracted.
+    // This is triggered in LambdaInfo when the parameter syntax node is missing or malformed.
+    // No reproducible test case has been found — the C# parser typically always provides a
+    // parameter name. Kept as a safety net to avoid a generator crash on unexpected input.
     public static DiagnosticInfo MissingLambdaParameterName(Location location)
     {
         return new DiagnosticInfo(

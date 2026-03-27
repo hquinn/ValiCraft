@@ -1,4 +1,6 @@
+using System.Text.RegularExpressions;
 using ValiCraft.Attributes;
+using ValiCraft.BuilderTypes;
 using ValiCraft.IntegrationTests.Models;
 
 namespace ValiCraft.IntegrationTests.Validators;
@@ -604,5 +606,67 @@ public partial class StaticAsyncOrderConditionalValidator : StaticAsyncValidator
             b.Ensure(x => x.Notes)
                 .IsNotNullOrWhiteSpace();
         });
+    }
+}
+
+// =============================================================================
+// Custom Rule Definitions + Extension Methods
+// =============================================================================
+
+public static class TestCustomRules
+{
+    public static bool UsPostalCode(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return false;
+        return Regex.IsMatch(value, @"^\d{5}(-\d{4})?$");
+    }
+
+    public static bool DivisibleBy(int value, int divisor)
+    {
+        return divisor != 0 && value % divisor == 0;
+    }
+}
+
+public static class TestCustomRuleExtensions
+{
+    [MapToValidationRule(typeof(TestCustomRules), nameof(TestCustomRules.UsPostalCode))]
+    public static IValidationRuleBuilderType<TRequest, string?> IsUsPostalCode<TRequest>(
+        this IBuilderType<TRequest, string?> builder)
+        where TRequest : notnull
+    {
+        return builder.Is(TestCustomRules.UsPostalCode);
+    }
+
+    [MapToValidationRule(typeof(TestCustomRules), nameof(TestCustomRules.DivisibleBy))]
+    public static IValidationRuleBuilderType<TRequest, int> IsDivisibleBy<TRequest>(
+        this IBuilderType<TRequest, int> builder,
+        int divisor)
+        where TRequest : notnull
+    {
+        return builder.Is(TestCustomRules.DivisibleBy, divisor);
+    }
+}
+
+// =============================================================================
+// Validators Using Custom Rules
+// =============================================================================
+
+[GenerateValidator]
+public partial class AddressCustomRuleValidator : Validator<Address>
+{
+    protected override void DefineRules(IValidationRuleBuilder<Address> builder)
+    {
+        builder.Ensure(x => x.ZipCode)
+            .IsUsPostalCode();
+    }
+}
+
+[GenerateValidator]
+public partial class OrderCustomRuleValidator : Validator<Order>
+{
+    protected override void DefineRules(IValidationRuleBuilder<Order> builder)
+    {
+        builder.Ensure(x => x.Quantity)
+            .IsDivisibleBy(5);
     }
 }
