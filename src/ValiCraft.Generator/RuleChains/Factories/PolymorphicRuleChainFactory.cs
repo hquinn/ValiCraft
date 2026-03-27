@@ -225,7 +225,7 @@ public class PolymorphicRuleChainFactory : IRuleChainFactory
         if (argumentExpression is not null)
         {
             var typeInfo = context.SemanticModel.GetTypeInfo(argumentExpression);
-            isAsyncValidatorCall = IsAsyncValidatorType(typeInfo.Type);
+            isAsyncValidatorCall = typeInfo.Type.IsAsyncValidatorType();
         }
 
         return new PolymorphicBranch(
@@ -315,30 +315,4 @@ public class PolymorphicRuleChainFactory : IRuleChainFactory
         return new PolymorphicOtherwiseBranch(PolymorphicBranchBehavior.Fail, failMessage);
     }
 
-    private static bool IsAsyncValidatorType(ITypeSymbol? typeSymbol)
-    {
-        if (typeSymbol is not INamedTypeSymbol namedType)
-        {
-            return false;
-        }
-
-        // Check if the type itself IS IAsyncValidator<T>
-        if (namedType.Name == KnownNames.InterfaceNames.IAsyncValidator &&
-            namedType.ContainingNamespace.ToDisplayString() == KnownNames.Namespaces.Base)
-        {
-            return true;
-        }
-
-        // Check if the type implements IAsyncValidator<T>
-        foreach (var iface in namedType.AllInterfaces)
-        {
-            if (iface.Name == KnownNames.InterfaceNames.IAsyncValidator &&
-                iface.ContainingNamespace.ToDisplayString() == KnownNames.Namespaces.Base)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

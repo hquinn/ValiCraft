@@ -44,7 +44,7 @@ public class CollectionWithRulesValidateWithRuleChainFactory : IRuleChainFactory
 
         // Determine if the validator argument is an IAsyncValidator
         var typeInfo = context.SemanticModel.GetTypeInfo(argumentExpression);
-        var isAsyncValidatorCall = CollectionValidateWithRuleChainFactory.IsAsyncValidatorType(typeInfo.Type);
+        var isAsyncValidatorCall = typeInfo.Type.IsAsyncValidatorType();
 
         // Process rules from index 1 to N-2
         RuleBuilder? ruleBuilder = null;
