@@ -115,6 +115,27 @@ public static class InvocationExpressionSyntaxExtensions
         });
     }
     
+    public static TypeInfo? GetElementTypeInfo(
+        this InvocationExpressionSyntax invocation,
+        GeneratorAttributeSyntaxContext context)
+    {
+        if (context.SemanticModel.GetSymbolInfo(invocation).Symbol is not IMethodSymbol methodSymbol)
+        {
+            return null;
+        }
+
+        if (methodSymbol.TypeArguments.Length == 0)
+        {
+            return null;
+        }
+
+        var elementType = methodSymbol.TypeArguments[0];
+
+        return new TypeInfo(
+            elementType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            elementType.NullableAnnotation == NullableAnnotation.Annotated);
+    }
+
     public static EquatableArray<string> GetGenericArguments(this InvocationExpressionSyntax invocation)
     {
         if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)

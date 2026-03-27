@@ -25,7 +25,7 @@ public class CollectionWithRulesValidateWithRuleChainFactory : IRuleChainFactory
         GeneratorAttributeSyntaxContext context)
     {
         // Resolve the element type from EnsureEach
-        var elementTypeInfo = GetElementTypeInfo(invocation, context);
+        var elementTypeInfo = invocation.GetElementTypeInfo(context);
         if (elementTypeInfo is null)
         {
             return null;
@@ -66,26 +66,5 @@ public class CollectionWithRulesValidateWithRuleChainFactory : IRuleChainFactory
             rules.ToEquatableImmutableArray(),
             validatorExpression,
             isAsyncValidatorCall);
-    }
-
-    private static TypeInfo? GetElementTypeInfo(
-        InvocationExpressionSyntax invocation,
-        GeneratorAttributeSyntaxContext context)
-    {
-        if (context.SemanticModel.GetSymbolInfo(invocation).Symbol is not IMethodSymbol methodSymbol)
-        {
-            return null;
-        }
-
-        if (methodSymbol.TypeArguments.Length == 0)
-        {
-            return null;
-        }
-
-        var elementType = methodSymbol.TypeArguments[0];
-
-        return new TypeInfo(
-            elementType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-            elementType.NullableAnnotation == NullableAnnotation.Annotated);
     }
 }

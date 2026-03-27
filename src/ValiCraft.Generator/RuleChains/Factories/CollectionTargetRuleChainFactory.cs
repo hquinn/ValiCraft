@@ -25,8 +25,7 @@ public class CollectionTargetRuleChainFactory : IRuleChainFactory
         GeneratorAttributeSyntaxContext context)
     {
         // Resolve the element type from the EnsureEach method's TTarget generic argument.
-        var elementTypeInfo = GetElementTypeInfo(invocation, context);
-
+        var elementTypeInfo = invocation.GetElementTypeInfo(context);
         if (elementTypeInfo is null)
         {
             return null;
@@ -50,28 +49,5 @@ public class CollectionTargetRuleChainFactory : IRuleChainFactory
             invocation.GetOnFailureModeFromSyntax(),
             elementTypeInfo,
             rules.ToEquatableImmutableArray());
-    }
-
-    private static TypeInfo? GetElementTypeInfo(
-        InvocationExpressionSyntax invocation,
-        GeneratorAttributeSyntaxContext context)
-    {
-        // Get the method symbol for EnsureEach to extract TTarget (the element type)
-        if (context.SemanticModel.GetSymbolInfo(invocation).Symbol is not IMethodSymbol methodSymbol)
-        {
-            return null;
-        }
-
-        // EnsureEach<TTarget> — TTarget is the first type argument
-        if (methodSymbol.TypeArguments.Length == 0)
-        {
-            return null;
-        }
-
-        var elementType = methodSymbol.TypeArguments[0];
-
-        return new TypeInfo(
-            elementType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-            elementType.NullableAnnotation == NullableAnnotation.Annotated);
     }
 }
