@@ -32,28 +32,12 @@ public class CollectionTargetRuleChainFactory : IRuleChainFactory
             return null;
         }
 
-        RuleBuilder? ruleBuilder = null;
-        var rules = new List<Rule>();
-
         // Skip the EnsureEach method as that's not a rule.
-        foreach (var ruleInvocation in invocationChain.Skip(1))
+        var rules = RuleChainHelper.ProcessRuleInvocations(
+            isAsyncValidator, invocationChain.Skip(1), diagnostics, context);
+        if (rules is null)
         {
-            var result = TargetRuleChainFactory.ProcessNextInChain(
-                isAsyncValidator, ruleBuilder, ruleInvocation, rules, diagnostics, context);
-
-            // We don't have a valid rule, return early
-            if (result is null)
-            {
-                return null;
-            }
-
-            ruleBuilder = result;
-        }
-
-        // Add the last rule into the rule list
-        if (ruleBuilder is not null)
-        {
-            rules.Add(ruleBuilder.Build());
+            return null;
         }
 
         return new CollectionTargetRuleChain(

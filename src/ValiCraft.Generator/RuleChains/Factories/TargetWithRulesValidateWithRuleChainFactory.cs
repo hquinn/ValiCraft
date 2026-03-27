@@ -39,26 +39,11 @@ public class TargetWithRulesValidateWithRuleChainFactory : IRuleChainFactory
         var isAsyncValidatorCall = typeInfo.Type.IsAsyncValidatorType();
 
         // Process rules from index 1 to N-2 (skip Ensure and ValidateWith)
-        RuleBuilder? ruleBuilder = null;
-        var rules = new List<Rule>();
-
-        foreach (var ruleInvocation in invocationChain.Skip(1).Take(invocationChain.Count - 2))
+        var rules = RuleChainHelper.ProcessRuleInvocations(
+            isAsyncValidator, invocationChain.Skip(1).Take(invocationChain.Count - 2), diagnostics, context);
+        if (rules is null)
         {
-            var result = TargetRuleChainFactory.ProcessNextInChain(
-                isAsyncValidator, ruleBuilder, ruleInvocation, rules, diagnostics, context);
-
-            if (result is null)
-            {
-                return null;
-            }
-
-            ruleBuilder = result;
-        }
-
-        // Add the last rule into the rule list
-        if (ruleBuilder is not null)
-        {
-            rules.Add(ruleBuilder.Build());
+            return null;
         }
 
         return new TargetWithRulesValidateWithRuleChain(
