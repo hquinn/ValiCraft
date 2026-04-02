@@ -24,15 +24,7 @@ public record TargetStaticValidateRuleChain(
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
 
-        string methodCall;
-        if (IsAsync && IsAsyncValidatorCall)
-        {
-            methodCall = $"await {ValidatorTypeName}.RunValidationAsync({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\", cancellationToken)";
-        }
-        else
-        {
-            methodCall = $"{ValidatorTypeName}.RunValidation({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\")";
-        }
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorTypeName, requestAccessor, Target.TargetPath.Value);
 
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple Validate calls exist
         // Always use 'if' here because the var declaration above breaks any if/else chain

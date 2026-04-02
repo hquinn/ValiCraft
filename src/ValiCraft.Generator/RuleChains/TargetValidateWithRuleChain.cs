@@ -24,15 +24,7 @@ public record TargetValidateWithRuleChain(
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
 
-        string methodCall;
-        if (IsAsync && IsAsyncValidatorCall)
-        {
-            methodCall = $"await {ValidatorExpression}.RunValidationAsync({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\", cancellationToken)";
-        }
-        else
-        {
-            methodCall = $"{ValidatorExpression}.RunValidation({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\")";
-        }
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorExpression, requestAccessor, Target.TargetPath.Value);
 
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple ValidateWith calls exist
         // Always use 'if' here because the var declaration above breaks any if/else chain

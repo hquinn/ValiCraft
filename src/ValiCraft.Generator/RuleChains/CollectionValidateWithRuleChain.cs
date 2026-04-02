@@ -26,15 +26,7 @@ public record CollectionValidateWithRuleChain(
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
         var itemRequestName = GetItemRequestParameterName();
 
-        string methodCall;
-        if (IsAsync && IsAsyncValidatorCall)
-        {
-            methodCall = $"await {validatorVar}.RunValidationAsync({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\", cancellationToken)";
-        }
-        else
-        {
-            methodCall = $"{validatorVar}.RunValidation({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\")";
-        }
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, validatorVar, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");
 
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple ValidateWith calls exist
         // Hoist the validator expression before the loop to avoid repeated allocations

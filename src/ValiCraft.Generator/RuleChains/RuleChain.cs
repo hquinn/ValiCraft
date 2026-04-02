@@ -94,6 +94,21 @@ public abstract record RuleChain(
             : context.CreateContinueContext();
     }
 
+    protected static string BuildValidatorMethodCall(
+        bool isAsync,
+        bool isAsyncCall,
+        string callTarget,
+        string requestAccessor,
+        string targetPath)
+    {
+        if (isAsync && isAsyncCall)
+        {
+            return $"await {callTarget}.RunValidationAsync({requestAccessor}, $\"{{inheritedTargetPath}}{targetPath}.\", cancellationToken)";
+        }
+
+        return $"{callTarget}.RunValidation({requestAccessor}, $\"{{inheritedTargetPath}}{targetPath}.\")";
+    }
+
     private void AppendGotoLabelIfNeeded(
         StringBuilder code,
         RuleChainContext contextToUse,

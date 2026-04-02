@@ -57,15 +57,7 @@ public record CollectionWithRulesValidateWithRuleChain(
         }
 
         // Generate the ValidateWith code inside the loop
-        string methodCall;
-        if (IsAsync && IsAsyncValidatorCall)
-        {
-            methodCall = $"await {validatorVar}.RunValidationAsync({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\", cancellationToken)";
-        }
-        else
-        {
-            methodCall = $"{validatorVar}.RunValidation({itemRequestName}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}[{{{index}}}].\")";
-        }
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, validatorVar, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");
 
         var validateCode = $$"""
                              {{childIndent}}var errors{{context.Counter}} = {{methodCall}};

@@ -44,15 +44,7 @@ public record TargetWithRulesStaticValidateRuleChain(
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
 
-        string methodCall;
-        if (IsAsync && IsAsyncValidatorCall)
-        {
-            methodCall = $"await {ValidatorTypeName}.RunValidationAsync({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\", cancellationToken)";
-        }
-        else
-        {
-            methodCall = $"{ValidatorTypeName}.RunValidation({requestAccessor}, $\"{{inheritedTargetPath}}{Target.TargetPath.Value}.\")";
-        }
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorTypeName, requestAccessor, Target.TargetPath.Value);
 
         var validateCode = $$"""
                              {{Indent}}var errors{{context.Counter}} = {{methodCall}};

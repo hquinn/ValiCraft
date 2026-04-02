@@ -156,28 +156,9 @@ public record PolymorphicRuleChain(
         IndentModel childIndent,
         RuleChainContext context)
     {
-        string methodCall;
-
-        if (branch.IsStaticValidator)
-        {
-            // Static validator - call RunValidation or RunValidationAsync statically
-            if (IsAsync && branch.IsAsyncValidatorCall)
-            {
-                methodCall = $"await {branch.StaticValidatorTypeName}.RunValidationAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
-            }
-            else
-            {
-                methodCall = $"{branch.StaticValidatorTypeName}.RunValidation({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
-            }
-        }
-        else if (IsAsync && branch.IsAsyncValidatorCall)
-        {
-            methodCall = $"await {branch.ValidatorExpression}.RunValidationAsync({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\", cancellationToken)";
-        }
-        else
-        {
-            methodCall = $"{branch.ValidatorExpression}.RunValidation({typedVarName}, $\"{{inheritedTargetPath}}{Target!.TargetPath.Value}.\")";
-        }
+        // Static validator - call RunValidation or RunValidationAsync statically
+        var callTarget = (branch.IsStaticValidator ? branch.StaticValidatorTypeName : branch.ValidatorExpression)!;
+        var methodCall = BuildValidatorMethodCall(IsAsync, branch.IsAsyncValidatorCall, callTarget, typedVarName, Target!.TargetPath.Value);
 
         return $$"""
                  {{childIndent}}var errors{{context.Counter}} = {{methodCall}};
