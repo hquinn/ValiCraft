@@ -5,8 +5,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
-using ValiCraft.Generator.Rules;
-using ValiCraft.Generator.Rules.Builders;
 
 namespace ValiCraft.Generator.RuleChains.Factories;
 
