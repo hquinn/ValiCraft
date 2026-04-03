@@ -30,17 +30,17 @@ public static class IfConditionFactory
         return null;
     }
 
-    private static PatternLambdaIfConditionModel CreatePatternLambda(
+    private static ExpressionFormatIfConditionModel CreatePatternLambda(
         LambdaExpressionSyntax lambda,
         bool isRuleChainCondition)
     {
         var parameterName = lambda.GetParameterName();
-        
+
         // Use our rewriter to visit the lambda body and replace the parameter.
         var rewriter = new LambdaParameterRewriter(parameterName);
         var rewrittenBody = rewriter.Visit(lambda.Body);
 
-        return new PatternLambdaIfConditionModel(rewrittenBody.ToString(), isRuleChainCondition);
+        return new ExpressionFormatIfConditionModel(rewrittenBody.ToString(), isRuleChainCondition);
     }
 
     private static BlockLambdaIfConditionModel CreateBlockLambda(
@@ -52,25 +52,25 @@ public static class IfConditionFactory
         return new BlockLambdaIfConditionModel(lambda.Body.ToString(), parameterName, isRuleChainCondition);
     }
 
-    private static InvocationLambdaIfConditionModel CreateInvocationLambda(
+    private static ExpressionFormatIfConditionModel CreateInvocationLambda(
         LambdaExpressionSyntax lambda,
         bool isRuleChainCondition)
     {
         var parameterName = lambda.GetParameterName();
-        
+
         // Use our rewriter to visit the lambda body and replace the parameter.
         var rewriter = new LambdaParameterRewriter(parameterName);
         var rewrittenBody = rewriter.Visit(lambda.Body);
 
-        return new InvocationLambdaIfConditionModel(rewrittenBody.ToString(), isRuleChainCondition);
+        return new ExpressionFormatIfConditionModel(rewrittenBody.ToString(), isRuleChainCondition);
     }
 
-    private static IdentifierNameIfConditionModel CreateIdentifierName(
+    private static ExpressionFormatIfConditionModel CreateIdentifierName(
         IdentifierNameSyntax identifierNameSyntax,
         bool isRuleChainCondition)
     {
         var expressionFormat = $"{identifierNameSyntax.Identifier.ValueText}({{0}})";
-        
-        return new IdentifierNameIfConditionModel(expressionFormat, isRuleChainCondition);
+
+        return new ExpressionFormatIfConditionModel(expressionFormat, isRuleChainCondition);
     }
 }

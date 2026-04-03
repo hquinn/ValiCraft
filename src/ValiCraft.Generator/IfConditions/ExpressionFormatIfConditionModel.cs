@@ -3,7 +3,7 @@ using ValiCraft.Generator.RuleChains.Context;
 
 namespace ValiCraft.Generator.IfConditions;
 
-public record InvocationLambdaIfConditionModel(string ExpressionFormat, bool IsRuleChainCondition)
+public record ExpressionFormatIfConditionModel(string ExpressionFormat, bool IsRuleChainCondition)
     : IfConditionModel(IsRuleChainCondition)
 {
     public override string GenerateIfBlock(
@@ -13,16 +13,15 @@ public record InvocationLambdaIfConditionModel(string ExpressionFormat, bool IsR
         RuleChainContext context)
     {
         var targetAccessor = string.Format(target.AccessorExpressionFormat, requestName);
-
         var inlinedCondition = string.Format(ExpressionFormat, targetAccessor);
-        
+
         if (IsRuleChainCondition)
         {
             return $$"""
                      {{indent}}if ({{inlinedCondition}})
                      """;
         }
-        
+
         return $"{indent}{context.GetIfElseIfKeyword()} ({inlinedCondition} && ";
     }
 }
