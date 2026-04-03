@@ -28,38 +28,14 @@ public class WithOnFailureRuleChainFactory : IRuleChainFactory
             return null;
         }
         
-        var lambdaInfo = invocation.GetLambdaInfoFromLastArgument();
-
-        if (!LambdaInfo.IsValid(lambdaInfo, invocation, KnownNames.Methods.WithOnFailure, diagnostics))
+        var ruleChains = RuleChainHelper.CreateChildRuleChains(
+            isAsyncValidator, invocation, KnownNames.Methods.WithOnFailure,
+            depth, indent, diagnostics, context);
+        if (ruleChains is null)
         {
             return null;
         }
-        
-        var ruleChains = new List<RuleChain>();
 
-        foreach (var statement in lambdaInfo!.Statements)
-        {
-            var ruleChain = RuleChainFactory.CreateFromStatement(
-                isAsyncValidator,
-                statement,
-                lambdaInfo.ParameterName!,
-                depth,
-                indent,
-                diagnostics,
-                context);
-
-            if (ruleChain is not null)
-            {
-                ruleChains.Add(ruleChain);
-            }
-        }
-
-        // If we don't have any rule chains, then don't bother
-        if (ruleChains.Count == 0)
-        {
-            return null;
-        }
-        
         return new WithOnFailureRuleChain(
             isAsyncValidator,
             @object,

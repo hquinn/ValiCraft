@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
+using ValiCraft.Generator.Extensions;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.Rules;
 using ValiCraft.Generator.Rules.Builders;
@@ -11,6 +12,49 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 
 internal static class RuleChainHelper
 {
+    internal static List<RuleChain>? CreateChildRuleChains(
+        bool isAsyncValidator,
+        InvocationExpressionSyntax invocation,
+        string methodName,
+        int depth,
+        IndentModel indent,
+        List<DiagnosticInfo> diagnostics,
+        GeneratorAttributeSyntaxContext context)
+    {
+        var lambdaInfo = invocation.GetLambdaInfoFromLastArgument();
+
+        if (!LambdaInfo.IsValid(lambdaInfo, invocation, methodName, diagnostics))
+        {
+            return null;
+        }
+
+        var ruleChains = new List<RuleChain>();
+
+        foreach (var statement in lambdaInfo!.Statements)
+        {
+            var ruleChain = RuleChainFactory.CreateFromStatement(
+                isAsyncValidator,
+                statement,
+                lambdaInfo.ParameterName!,
+                depth,
+                indent,
+                diagnostics,
+                context);
+
+            if (ruleChain is not null)
+            {
+                ruleChains.Add(ruleChain);
+            }
+        }
+
+        if (ruleChains.Count == 0)
+        {
+            return null;
+        }
+
+        return ruleChains;
+    }
+
     internal static List<Rule>? ProcessRuleInvocations(
         bool isAsyncValidator,
         IEnumerable<InvocationExpressionSyntax> ruleInvocations,
