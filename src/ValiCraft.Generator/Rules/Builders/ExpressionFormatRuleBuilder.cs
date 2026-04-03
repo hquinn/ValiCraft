@@ -9,7 +9,7 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Rules.Builders;
 
-public class IdentifierNameRuleBuilder(
+public class ExpressionFormatRuleBuilder(
     bool isAsync,
     EquatableArray<ArgumentInfo> arguments,
     MessageInfo? defaultMessage,
@@ -18,17 +18,14 @@ public class IdentifierNameRuleBuilder(
     string expressionFormat,
     LocationInfo location) : RuleBuilder
 {
-    public static IdentifierNameRuleBuilder Create(
+    public static ExpressionFormatRuleBuilder Create(
         bool isAsync,
         bool usesCancellationToken,
         InvocationExpressionSyntax invocation,
-        IdentifierNameSyntax identifierNameSyntax,
+        string fullMethodName,
+        ISymbol? methodSymbol,
         GeneratorAttributeSyntaxContext context)
     {
-        var identifierNameSymbol = context.SemanticModel.GetSymbolInfo(identifierNameSyntax).Symbol;
-
-        var fullMethodName = identifierNameSyntax.Identifier.ValueText;
-
         var extraArgs = invocation.ArgumentList.Arguments
             .Skip(1)
             .Select(a => a.ToString())
@@ -47,13 +44,13 @@ public class IdentifierNameRuleBuilder(
         }
 
         sb.Append(")");
-        
-        return new IdentifierNameRuleBuilder(
+
+        return new ExpressionFormatRuleBuilder(
             isAsync,
             invocation.GetRuleArguments(context.SemanticModel).ToEquatableImmutableArray(),
-            MessageInfo.CreateFromAttribute(identifierNameSymbol, KnownNames.Attributes.DefaultMessageAttribute),
-            MessageInfo.CreateFromAttribute(identifierNameSymbol, KnownNames.Attributes.DefaultErrorCodeAttribute) ?? new MessageInfo(fullMethodName, true),
-            RulePlaceholder.CreateFromRulePlaceholderAttributes(identifierNameSymbol!),
+            MessageInfo.CreateFromAttribute(methodSymbol, KnownNames.Attributes.DefaultMessageAttribute),
+            MessageInfo.CreateFromAttribute(methodSymbol, KnownNames.Attributes.DefaultErrorCodeAttribute) ?? new MessageInfo(fullMethodName, true),
+            RulePlaceholder.CreateFromRulePlaceholderAttributes(methodSymbol!),
             sb.ToString(),
             LocationInfo.CreateFrom(invocation)!);
     }

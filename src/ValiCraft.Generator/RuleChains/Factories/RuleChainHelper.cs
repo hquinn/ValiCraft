@@ -74,21 +74,29 @@ internal static class RuleChainHelper
             {
                 // Method groups (e.g. .Is(NotEmpty))
                 case IdentifierNameSyntax identifierNameSyntax:
-                    return IdentifierNameRuleBuilder.Create(
+                {
+                    var identifierSymbol = context.SemanticModel.GetSymbolInfo(identifierNameSyntax).Symbol;
+                    return ExpressionFormatRuleBuilder.Create(
                         isMethodAsync,
                         usesCancellationToken,
                         invocation,
-                        identifierNameSyntax,
+                        identifierNameSyntax.Identifier.ValueText,
+                        identifierSymbol,
                         context);
+                }
 
                 // Method groups that are accessed (e.g. .Is(Rules.NotEmpty))
                 case MemberAccessExpressionSyntax memberAccessExpressionSyntax:
-                    return MemberAccessRuleBuilder.Create(
+                {
+                    var memberAccessSymbol = context.SemanticModel.GetSymbolInfo(memberAccessExpressionSyntax).Symbol;
+                    return ExpressionFormatRuleBuilder.Create(
                         isMethodAsync,
                         usesCancellationToken,
                         invocation,
-                        memberAccessExpressionSyntax,
+                        memberAccessExpressionSyntax.ToString(),
+                        memberAccessSymbol,
                         context);
+                }
 
                 // Block lambdas (e.g. .Is(x => { return string.IsNullOrEmpty(x) }))
                 case LambdaExpressionSyntax { Body: BlockSyntax } blockLambda:
