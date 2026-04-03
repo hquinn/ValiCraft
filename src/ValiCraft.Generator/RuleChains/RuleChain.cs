@@ -189,6 +189,21 @@ public abstract record RuleChain(
         return string.Empty;
     }
 
+    protected static (string CallTarget, string? HoistLine) ResolveHoistTarget(
+        bool hoistValidator,
+        string validatorCallTarget,
+        IndentModel indent,
+        RuleChainContext context)
+    {
+        if (!hoistValidator)
+        {
+            return (validatorCallTarget, null);
+        }
+
+        var validatorVar = $"validator{context.Counter}";
+        return (validatorVar, $"{indent}var {validatorVar} = {validatorCallTarget};\r\n");
+    }
+
     protected static string BuildValidatorMethodCall(
         bool isAsync,
         bool isAsyncCall,

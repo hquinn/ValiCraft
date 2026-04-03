@@ -25,7 +25,7 @@ public record CollectionValidatorRuleChain(
         var childIndent = IndentModel.CreateChild(Indent);
 
         // When hoisting, use a local variable for the validator to avoid repeated allocations in the loop
-        var (loopCallTarget, hoistLine) = ResolveHoistTarget(context);
+        var (loopCallTarget, hoistLine) = ResolveHoistTarget(HoistValidator, ValidatorCallTarget, Indent, context);
 
         var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, loopCallTarget, GetItemRequestParameterName(), $"{Target!.TargetPath.Value}[{{{index}}}]");
 
@@ -37,17 +37,6 @@ public record CollectionValidatorRuleChain(
         // Reset because the foreach block breaks any if/else chain — the next chain cannot use 'else if'
         context.ResetIfElseMode();
         return code;
-    }
-
-    private (string CallTarget, string? HoistLine) ResolveHoistTarget(RuleChainContext context)
-    {
-        if (!HoistValidator)
-        {
-            return (ValidatorCallTarget, null);
-        }
-
-        var validatorVar = $"validator{context.Counter}";
-        return (validatorVar, $"{Indent}var {validatorVar} = {ValidatorCallTarget};\r\n");
     }
 
     protected override string GetTargetPath(RuleChainContext context)

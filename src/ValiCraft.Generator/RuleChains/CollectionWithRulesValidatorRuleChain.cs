@@ -32,7 +32,7 @@ public record CollectionWithRulesValidatorRuleChain(
         var childIndent = IndentModel.CreateChild(Indent);
 
         // When hoisting, capture the validator variable name before rules decrement the counter
-        var (loopCallTarget, hoistLine) = ResolveHoistTarget(context);
+        var (loopCallTarget, hoistLine) = ResolveHoistTarget(HoistValidator, ValidatorCallTarget, Indent, context);
 
         // Create an object-level target for the item within the loop
         var itemTarget = CreateItemTarget(ElementType, Target!);
@@ -50,17 +50,6 @@ public record CollectionWithRulesValidatorRuleChain(
         // Reset because the foreach block breaks any if/else chain
         context.ResetIfElseMode();
         return code;
-    }
-
-    private (string CallTarget, string? HoistLine) ResolveHoistTarget(RuleChainContext context)
-    {
-        if (!HoistValidator)
-        {
-            return (ValidatorCallTarget, null);
-        }
-
-        var validatorVar = $"validator{context.Counter}";
-        return (validatorVar, $"{Indent}var {validatorVar} = {ValidatorCallTarget};\r\n");
     }
 
     protected override string GetTargetPath(RuleChainContext context)
