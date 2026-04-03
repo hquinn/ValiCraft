@@ -14,7 +14,7 @@ public record TargetRuleChain(
     IndentModel Indent,
     int NumberOfRules,
     OnFailureMode? FailureMode,
-    EquatableArray<Rule> Rules) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    EquatableArray<Rule> Rules) : DirectTargetRuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
 
     public override bool NeedsGotoLabels()
@@ -31,8 +31,4 @@ public record TargetRuleChain(
         return string.Join("\r\n", ruleCodes);
     }
 
-    protected override string GetTargetPath(RuleChainContext context)
-    {
-        return $"{context.TargetPath}{Target!.TargetPath.Value}";
-    }
 }

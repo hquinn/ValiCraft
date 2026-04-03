@@ -11,7 +11,7 @@ public record TargetValidatorRuleChain(
     IndentModel Indent,
     OnFailureMode? FailureMode,
     string ValidatorCallTarget,
-    bool IsAsyncValidatorCall) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
+    bool IsAsyncValidatorCall) : DirectTargetRuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
     public override bool NeedsGotoLabels()
     {
@@ -34,8 +34,4 @@ public record TargetValidatorRuleChain(
         return code;
     }
 
-    protected override string GetTargetPath(RuleChainContext context)
-    {
-        return $"{context.TargetPath}{Target!.TargetPath.Value}";
-    }
 }

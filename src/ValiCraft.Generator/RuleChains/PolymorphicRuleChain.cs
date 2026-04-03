@@ -15,7 +15,7 @@ public record PolymorphicRuleChain(
     OnFailureMode? FailureMode,
     PolymorphicNullBehavior NullBehavior,
     EquatableArray<PolymorphicBranch> Branches,
-    PolymorphicOtherwiseBranch? OtherwiseBranch) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
+    PolymorphicOtherwiseBranch? OtherwiseBranch) : DirectTargetRuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
     public override bool NeedsGotoLabels()
     {
@@ -160,11 +160,6 @@ public record PolymorphicRuleChain(
         var methodCall = BuildValidatorMethodCall(IsAsync, branch.IsAsyncValidatorCall, callTarget, typedVarName, Target!.TargetPath.Value);
 
         return GenerateValidatorCallCode(childIndent, methodCall, context) + "\r\n";
-    }
-
-    protected override string GetTargetPath(RuleChainContext context)
-    {
-        return $"{context.TargetPath}{Target!.TargetPath.Value}";
     }
 
     private static string GetSimpleTypeName(string fullyQualifiedName)

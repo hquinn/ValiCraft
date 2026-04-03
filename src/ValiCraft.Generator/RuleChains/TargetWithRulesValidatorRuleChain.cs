@@ -15,7 +15,7 @@ public record TargetWithRulesValidatorRuleChain(
     OnFailureMode? FailureMode,
     EquatableArray<Rule> Rules,
     string ValidatorCallTarget,
-    bool IsAsyncValidatorCall) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    bool IsAsyncValidatorCall) : DirectTargetRuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
     public override bool NeedsGotoLabels()
     {
@@ -39,8 +39,4 @@ public record TargetWithRulesValidatorRuleChain(
         return string.Join("\r\n", ruleCodes);
     }
 
-    protected override string GetTargetPath(RuleChainContext context)
-    {
-        return $"{context.TargetPath}{Target!.TargetPath.Value}";
-    }
 }
