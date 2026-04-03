@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Rules;
@@ -7,7 +6,7 @@ using TypeInfo = ValiCraft.Generator.Concepts.TypeInfo;
 
 namespace ValiCraft.Generator.RuleChains;
 
-public record CollectionWithRulesStaticValidateRuleChain(
+public record CollectionWithRulesValidatorRuleChain(
     bool IsAsync,
     ValidationTarget Object,
     ValidationTarget Target,
@@ -17,8 +16,9 @@ public record CollectionWithRulesStaticValidateRuleChain(
     OnFailureMode? FailureMode,
     TypeInfo ElementType,
     EquatableArray<Rule> Rules,
-    string ValidatorTypeName,
-    bool IsAsyncValidatorCall) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    string ValidatorCallTarget,
+    bool IsAsyncValidatorCall,
+    bool HoistValidator) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
     public override bool NeedsGotoLabels()
     {
@@ -33,14 +33,28 @@ public record CollectionWithRulesStaticValidateRuleChain(
         var itemRequestName = GetItemRequestParameterName();
         var childIndent = IndentModel.CreateChild(Indent);
 
+        // When hoisting, capture the validator variable name before rules decrement the counter
+        string loopCallTarget;
+        string hoistLine;
+        if (HoistValidator)
+        {
+            var validatorVar = $"validator{context.Counter}";
+            loopCallTarget = validatorVar;
+            hoistLine = $"{Indent}var {validatorVar} = {ValidatorCallTarget};\r\n";
+        }
+        else
+        {
+            loopCallTarget = ValidatorCallTarget;
+            hoistLine = string.Empty;
+        }
+
         // Create an object-level target for the item within the loop
         var itemTarget = CreateItemTarget(ElementType, Target!);
 
         // Generate rule code for inside the loop
         var ruleCodes = GenerateRulesCode(Rules, itemRequestName, childIndent, Object, itemTarget, context, 1);
 
-        // Generate the Validate<T> code inside the loop
-        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorTypeName, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, loopCallTarget, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");
 
         ruleCodes.Add(GenerateValidatorCallCode(childIndent, methodCall, context, IndentModel.CreateChild(childIndent)));
         context.DecrementCountdown();
@@ -48,7 +62,7 @@ public record CollectionWithRulesStaticValidateRuleChain(
         var ruleChainCodes = string.Join("\r\n", ruleCodes);
 
         var code = $$"""
-                     {{Indent}}var {{index}} = 0;
+                     {{hoistLine}}{{Indent}}var {{index}} = 0;
                      {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
                      {{Indent}}{
                      {{ruleChainCodes}}

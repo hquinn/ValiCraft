@@ -3,14 +3,14 @@ using ValiCraft.Generator.RuleChains.Context;
 
 namespace ValiCraft.Generator.RuleChains;
 
-public record TargetStaticValidateRuleChain(
+public record TargetValidatorRuleChain(
     bool IsAsync,
     ValidationTarget Object,
     ValidationTarget Target,
     int Depth,
     IndentModel Indent,
     OnFailureMode? FailureMode,
-    string ValidatorTypeName,
+    string ValidatorCallTarget,
     bool IsAsyncValidatorCall) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
     public override bool NeedsGotoLabels()
@@ -24,9 +24,8 @@ public record TargetStaticValidateRuleChain(
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
 
-        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorTypeName, requestAccessor, Target.TargetPath.Value);
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorCallTarget, requestAccessor, Target.TargetPath.Value);
 
-        // Use a unique variable name suffix (counter) to avoid conflicts when multiple Validate calls exist
         // Always use 'if' here because the var declaration above breaks any if/else chain
         var code = GenerateValidatorCallCode(Indent, methodCall, context);
 

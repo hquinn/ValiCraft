@@ -35,7 +35,7 @@ public class TargetValidateWithRuleChainFactory : IRuleChainFactory
         var typeInfo = context.SemanticModel.GetTypeInfo(argumentExpression);
         var isAsyncValidatorCall = typeInfo.Type.IsAsyncValidatorType();
 
-        return new TargetValidateWithRuleChain(
+        return new TargetValidatorRuleChain(
             isAsyncValidator,
             @object,
             target!,

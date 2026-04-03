@@ -35,7 +35,7 @@ public class CollectionValidateWithRuleChainFactory : IRuleChainFactory
         var typeInfo = context.SemanticModel.GetTypeInfo(argumentExpression);
         var isAsyncValidatorCall = typeInfo.Type.IsAsyncValidatorType();
 
-        return new CollectionValidateWithRuleChain(
+        return new CollectionValidatorRuleChain(
             isAsyncValidator,
             @object,
             target!,
@@ -43,6 +43,7 @@ public class CollectionValidateWithRuleChainFactory : IRuleChainFactory
             indent,
             invocation.GetOnFailureModeFromSyntax(),
             validatorExpression,
-            isAsyncValidatorCall);
+            isAsyncValidatorCall,
+            HoistValidator: true);
     }
 }

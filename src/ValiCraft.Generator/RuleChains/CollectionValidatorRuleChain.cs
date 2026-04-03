@@ -3,15 +3,16 @@ using ValiCraft.Generator.RuleChains.Context;
 
 namespace ValiCraft.Generator.RuleChains;
 
-public record CollectionStaticValidateRuleChain(
+public record CollectionValidatorRuleChain(
     bool IsAsync,
     ValidationTarget Object,
     ValidationTarget Target,
     int Depth,
     IndentModel Indent,
     OnFailureMode? FailureMode,
-    string ValidatorTypeName,
-    bool IsAsyncValidatorCall) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
+    string ValidatorCallTarget,
+    bool IsAsyncValidatorCall,
+    bool HoistValidator) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
     public override bool NeedsGotoLabels()
     {
@@ -26,13 +27,27 @@ public record CollectionStaticValidateRuleChain(
         var itemRequestName = GetItemRequestParameterName();
         var childIndent = IndentModel.CreateChild(Indent);
 
-        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorTypeName, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");
+        // When hoisting, use a local variable for the validator to avoid repeated allocations in the loop
+        string loopCallTarget;
+        string hoistLine;
+        if (HoistValidator)
+        {
+            var validatorVar = $"validator{context.Counter}";
+            loopCallTarget = validatorVar;
+            hoistLine = $"{Indent}var {validatorVar} = {ValidatorCallTarget};\r\n";
+        }
+        else
+        {
+            loopCallTarget = ValidatorCallTarget;
+            hoistLine = string.Empty;
+        }
 
-        // Use a unique variable name suffix (counter) to avoid conflicts when multiple Validate calls exist
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, loopCallTarget, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");
+
         var validatorCallCode = GenerateValidatorCallCode(childIndent, methodCall, context);
 
         var code = $$"""
-                     {{Indent}}var {{index}} = 0;
+                     {{hoistLine}}{{Indent}}var {{index}} = 0;
                      {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
                      {{Indent}}{
                      {{validatorCallCode}}

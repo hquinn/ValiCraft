@@ -44,7 +44,7 @@ public class CollectionStaticValidateRuleChainFactory : IRuleChainFactory
             validatorTypeName = namedType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         }
 
-        return new CollectionStaticValidateRuleChain(
+        return new CollectionValidatorRuleChain(
             isAsyncValidator,
             @object,
             target!,
@@ -52,6 +52,7 @@ public class CollectionStaticValidateRuleChainFactory : IRuleChainFactory
             indent,
             invocation.GetOnFailureModeFromSyntax(),
             validatorTypeName,
-            isAsyncValidatorCall);
+            isAsyncValidatorCall,
+            HoistValidator: false);
     }
 }

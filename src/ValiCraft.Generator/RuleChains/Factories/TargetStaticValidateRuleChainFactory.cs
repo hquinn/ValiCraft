@@ -44,7 +44,7 @@ public class TargetStaticValidateRuleChainFactory : IRuleChainFactory
             validatorTypeName = namedType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         }
 
-        return new TargetStaticValidateRuleChain(
+        return new TargetValidatorRuleChain(
             isAsyncValidator,
             @object,
             target!,

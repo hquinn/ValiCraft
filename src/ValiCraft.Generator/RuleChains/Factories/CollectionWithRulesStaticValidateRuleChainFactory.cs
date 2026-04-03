@@ -57,7 +57,7 @@ public class CollectionWithRulesStaticValidateRuleChainFactory : IRuleChainFacto
             return null;
         }
 
-        return new CollectionWithRulesStaticValidateRuleChain(
+        return new CollectionWithRulesValidatorRuleChain(
             isAsyncValidator,
             @object,
             target!,
@@ -68,6 +68,7 @@ public class CollectionWithRulesStaticValidateRuleChainFactory : IRuleChainFacto
             elementTypeInfo,
             rules.ToEquatableImmutableArray(),
             validatorTypeName,
-            isAsyncValidatorCall);
+            isAsyncValidatorCall,
+            HoistValidator: false);
     }
 }

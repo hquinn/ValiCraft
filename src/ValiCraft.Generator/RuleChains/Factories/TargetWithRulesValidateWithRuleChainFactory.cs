@@ -44,7 +44,7 @@ public class TargetWithRulesValidateWithRuleChainFactory : IRuleChainFactory
             return null;
         }
 
-        return new TargetWithRulesValidateWithRuleChain(
+        return new TargetWithRulesValidatorRuleChain(
             isAsyncValidator,
             @object,
             target!,

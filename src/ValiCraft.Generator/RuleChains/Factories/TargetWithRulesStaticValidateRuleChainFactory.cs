@@ -52,7 +52,7 @@ public class TargetWithRulesStaticValidateRuleChainFactory : IRuleChainFactory
             return null;
         }
 
-        return new TargetWithRulesStaticValidateRuleChain(
+        return new TargetWithRulesValidatorRuleChain(
             isAsyncValidator,
             @object,
             target!,

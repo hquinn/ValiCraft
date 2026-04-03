@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Rules;
@@ -6,7 +5,7 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.RuleChains;
 
-public record TargetWithRulesValidateWithRuleChain(
+public record TargetWithRulesValidatorRuleChain(
     bool IsAsync,
     ValidationTarget Object,
     ValidationTarget Target,
@@ -15,7 +14,7 @@ public record TargetWithRulesValidateWithRuleChain(
     int NumberOfRules,
     OnFailureMode? FailureMode,
     EquatableArray<Rule> Rules,
-    string ValidatorExpression,
+    string ValidatorCallTarget,
     bool IsAsyncValidatorCall) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
     public override bool NeedsGotoLabels()
@@ -28,11 +27,10 @@ public record TargetWithRulesValidateWithRuleChain(
     {
         var ruleCodes = GenerateRulesCode(Rules, GetRequestParameterName(), Indent, Object, Target!, context, 1);
 
-        // Generate the ValidateWith code
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
 
-        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorExpression, requestAccessor, Target.TargetPath.Value);
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorCallTarget, requestAccessor, Target.TargetPath.Value);
 
         ruleCodes.Add(GenerateValidatorCallCode(Indent, methodCall, context));
         context.DecrementCountdown();
