@@ -13,20 +13,15 @@ public record IfRuleChain(
     IndentModel Indent,
     int NumberOfRules,
     IfConditionModel IfCondition,
-    EquatableArray<RuleChain> ChildRuleChains) : RuleChain(IsAsync, Object, null, Depth, Indent, NumberOfRules, null)
+    EquatableArray<RuleChain> ChildRuleChains) : ContainerRuleChain(IsAsync, Object, Depth, Indent, NumberOfRules, null, ChildRuleChains)
 {
-    public override bool NeedsGotoLabels()
-    {
-        return ChildRuleChains.Any(x => x.NeedsGotoLabels());
-    }
-
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         if (ChildRuleChains.Count == 0)
         {
             return string.Empty;
         }
-        
+
         var code = $$"""
                    {{IfCondition.GenerateIfBlock(Object, GetRequestParameterName(), Indent, context)}}
                    {{Indent}}{
@@ -35,12 +30,7 @@ public record IfRuleChain(
                    """;
 
         context.ResetIfElseMode();
-        
-        return code;
-    }
 
-    protected override string GetTargetPath(RuleChainContext context)
-    {
-        return context.TargetPath;
+        return code;
     }
 }
