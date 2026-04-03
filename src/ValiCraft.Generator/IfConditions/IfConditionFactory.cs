@@ -14,7 +14,7 @@ public static class IfConditionFactory
         {
             return null;
         }
-        
+
         switch (argumentExpression)
         {
             case LambdaExpressionSyntax { Body: IsPatternExpressionSyntax or BinaryExpressionSyntax } patternLambda:
@@ -30,7 +30,7 @@ public static class IfConditionFactory
         return null;
     }
 
-    private static ExpressionFormatIfConditionModel CreatePatternLambda(
+    private static IfConditionModel CreatePatternLambda(
         LambdaExpressionSyntax lambda,
         bool isRuleChainCondition)
     {
@@ -40,19 +40,19 @@ public static class IfConditionFactory
         var rewriter = new LambdaParameterRewriter(parameterName);
         var rewrittenBody = rewriter.Visit(lambda.Body);
 
-        return new ExpressionFormatIfConditionModel(rewrittenBody.ToString(), isRuleChainCondition);
+        return IfConditionModel.CreateExpressionFormat(rewrittenBody.ToString(), isRuleChainCondition);
     }
 
-    private static BlockLambdaIfConditionModel CreateBlockLambda(
+    private static IfConditionModel CreateBlockLambda(
         LambdaExpressionSyntax lambda,
         bool isRuleChainCondition)
     {
         var parameterName = lambda.GetParameterName();
-        
-        return new BlockLambdaIfConditionModel(lambda.Body.ToString(), parameterName, isRuleChainCondition);
+
+        return IfConditionModel.CreateBlockLambda(lambda.Body.ToString(), parameterName, isRuleChainCondition);
     }
 
-    private static ExpressionFormatIfConditionModel CreateInvocationLambda(
+    private static IfConditionModel CreateInvocationLambda(
         LambdaExpressionSyntax lambda,
         bool isRuleChainCondition)
     {
@@ -62,15 +62,15 @@ public static class IfConditionFactory
         var rewriter = new LambdaParameterRewriter(parameterName);
         var rewrittenBody = rewriter.Visit(lambda.Body);
 
-        return new ExpressionFormatIfConditionModel(rewrittenBody.ToString(), isRuleChainCondition);
+        return IfConditionModel.CreateExpressionFormat(rewrittenBody.ToString(), isRuleChainCondition);
     }
 
-    private static ExpressionFormatIfConditionModel CreateIdentifierName(
+    private static IfConditionModel CreateIdentifierName(
         IdentifierNameSyntax identifierNameSyntax,
         bool isRuleChainCondition)
     {
         var expressionFormat = $"{identifierNameSyntax.Identifier.ValueText}({{0}})";
 
-        return new ExpressionFormatIfConditionModel(expressionFormat, isRuleChainCondition);
+        return IfConditionModel.CreateExpressionFormat(expressionFormat, isRuleChainCondition);
     }
 }

@@ -15,7 +15,7 @@ public abstract class RuleBuilder
     private MessageInfo? _severity;
     private IfConditionModel? _ifCondition;
     private List<MetadataEntry>? _metadata;
-    protected IfConditionModel IfCondition => _ifCondition ?? new BlankIfConditionModel(false);
+    protected IfConditionModel IfCondition => _ifCondition ?? IfConditionModel.Blank();
 
     public void WithMessage(MessageInfo? message)
     {
