@@ -3,11 +3,24 @@ using ValiCraft.Generator.Extensions;
 
 namespace ValiCraft.Generator.RuleChains.Factories;
 
-public class TargetRuleChainFactory : IRuleChainFactory
+public class TargetRuleChainFactory(bool isCollection = false) : IRuleChainFactory
 {
     public RuleChain? Create(RuleChainFactoryContext context)
     {
-        // Skip the Ensure method as that's not a rule.
+        CollectionConfig? resolvedCollection = null;
+        if (isCollection)
+        {
+            // Resolve the element type from the EnsureEach method's TTarget generic argument.
+            var elementTypeInfo = context.Invocation.GetElementTypeInfo(context.GeneratorContext);
+            if (elementTypeInfo is null)
+            {
+                return null;
+            }
+
+            resolvedCollection = new CollectionConfig(elementTypeInfo);
+        }
+
+        // Skip the Ensure/EnsureEach method as that's not a rule.
         var rules = RuleChainHelper.ProcessRuleInvocations(
             context.IsAsyncValidator, context.InvocationChain.Skip(1), context.Diagnostics, context.GeneratorContext);
         if (rules is null)
@@ -24,6 +37,7 @@ public class TargetRuleChainFactory : IRuleChainFactory
             context.Indent,
             rules.Count,
             context.Invocation?.GetOnFailureModeFromSyntax(),
-            rules.ToEquatableImmutableArray());
+            rules.ToEquatableImmutableArray(),
+            resolvedCollection);
     }
 }
