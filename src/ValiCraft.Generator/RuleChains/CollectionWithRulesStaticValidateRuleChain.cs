@@ -58,22 +58,7 @@ public record CollectionWithRulesStaticValidateRuleChain(
         // Generate the Validate<T> code inside the loop
         var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorTypeName, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");
 
-        var validateCode = $$"""
-                             {{childIndent}}var errors{{context.Counter}} = {{methodCall}};
-                             {{childIndent}}if (errors{{context.Counter}} is not null)
-                             {{childIndent}}{
-                             {{childIndent}}    if (errors is null)
-                             {{childIndent}}    {
-                             {{childIndent}}        errors = errors{{context.Counter}};
-                             {{GetGotoLabelIfNeeded(context, childIndent)}}{{childIndent}}    }
-                             {{childIndent}}    else
-                             {{childIndent}}    {
-                             {{childIndent}}        errors.AddRange(errors{{context.Counter}});
-                             {{GetGotoLabelIfNeeded(context, childIndent)}}{{childIndent}}    }
-                             {{childIndent}}}
-                             """;
-
-        ruleCodes.Add(validateCode);
+        ruleCodes.Add(GenerateValidatorCallCode(childIndent, methodCall, context, IndentModel.CreateChild(childIndent)));
         context.DecrementCountdown();
 
         var ruleChainCodes = string.Join("\r\n", ruleCodes);
@@ -90,19 +75,6 @@ public record CollectionWithRulesStaticValidateRuleChain(
         // Reset because the foreach block breaks any if/else chain
         context.ResetIfElseMode();
         return code;
-    }
-
-    private string GetGotoLabelIfNeeded(RuleChainContext context, IndentModel childIndent)
-    {
-        if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })
-        {
-            return $"""
-                    {childIndent}            goto {context.HaltLabel};
-
-                    """;
-        }
-
-        return string.Empty;
     }
 
     protected override string GetTargetPath(RuleChainContext context)

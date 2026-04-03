@@ -28,37 +28,11 @@ public record TargetStaticValidateRuleChain(
 
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple Validate calls exist
         // Always use 'if' here because the var declaration above breaks any if/else chain
-        var code = $$"""
-                     {{Indent}}var errors{{context.Counter}} = {{methodCall}};
-                     {{Indent}}if (errors{{context.Counter}} is not null)
-                     {{Indent}}{
-                     {{Indent}}    if (errors is null)
-                     {{Indent}}    {
-                     {{Indent}}        errors = errors{{context.Counter}};
-                     {{GetGotoLabelIfNeeded(context)}}{{Indent}}    }
-                     {{Indent}}    else
-                     {{Indent}}    {
-                     {{Indent}}        errors.AddRange(errors{{context.Counter}});
-                     {{GetGotoLabelIfNeeded(context)}}{{Indent}}    }
-                     {{Indent}}}
-                     """;
+        var code = GenerateValidatorCallCode(Indent, methodCall, context);
 
         context.DecrementCountdown();
         context.UpdateIfElseMode();
         return code;
-    }
-
-    private string GetGotoLabelIfNeeded(RuleChainContext context)
-    {
-        if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })
-        {
-            return $"""
-                    {Indent}        goto {context.HaltLabel};
-
-                    """;
-        }
-
-        return string.Empty;
     }
 
     protected override string GetTargetPath(RuleChainContext context)

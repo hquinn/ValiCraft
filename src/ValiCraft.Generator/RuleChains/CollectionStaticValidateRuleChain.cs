@@ -24,26 +24,18 @@ public record CollectionStaticValidateRuleChain(
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
         var itemRequestName = GetItemRequestParameterName();
+        var childIndent = IndentModel.CreateChild(Indent);
 
         var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorTypeName, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");
 
         // Use a unique variable name suffix (counter) to avoid conflicts when multiple Validate calls exist
+        var validatorCallCode = GenerateValidatorCallCode(childIndent, methodCall, context);
+
         var code = $$"""
                      {{Indent}}var {{index}} = 0;
                      {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
                      {{Indent}}{
-                     {{Indent}}    var errors{{context.Counter}} = {{methodCall}};
-                     {{Indent}}    if (errors{{context.Counter}} is not null)
-                     {{Indent}}    {
-                     {{Indent}}        if (errors is null)
-                     {{Indent}}        {
-                     {{Indent}}            errors = errors{{context.Counter}};
-                     {{GetGotoLabelIfNeeded(context)}}{{Indent}}        }
-                     {{Indent}}        else
-                     {{Indent}}        {
-                     {{Indent}}            errors.AddRange(errors{{context.Counter}});
-                     {{GetGotoLabelIfNeeded(context)}}{{Indent}}        }
-                     {{Indent}}    }
+                     {{validatorCallCode}}
                      {{Indent}}    {{index}}++;
                      {{Indent}}}
                      """;
@@ -52,19 +44,6 @@ public record CollectionStaticValidateRuleChain(
         // Reset because the foreach block breaks any if/else chain — the next chain cannot use 'else if'
         context.ResetIfElseMode();
         return code;
-    }
-
-    private string GetGotoLabelIfNeeded(RuleChainContext context)
-    {
-        if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })
-        {
-            return $"""
-                    {Indent}            goto {context.HaltLabel};
-
-                    """;
-        }
-
-        return string.Empty;
     }
 
     protected override string GetTargetPath(RuleChainContext context)

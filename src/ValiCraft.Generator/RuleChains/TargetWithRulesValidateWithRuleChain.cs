@@ -46,39 +46,11 @@ public record TargetWithRulesValidateWithRuleChain(
 
         var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorExpression, requestAccessor, Target.TargetPath.Value);
 
-        var validateCode = $$"""
-                             {{Indent}}var errors{{context.Counter}} = {{methodCall}};
-                             {{Indent}}if (errors{{context.Counter}} is not null)
-                             {{Indent}}{
-                             {{Indent}}    if (errors is null)
-                             {{Indent}}    {
-                             {{Indent}}        errors = errors{{context.Counter}};
-                             {{GetGotoLabelIfNeeded(context)}}{{Indent}}    }
-                             {{Indent}}    else
-                             {{Indent}}    {
-                             {{Indent}}        errors.AddRange(errors{{context.Counter}});
-                             {{GetGotoLabelIfNeeded(context)}}{{Indent}}    }
-                             {{Indent}}}
-                             """;
-
-        ruleCodes.Add(validateCode);
+        ruleCodes.Add(GenerateValidatorCallCode(Indent, methodCall, context));
         context.DecrementCountdown();
         context.UpdateIfElseMode();
 
         return string.Join("\r\n", ruleCodes);
-    }
-
-    private string GetGotoLabelIfNeeded(RuleChainContext context)
-    {
-        if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })
-        {
-            return $"""
-                    {Indent}        goto {context.HaltLabel};
-
-                    """;
-        }
-
-        return string.Empty;
     }
 
     protected override string GetTargetPath(RuleChainContext context)

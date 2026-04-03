@@ -94,6 +94,42 @@ public abstract record RuleChain(
             : context.CreateContinueContext();
     }
 
+    protected static string GenerateValidatorCallCode(
+        IndentModel indent,
+        string methodCall,
+        RuleChainContext context,
+        IndentModel? gotoIndent = null)
+    {
+        var effectiveGotoIndent = gotoIndent ?? indent;
+        return $$"""
+                 {{indent}}var errors{{context.Counter}} = {{methodCall}};
+                 {{indent}}if (errors{{context.Counter}} is not null)
+                 {{indent}}{
+                 {{indent}}    if (errors is null)
+                 {{indent}}    {
+                 {{indent}}        errors = errors{{context.Counter}};
+                 {{GetValidatorGotoLabelIfNeeded(effectiveGotoIndent, context)}}{{indent}}    }
+                 {{indent}}    else
+                 {{indent}}    {
+                 {{indent}}        errors.AddRange(errors{{context.Counter}});
+                 {{GetValidatorGotoLabelIfNeeded(effectiveGotoIndent, context)}}{{indent}}    }
+                 {{indent}}}
+                 """;
+    }
+
+    protected static string GetValidatorGotoLabelIfNeeded(IndentModel indent, RuleChainContext context)
+    {
+        if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })
+        {
+            return $"""
+                    {indent}        goto {context.HaltLabel};
+
+                    """;
+        }
+
+        return string.Empty;
+    }
+
     protected static string BuildValidatorMethodCall(
         bool isAsync,
         bool isAsyncCall,

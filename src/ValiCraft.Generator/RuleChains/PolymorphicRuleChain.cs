@@ -89,7 +89,7 @@ public record PolymorphicRuleChain(
                  {{Indent}}        TargetPath = $"{inheritedTargetPath}{{Target!.TargetPath.Value}}",
                  {{Indent}}        AttemptedValue = {{requestAccessor}}
                  {{Indent}}    });
-                 {{GetGotoLabelIfNeeded(Indent, context)}}{{Indent}}}
+                 {{GetValidatorGotoLabelIfNeeded(Indent, context)}}{{Indent}}}
                  """;
     }
 
@@ -146,7 +146,7 @@ public record PolymorphicRuleChain(
                  {{childIndent}}    TargetPath = $"{inheritedTargetPath}{{Target!.TargetPath.Value}}",
                  {{childIndent}}    AttemptedValue = {{requestAccessor}}
                  {{childIndent}}});
-                 {{GetGotoLabelIfNeeded(childIndent, context)}}
+                 {{GetValidatorGotoLabelIfNeeded(childIndent, context)}}
                  """;
     }
 
@@ -167,27 +167,14 @@ public record PolymorphicRuleChain(
                  {{childIndent}}    if (errors is null)
                  {{childIndent}}    {
                  {{childIndent}}        errors = errors{{context.Counter}};
-                 {{GetGotoLabelIfNeeded(childIndent, context)}}{{childIndent}}    }
+                 {{GetValidatorGotoLabelIfNeeded(childIndent, context)}}{{childIndent}}    }
                  {{childIndent}}    else
                  {{childIndent}}    {
                  {{childIndent}}        errors.AddRange(errors{{context.Counter}});
-                 {{GetGotoLabelIfNeeded(childIndent, context)}}{{childIndent}}    }
+                 {{GetValidatorGotoLabelIfNeeded(childIndent, context)}}{{childIndent}}    }
                  {{childIndent}}}
 
                  """;
-    }
-
-    private string GetGotoLabelIfNeeded(IndentModel indent, RuleChainContext context)
-    {
-        if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })
-        {
-            return $"""
-                    {indent}        goto {context.HaltLabel};
-
-                    """;
-        }
-
-        return string.Empty;
     }
 
     protected override string GetTargetPath(RuleChainContext context)
