@@ -26,19 +26,7 @@ public record TargetWithRulesValidateWithRuleChain(
 
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
-        var ruleCodes = new List<string>(Rules.Count + 1);
-
-        // Generate code for each rule
-        foreach (var rule in Rules)
-        {
-            ruleCodes.Add(rule.GenerateCodeForRule(
-                GetRequestParameterName(),
-                Indent,
-                Object,
-                Target!,
-                context));
-            context.DecrementCountdown();
-        }
+        var ruleCodes = GenerateRulesCode(Rules, GetRequestParameterName(), Indent, Object, Target!, context, 1);
 
         // Generate the ValidateWith code
         var requestName = GetRequestParameterName();

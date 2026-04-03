@@ -42,18 +42,7 @@ public record CollectionWithRulesStaticValidateRuleChain(
             TargetPath: Target.TargetPath);
 
         // Generate rule code for inside the loop
-        var ruleCodes = new List<string>(Rules.Count + 1);
-
-        foreach (var rule in Rules)
-        {
-            ruleCodes.Add(rule.GenerateCodeForRule(
-                itemRequestName,
-                childIndent,
-                Object,
-                itemTarget,
-                context));
-            context.DecrementCountdown();
-        }
+        var ruleCodes = GenerateRulesCode(Rules, itemRequestName, childIndent, Object, itemTarget, context, 1);
 
         // Generate the Validate<T> code inside the loop
         var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorTypeName, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");

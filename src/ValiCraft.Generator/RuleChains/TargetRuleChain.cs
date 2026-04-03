@@ -26,22 +26,9 @@ public record TargetRuleChain(
 
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
-        var ruleCodes = new List<string>(NumberOfRules);
+        var ruleCodes = GenerateRulesCode(Rules, GetRequestParameterName(), Indent, Object, Target!, context);
 
-        foreach (var rule in Rules)
-        {
-            ruleCodes.Add(rule.GenerateCodeForRule(
-                GetRequestParameterName(),
-                Indent,
-                Object,
-                Target!,
-                context));
-            context.DecrementCountdown();
-        }
-        
-        var generatedCode = string.Join("\r\n", ruleCodes);
-        
-        return generatedCode;
+        return string.Join("\r\n", ruleCodes);
     }
 
     protected override string GetTargetPath(RuleChainContext context)

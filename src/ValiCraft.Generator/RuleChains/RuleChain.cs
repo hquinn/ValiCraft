@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Text;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
+using ValiCraft.Generator.Rules;
+using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.RuleChains;
 
@@ -92,6 +95,31 @@ public abstract record RuleChain(
         return context.ParentFailureMode is OnFailureMode.Continue
             ? context
             : context.CreateContinueContext();
+    }
+
+    protected static List<string> GenerateRulesCode(
+        EquatableArray<Rule> rules,
+        string requestName,
+        IndentModel indent,
+        ValidationTarget @object,
+        ValidationTarget target,
+        RuleChainContext context,
+        int extraCapacity = 0)
+    {
+        var ruleCodes = new List<string>(rules.Count + extraCapacity);
+
+        foreach (var rule in rules)
+        {
+            ruleCodes.Add(rule.GenerateCodeForRule(
+                requestName,
+                indent,
+                @object,
+                target,
+                context));
+            context.DecrementCountdown();
+        }
+
+        return ruleCodes;
     }
 
     protected static string GenerateValidatorCallCode(

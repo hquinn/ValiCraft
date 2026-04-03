@@ -47,18 +47,7 @@ public record CollectionTargetRuleChain(
             DefaultTargetName: Target.DefaultTargetName,
             TargetPath: Target.TargetPath);
 
-        var ruleCodes = new List<string>(NumberOfRules);
-
-        foreach (var rule in Rules)
-        {
-            ruleCodes.Add(rule.GenerateCodeForRule(
-                itemRequestName,
-                childIndent,
-                Object,
-                itemTarget,
-                context));
-            context.DecrementCountdown();
-        }
+        var ruleCodes = GenerateRulesCode(Rules, itemRequestName, childIndent, Object, itemTarget, context);
 
         var ruleChainCodes = string.Join("\r\n", ruleCodes);
 
