@@ -15,7 +15,7 @@ public record TargetRuleChain(
     int NumberOfRules,
     OnFailureMode? FailureMode,
     EquatableArray<Rule> Rules,
-    CollectionConfig? Collection = null) : DirectTargetRuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    CollectionConfig? Collection = null) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
 
     public override bool NeedsGotoLabels()

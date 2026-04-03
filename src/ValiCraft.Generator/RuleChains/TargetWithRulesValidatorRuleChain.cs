@@ -17,7 +17,7 @@ public record TargetWithRulesValidatorRuleChain(
     string ValidatorCallTarget,
     bool IsAsyncValidatorCall,
     CollectionConfig? Collection = null,
-    bool HoistValidator = false) : DirectTargetRuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    bool HoistValidator = false) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
     public override bool NeedsGotoLabels()
     {

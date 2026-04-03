@@ -13,7 +13,7 @@ public record TargetValidatorRuleChain(
     string ValidatorCallTarget,
     bool IsAsyncValidatorCall,
     CollectionConfig? Collection = null,
-    bool HoistValidator = false) : DirectTargetRuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
+    bool HoistValidator = false) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
     public override bool NeedsGotoLabels()
     {

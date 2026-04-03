@@ -15,8 +15,13 @@ public record PolymorphicRuleChain(
     OnFailureMode? FailureMode,
     PolymorphicNullBehavior NullBehavior,
     EquatableArray<PolymorphicBranch> Branches,
-    PolymorphicOtherwiseBranch? OtherwiseBranch) : DirectTargetRuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
+    PolymorphicOtherwiseBranch? OtherwiseBranch) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
+    protected override string GetTargetPath(RuleChainContext context)
+    {
+        return $"{context.TargetPath}{Target!.TargetPath.Value}";
+    }
+
     public override bool NeedsGotoLabels()
     {
         // The internal if/else type-switch breaks any halt-level if/else chain, so goto labels are required
