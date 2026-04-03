@@ -23,13 +23,7 @@ public record TargetValidatorRuleChain(
 
     protected override string GetTargetPath(RuleChainContext context)
     {
-        if (Collection is not null)
-        {
-            var indexer = $"index{context.Counter}";
-            return $"{context.TargetPath}{Target!.TargetPath.Value}[{{{indexer}}}].";
-        }
-
-        return $"{context.TargetPath}{Target!.TargetPath.Value}";
+        return BuildTargetPath(context.TargetPath, Target!.TargetPath.Value, Collection is not null, context.Counter, ".");
     }
 
     protected override string HandleCodeGeneration(RuleChainContext context)

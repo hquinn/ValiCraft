@@ -38,6 +38,22 @@ public abstract record RuleChain(
     
     protected abstract string GetTargetPath(RuleChainContext context);
     
+    protected static string BuildTargetPath(
+        string currentTargetPath,
+        string targetPathValue,
+        bool isCollection,
+        Counter counter,
+        string collectionSuffix = "")
+    {
+        if (isCollection)
+        {
+            var indexer = $"index{counter}";
+            return $"{currentTargetPath}{targetPathValue}[{{{indexer}}}]{collectionSuffix}";
+        }
+
+        return $"{currentTargetPath}{targetPathValue}";
+    }
+
     protected string GetRequestParameterName()
     {
         return CalculateRequestParameterName(Depth);
