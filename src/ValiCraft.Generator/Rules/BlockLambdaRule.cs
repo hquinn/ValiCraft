@@ -64,13 +64,4 @@ public record BlockLambdaRule(
         return code;
     }
 
-    protected override string GetErrorCode(string validationRuleInvocation)
-    {
-        if (RuleOverrides.OverrideErrorCode is null)
-        {
-            return $"\"{KnownNames.Targets.Is}\"";
-        }
-        
-        return base.GetErrorCode(validationRuleInvocation);
-    }
 }
