@@ -52,7 +52,7 @@ public static class RuleChainFactory
             [RuleChainKind.Collection] = new CollectionRuleChainFactory(),
             [RuleChainKind.CollectionTarget] = new TargetRuleChainFactory(isCollection: true),
             [RuleChainKind.CollectionValidator] = new TargetValidatorRuleChainFactory(isCollection: true),
-            [RuleChainKind.CollectionWithRulesValidator] = new CollectionWithRulesValidatorRuleChainFactory(),
+            [RuleChainKind.CollectionWithRulesValidator] = new TargetWithRulesValidatorRuleChainFactory(isCollection: true),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
             [RuleChainKind.If] = new IfRuleChainFactory(),
             [RuleChainKind.Polymorphic] = new PolymorphicRuleChainFactory(),
