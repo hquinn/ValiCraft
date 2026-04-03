@@ -156,25 +156,10 @@ public record PolymorphicRuleChain(
         IndentModel childIndent,
         RuleChainContext context)
     {
-        // Static validator - call RunValidation or RunValidationAsync statically
         var callTarget = (branch.IsStaticValidator ? branch.StaticValidatorTypeName : branch.ValidatorExpression)!;
         var methodCall = BuildValidatorMethodCall(IsAsync, branch.IsAsyncValidatorCall, callTarget, typedVarName, Target!.TargetPath.Value);
 
-        return $$"""
-                 {{childIndent}}var errors{{context.Counter}} = {{methodCall}};
-                 {{childIndent}}if (errors{{context.Counter}} is not null)
-                 {{childIndent}}{
-                 {{childIndent}}    if (errors is null)
-                 {{childIndent}}    {
-                 {{childIndent}}        errors = errors{{context.Counter}};
-                 {{GetValidatorGotoLabelIfNeeded(childIndent, context)}}{{childIndent}}    }
-                 {{childIndent}}    else
-                 {{childIndent}}    {
-                 {{childIndent}}        errors.AddRange(errors{{context.Counter}});
-                 {{GetValidatorGotoLabelIfNeeded(childIndent, context)}}{{childIndent}}    }
-                 {{childIndent}}}
-
-                 """;
+        return GenerateValidatorCallCode(childIndent, methodCall, context) + "\r\n";
     }
 
     protected override string GetTargetPath(RuleChainContext context)
