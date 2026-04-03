@@ -13,16 +13,12 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 public enum RuleChainKind
 {
     Target,
-    TargetValidateWith,
-    TargetStaticValidate,
-    TargetWithRulesValidateWith,
-    TargetWithRulesStaticValidate,
+    TargetValidator,
+    TargetWithRulesValidator,
     Collection,
     CollectionTarget,
-    CollectionValidateWith,
-    CollectionStaticValidate,
-    CollectionWithRulesValidateWith,
-    CollectionWithRulesStaticValidate,
+    CollectionValidator,
+    CollectionWithRulesValidator,
     WithOnFailure,
     If,
     Polymorphic
@@ -51,16 +47,12 @@ public static class RuleChainFactory
         RuleChainFactories = new Dictionary<RuleChainKind, IRuleChainFactory>
         {
             [RuleChainKind.Target] = new TargetRuleChainFactory(),
-            [RuleChainKind.TargetValidateWith] = new TargetValidateWithRuleChainFactory(),
-            [RuleChainKind.TargetStaticValidate] = new TargetStaticValidateRuleChainFactory(),
-            [RuleChainKind.TargetWithRulesValidateWith] = new TargetWithRulesValidateWithRuleChainFactory(),
-            [RuleChainKind.TargetWithRulesStaticValidate] = new TargetWithRulesStaticValidateRuleChainFactory(),
+            [RuleChainKind.TargetValidator] = new TargetValidatorRuleChainFactory(),
+            [RuleChainKind.TargetWithRulesValidator] = new TargetWithRulesValidatorRuleChainFactory(),
             [RuleChainKind.Collection] = new CollectionRuleChainFactory(),
             [RuleChainKind.CollectionTarget] = new CollectionTargetRuleChainFactory(),
-            [RuleChainKind.CollectionValidateWith] = new CollectionValidateWithRuleChainFactory(),
-            [RuleChainKind.CollectionStaticValidate] = new CollectionStaticValidateRuleChainFactory(),
-            [RuleChainKind.CollectionWithRulesValidateWith] = new CollectionWithRulesValidateWithRuleChainFactory(),
-            [RuleChainKind.CollectionWithRulesStaticValidate] = new CollectionWithRulesStaticValidateRuleChainFactory(),
+            [RuleChainKind.CollectionValidator] = new CollectionValidatorRuleChainFactory(),
+            [RuleChainKind.CollectionWithRulesValidator] = new CollectionWithRulesValidatorRuleChainFactory(),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
             [RuleChainKind.If] = new IfRuleChainFactory(),
             [RuleChainKind.Polymorphic] = new PolymorphicRuleChainFactory(),
@@ -184,76 +176,54 @@ public static class RuleChainFactory
         var firstMethodName = firstMemberAccess?.Name.Identifier.ValueText;
         
         var secondInvocation = invocationChain.Skip(1).FirstOrDefault();
-        var secondInvocationIsValidateWith = secondInvocation is
-        {
-            Expression: MemberAccessExpressionSyntax
-            {
-                Name.Identifier.ValueText: KnownNames.Methods.ValidateWith
-            }
-        };
-        
-        // Check for static Validate<T>() or ValidateAsync<T>() - these have generic type arguments
-        var secondInvocationIsStaticValidate = secondInvocation is
-        {
-            Expression: MemberAccessExpressionSyntax
-            {
-                Name: GenericNameSyntax
-                {
-                    Identifier.ValueText: KnownNames.Methods.Validate or KnownNames.Methods.ValidateAsync
-                }
-            }
-        };
+        var secondInvocationIsValidator = IsValidatorInvocation(secondInvocation);
 
         // Check if the last invocation is ValidateWith or Validate<T> (for hybrid chains with rules before validate)
         var lastInvocation = invocationChain.LastOrDefault();
-        var lastInvocationIsValidateWith = lastInvocation is
-        {
-            Expression: MemberAccessExpressionSyntax
-            {
-                Name.Identifier.ValueText: KnownNames.Methods.ValidateWith
-            }
-        };
-        var lastInvocationIsStaticValidate = lastInvocation is
-        {
-            Expression: MemberAccessExpressionSyntax
-            {
-                Name: GenericNameSyntax
-                {
-                    Identifier.ValueText: KnownNames.Methods.Validate or KnownNames.Methods.ValidateAsync
-                }
-            }
-        };
+        var lastInvocationIsValidator = IsValidatorInvocation(lastInvocation);
 
         return firstMethodName switch
         {
             // We don't have a valid rule chain if we have zero or one method invocations
             // As the first invocation should be the Ensure method.
             KnownNames.Methods.Ensure => invocationChain.Count > 1
-                ? secondInvocationIsValidateWith
-                    ? RuleChainKind.TargetValidateWith
-                    : secondInvocationIsStaticValidate
-                        ? RuleChainKind.TargetStaticValidate
-                        : lastInvocationIsValidateWith
-                            ? RuleChainKind.TargetWithRulesValidateWith
-                            : lastInvocationIsStaticValidate
-                                ? RuleChainKind.TargetWithRulesStaticValidate
-                                : RuleChainKind.Target
+                ? secondInvocationIsValidator
+                    ? RuleChainKind.TargetValidator
+                    : lastInvocationIsValidator
+                        ? RuleChainKind.TargetWithRulesValidator
+                        : RuleChainKind.Target
                 : null,
             KnownNames.Methods.EnsureEach => invocationChain.Count > 1
-                ? secondInvocationIsValidateWith
-                    ? RuleChainKind.CollectionValidateWith
-                    : secondInvocationIsStaticValidate
-                        ? RuleChainKind.CollectionStaticValidate
-                        : lastInvocationIsValidateWith
-                            ? RuleChainKind.CollectionWithRulesValidateWith
-                            : lastInvocationIsStaticValidate
-                                ? RuleChainKind.CollectionWithRulesStaticValidate
-                                : RuleChainKind.CollectionTarget
+                ? secondInvocationIsValidator
+                    ? RuleChainKind.CollectionValidator
+                    : lastInvocationIsValidator
+                        ? RuleChainKind.CollectionWithRulesValidator
+                        : RuleChainKind.CollectionTarget
                 : RuleChainKind.Collection,
             KnownNames.Methods.WithOnFailure => RuleChainKind.WithOnFailure,
             KnownNames.Methods.If => RuleChainKind.If,
             KnownNames.Methods.Polymorphic => invocationChain.Count > 1 ? RuleChainKind.Polymorphic : null,
             _ => null
+        };
+    }
+
+    private static bool IsValidatorInvocation(InvocationExpressionSyntax? invocation)
+    {
+        if (invocation?.Expression is not MemberAccessExpressionSyntax memberAccess)
+        {
+            return false;
+        }
+
+        // Check for ValidateWith(expr)
+        if (memberAccess.Name.Identifier.ValueText == KnownNames.Methods.ValidateWith)
+        {
+            return true;
+        }
+
+        // Check for Validate<T>() or ValidateAsync<T>()
+        return memberAccess.Name is GenericNameSyntax
+        {
+            Identifier.ValueText: KnownNames.Methods.Validate or KnownNames.Methods.ValidateAsync
         };
     }
 
