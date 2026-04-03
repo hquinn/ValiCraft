@@ -12,13 +12,8 @@ public record CollectionValidatorRuleChain(
     OnFailureMode? FailureMode,
     string ValidatorCallTarget,
     bool IsAsyncValidatorCall,
-    bool HoistValidator) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
+    bool HoistValidator) : CollectionItemRuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
 {
-    public override bool NeedsGotoLabels()
-    {
-        return true;
-    }
-
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         var index = $"index{context.Counter}";
@@ -39,9 +34,4 @@ public record CollectionValidatorRuleChain(
         return code;
     }
 
-    protected override string GetTargetPath(RuleChainContext context)
-    {
-        var indexer = $"index{context.Counter}";
-        return $"{context.TargetPath}{Target!.TargetPath.Value}[{{{indexer}}}].";
-    }
 }

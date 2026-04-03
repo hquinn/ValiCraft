@@ -16,14 +16,8 @@ public record CollectionTargetRuleChain(
     int NumberOfRules,
     OnFailureMode? FailureMode,
     TypeInfo ElementType,
-    EquatableArray<Rule> Rules) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    EquatableArray<Rule> Rules) : CollectionItemRuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
-    public override bool NeedsGotoLabels()
-    {
-        // Loops have no reliable way (besides break and return) to exit loops early
-        return true;
-    }
-
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         if (Rules.Count == 0)

@@ -18,13 +18,8 @@ public record CollectionWithRulesValidatorRuleChain(
     EquatableArray<Rule> Rules,
     string ValidatorCallTarget,
     bool IsAsyncValidatorCall,
-    bool HoistValidator) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    bool HoistValidator) : CollectionItemRuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
-    public override bool NeedsGotoLabels()
-    {
-        return true;
-    }
-
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         var index = $"index{context.Counter}";
@@ -52,9 +47,4 @@ public record CollectionWithRulesValidatorRuleChain(
         return code;
     }
 
-    protected override string GetTargetPath(RuleChainContext context)
-    {
-        var indexer = $"index{context.Counter}";
-        return $"{context.TargetPath}{Target!.TargetPath.Value}[{{{indexer}}}].";
-    }
 }

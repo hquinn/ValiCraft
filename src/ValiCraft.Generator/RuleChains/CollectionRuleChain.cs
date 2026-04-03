@@ -13,14 +13,8 @@ public record CollectionRuleChain(
     IndentModel Indent,
     int NumberOfRules,
     OnFailureMode? FailureMode,
-    EquatableArray<RuleChain> ItemRuleChains) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    EquatableArray<RuleChain> ItemRuleChains) : CollectionItemRuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
 {
-    public override bool NeedsGotoLabels()
-    {
-        // Loops have no reliable way (besides break and return) to exit loops early
-        return true;
-    }
-
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         if (ItemRuleChains.Count == 0)
@@ -37,11 +31,5 @@ public record CollectionRuleChain(
         }
 
         return GenerateForEachLoop(index, string.Join("\r\n", itemRuleChainCodes));
-    }
-
-    protected override string GetTargetPath(RuleChainContext context)
-    {
-        var indexer = $"index{context.Counter}";
-        return $"{context.TargetPath}{Target!.TargetPath.Value}[{{{indexer}}}].";
     }
 }
