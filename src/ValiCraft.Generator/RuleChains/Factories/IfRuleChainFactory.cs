@@ -25,12 +25,17 @@ public class IfRuleChainFactory : IRuleChainFactory
             return null;
         }
 
-        return new IfRuleChain(
+        var config = new RuleChainConfig(
             context.IsAsyncValidator,
             context.Object,
+            null,
             context.Depth,
             context.Indent,
-            ruleChains.Sum(x => x.NumberOfRules),
+            ruleChains.Sum(x => x.Config.NumberOfRules),
+            null);
+
+        return new IfRuleChain(
+            config,
             ifConditionArgument,
             ruleChains.ToEquatableImmutableArray());
     }

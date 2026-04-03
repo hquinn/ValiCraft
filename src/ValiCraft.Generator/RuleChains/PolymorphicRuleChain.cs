@@ -7,19 +7,14 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.RuleChains;
 
 public record PolymorphicRuleChain(
-    bool IsAsync,
-    ValidationTarget Object,
-    ValidationTarget Target,
-    int Depth,
-    IndentModel Indent,
-    OnFailureMode? FailureMode,
+    RuleChainConfig Config,
     PolymorphicNullBehavior NullBehavior,
     EquatableArray<PolymorphicBranch> Branches,
-    PolymorphicOtherwiseBranch? OtherwiseBranch) : RuleChain(IsAsync, Object, Target, Depth, Indent, 1, FailureMode)
+    PolymorphicOtherwiseBranch? OtherwiseBranch) : RuleChain(Config)
 {
     protected override string GetTargetPath(RuleChainContext context)
     {
-        return $"{context.TargetPath}{Target!.TargetPath.Value}";
+        return $"{context.TargetPath}{Config.Target!.TargetPath.Value}";
     }
 
     public override bool NeedsGotoLabels()
@@ -31,9 +26,9 @@ public record PolymorphicRuleChain(
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         var requestName = GetRequestParameterName();
-        var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
+        var requestAccessor = string.Format(Config.Target!.AccessorExpressionFormat, requestName);
         var code = new StringBuilder();
-        var childIndent = IndentModel.CreateChild(Indent);
+        var childIndent = IndentModel.CreateChild(Config.Indent);
         var doubleChildIndent = IndentModel.CreateChild(childIndent);
 
         // Generate null check if needed
@@ -51,10 +46,10 @@ public record PolymorphicRuleChain(
             var simpleTypeName = GetSimpleTypeName(branch.DerivedType.PureTypeName);
             var typedVarName = $"typed{simpleTypeName}";
             
-            code.AppendLine($"{Indent}{keyword} ({requestAccessor} is {branch.DerivedType.FormattedTypeName} {typedVarName})");
-            code.AppendLine($"{Indent}{{");
+            code.AppendLine($"{Config.Indent}{keyword} ({requestAccessor} is {branch.DerivedType.FormattedTypeName} {typedVarName})");
+            code.AppendLine($"{Config.Indent}{{");
             code.Append(GenerateBranchBody(branch, typedVarName, childIndent, doubleChildIndent, context));
-            code.AppendLine($"{Indent}}}");
+            code.AppendLine($"{Config.Indent}}}");
 
             isFirst = false;
         }
@@ -62,10 +57,10 @@ public record PolymorphicRuleChain(
         // Generate otherwise branch
         if (OtherwiseBranch is not null)
         {
-            code.AppendLine($"{Indent}else");
-            code.AppendLine($"{Indent}{{");
+            code.AppendLine($"{Config.Indent}else");
+            code.AppendLine($"{Config.Indent}{{");
             code.Append(GenerateOtherwiseBranchBody(OtherwiseBranch, childIndent, doubleChildIndent, context));
-            code.AppendLine($"{Indent}}}");
+            code.AppendLine($"{Config.Indent}}}");
         }
         else if (NullBehavior == PolymorphicNullBehavior.Skip)
         {
@@ -83,18 +78,18 @@ public record PolymorphicRuleChain(
     {
         var nullMessage = $"{{TargetName}} cannot be null.";
         return $$"""
-                 {{Indent}}if ({{requestAccessor}} is null)
-                 {{Indent}}{
-                 {{Indent}}    (errors ??= []).Add(new global::{{KnownNames.Types.ValidationError}}
-                 {{Indent}}    {
-                 {{Indent}}        Code = "{{Target!.TargetPath.Value}}IsNull",
-                 {{Indent}}        Message = $"{{Target!.DefaultTargetName.Value}} cannot be null.",
-                 {{Indent}}        Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,
-                 {{Indent}}        TargetName = "{{Target!.DefaultTargetName.Value}}",
-                 {{Indent}}        TargetPath = $"{inheritedTargetPath}{{Target!.TargetPath.Value}}",
-                 {{Indent}}        AttemptedValue = {{requestAccessor}}
-                 {{Indent}}    });
-                 {{GetValidatorGotoLabelIfNeeded(Indent, context)}}{{Indent}}}
+                 {{Config.Indent}}if ({{requestAccessor}} is null)
+                 {{Config.Indent}}{
+                 {{Config.Indent}}    (errors ??= []).Add(new global::{{KnownNames.Types.ValidationError}}
+                 {{Config.Indent}}    {
+                 {{Config.Indent}}        Code = "{{Config.Target!.TargetPath.Value}}IsNull",
+                 {{Config.Indent}}        Message = $"{{Config.Target!.DefaultTargetName.Value}} cannot be null.",
+                 {{Config.Indent}}        Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,
+                 {{Config.Indent}}        TargetName = "{{Config.Target!.DefaultTargetName.Value}}",
+                 {{Config.Indent}}        TargetPath = $"{inheritedTargetPath}{{Config.Target!.TargetPath.Value}}",
+                 {{Config.Indent}}        AttemptedValue = {{requestAccessor}}
+                 {{Config.Indent}}    });
+                 {{GetValidatorGotoLabelIfNeeded(Config.Indent, context)}}{{Config.Indent}}}
                  """;
     }
 
@@ -135,20 +130,20 @@ public record PolymorphicRuleChain(
         RuleChainContext context)
     {
         var requestName = GetRequestParameterName();
-        var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
+        var requestAccessor = string.Format(Config.Target!.AccessorExpressionFormat, requestName);
         var message = failMessage?.Value ?? $"{{TargetName}} is not a supported type.";
         var messageExpression = failMessage?.IsLiteral != false 
-            ? $"$\"{message.Replace("{TargetName}", Target!.DefaultTargetName.Value)}\"" 
+            ? $"$\"{message.Replace("{TargetName}", Config.Target!.DefaultTargetName.Value)}\"" 
             : message;
 
         return $$"""
                  {{childIndent}}(errors ??= []).Add(new global::{{KnownNames.Types.ValidationError}}
                  {{childIndent}}{
-                 {{childIndent}}    Code = "{{Target!.TargetPath.Value}}UnsupportedType",
+                 {{childIndent}}    Code = "{{Config.Target!.TargetPath.Value}}UnsupportedType",
                  {{childIndent}}    Message = {{messageExpression}},
                  {{childIndent}}    Severity = global::{{KnownNames.Enums.ErrorSeverity}}.Error,
-                 {{childIndent}}    TargetName = "{{Target!.DefaultTargetName.Value}}",
-                 {{childIndent}}    TargetPath = $"{inheritedTargetPath}{{Target!.TargetPath.Value}}",
+                 {{childIndent}}    TargetName = "{{Config.Target!.DefaultTargetName.Value}}",
+                 {{childIndent}}    TargetPath = $"{inheritedTargetPath}{{Config.Target!.TargetPath.Value}}",
                  {{childIndent}}    AttemptedValue = {{requestAccessor}}
                  {{childIndent}}});
                  {{GetValidatorGotoLabelIfNeeded(childIndent, context)}}
@@ -162,7 +157,7 @@ public record PolymorphicRuleChain(
         RuleChainContext context)
     {
         var callTarget = (branch.IsStaticValidator ? branch.StaticValidatorTypeName : branch.ValidatorExpression)!;
-        var methodCall = BuildValidatorMethodCall(IsAsync, branch.IsAsyncValidatorCall, callTarget, typedVarName, Target!.TargetPath.Value);
+        var methodCall = BuildValidatorMethodCall(Config.IsAsync, branch.IsAsyncValidatorCall, callTarget, typedVarName, Config.Target!.TargetPath.Value);
 
         return GenerateValidatorCallCode(childIndent, methodCall, context) + "\r\n";
     }

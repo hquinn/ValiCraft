@@ -7,14 +7,16 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.RuleChains;
 
-public abstract record RuleChain(
+public record RuleChainConfig(
     bool IsAsync,
     ValidationTarget Object,
     ValidationTarget? Target,
     int Depth,
     IndentModel Indent,
     int NumberOfRules,
-    OnFailureMode? FailureMode)
+    OnFailureMode? FailureMode);
+
+public abstract record RuleChain(RuleChainConfig Config)
 {
     public string GenerateCode(RuleChainContext context)
     {
@@ -56,12 +58,12 @@ public abstract record RuleChain(
 
     protected string GetRequestParameterName()
     {
-        return CalculateRequestParameterName(Depth);
+        return CalculateRequestParameterName(Config.Depth);
     }
 
     protected string GetItemRequestParameterName()
     {
-        return CalculateRequestParameterName(Depth + 1);
+        return CalculateRequestParameterName(Config.Depth + 1);
     }
 
     private static string CalculateRequestParameterName(int depth)
@@ -84,14 +86,14 @@ public abstract record RuleChain(
 
     private RuleChainContext HandleNoParentFailureMode(RuleChainContext context)
     {
-        return FailureMode is OnFailureMode.Halt 
+        return Config.FailureMode is OnFailureMode.Halt
             ? context.CreateHaltContext(NeedsGotoLabels())
             : context;
     }
 
     private RuleChainContext HandleWithParentFailureMode(RuleChainContext context)
     {
-        return FailureMode switch
+        return Config.FailureMode switch
         {
             OnFailureMode.Halt => HandleHaltFailureMode(context),
             OnFailureMode.Continue => HandleContinueFailureMode(context),
@@ -180,16 +182,16 @@ public abstract record RuleChain(
         string? hoistLine = null)
     {
         var requestName = GetRequestParameterName();
-        var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
+        var requestAccessor = string.Format(Config.Target!.AccessorExpressionFormat, requestName);
         var itemRequestName = GetItemRequestParameterName();
 
         return $$"""
-               {{hoistLine}}{{Indent}}var {{index}} = 0;
-               {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
-               {{Indent}}{
+               {{hoistLine}}{{Config.Indent}}var {{index}} = 0;
+               {{Config.Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
+               {{Config.Indent}}{
                {{bodyContent}}
-               {{Indent}}    {{index}}++;
-               {{Indent}}}
+               {{Config.Indent}}    {{index}}++;
+               {{Config.Indent}}}
                """;
     }
 
@@ -243,7 +245,7 @@ public abstract record RuleChain(
     {
         if (parentContext.HaltLabel is null && contextToUse.HaltLabel is not null)
         {
-            code.Append($"\r\n\r\n{Indent}{contextToUse.HaltLabel}:");
+            code.Append($"\r\n\r\n{Config.Indent}{contextToUse.HaltLabel}:");
         }
     }
 }

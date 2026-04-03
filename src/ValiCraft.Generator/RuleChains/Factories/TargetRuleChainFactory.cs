@@ -29,14 +29,17 @@ public class TargetRuleChainFactory(bool isCollection = false) : IRuleChainFacto
         }
 
         // Now that we have all the rules in the chain, we can now create the rule chain
-        return new TargetRuleChain(
+        var config = new RuleChainConfig(
             context.IsAsyncValidator,
             context.Object,
             context.Target!,
             context.Depth,
             context.Indent,
             rules.Count,
-            context.Invocation?.GetOnFailureModeFromSyntax(),
+            context.Invocation?.GetOnFailureModeFromSyntax());
+
+        return new TargetRuleChain(
+            config,
             rules.ToEquatableImmutableArray(),
             resolvedCollection);
     }

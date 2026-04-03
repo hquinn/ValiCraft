@@ -194,7 +194,7 @@ public static class ValidatorSourceProvider
     private static string GenerateCodeForRuleChains(EquatableArray<RuleChain> ruleChains)
     {
         var ruleChainsCode = new List<string>();
-        var context = new RuleChainContext(ruleChains.Sum(rc => rc.NumberOfRules));
+        var context = new RuleChainContext(ruleChains.Sum(rc => rc.Config.NumberOfRules));
 
         foreach (var ruleChain in ruleChains)
         {

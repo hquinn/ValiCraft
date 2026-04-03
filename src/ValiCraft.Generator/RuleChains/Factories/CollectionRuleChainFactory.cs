@@ -16,14 +16,17 @@ public class CollectionRuleChainFactory : IRuleChainFactory
             return null;
         }
 
-        return new CollectionRuleChain(
+        var config = new RuleChainConfig(
             context.IsAsyncValidator,
             context.Object,
             context.Target!,
             context.Depth,
             context.Indent,
-            ruleChains.Sum(x => x.NumberOfRules),
-            context.Invocation.GetOnFailureModeFromSyntax(),
+            ruleChains.Sum(x => x.Config.NumberOfRules),
+            context.Invocation.GetOnFailureModeFromSyntax());
+
+        return new CollectionRuleChain(
+            config,
             ruleChains.ToEquatableImmutableArray());
     }
 }

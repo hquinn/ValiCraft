@@ -15,13 +15,17 @@ public class TargetValidatorRuleChainFactory(bool isCollection = false) : IRuleC
             return null;
         }
 
-        return new TargetValidatorRuleChain(
+        var config = new RuleChainConfig(
             context.IsAsyncValidator,
             context.Object,
             context.Target!,
             context.Depth,
             context.Indent,
-            context.Invocation.GetOnFailureModeFromSyntax(),
+            1,
+            context.Invocation.GetOnFailureModeFromSyntax());
+
+        return new TargetValidatorRuleChain(
+            config,
             resolution.ValidatorCallTarget,
             resolution.IsAsyncValidatorCall,
             Collection: isCollection ? new CollectionConfig(default!) : null,

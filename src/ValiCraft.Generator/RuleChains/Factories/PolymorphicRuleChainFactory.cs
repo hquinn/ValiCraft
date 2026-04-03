@@ -93,13 +93,17 @@ public class PolymorphicRuleChainFactory : IRuleChainFactory
         // Default to Allow if no Otherwise branch specified
         otherwiseBranch ??= new PolymorphicOtherwiseBranch(PolymorphicBranchBehavior.Allow, null);
 
-        return new PolymorphicRuleChain(
+        var config = new RuleChainConfig(
             context.IsAsyncValidator,
             context.Object,
             context.Target!,
             context.Depth,
             context.Indent,
-            failureMode,
+            1,
+            failureMode);
+
+        return new PolymorphicRuleChain(
+            config,
             nullBehavior,
             branches.ToEquatableImmutableArray(),
             otherwiseBranch);

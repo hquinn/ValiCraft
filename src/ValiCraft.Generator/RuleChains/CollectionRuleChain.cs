@@ -1,19 +1,12 @@
 using System.Collections.Generic;
-using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.RuleChains;
 
 public record CollectionRuleChain(
-    bool IsAsync,
-    ValidationTarget Object,
-    ValidationTarget Target,
-    int Depth,
-    IndentModel Indent,
-    int NumberOfRules,
-    OnFailureMode? FailureMode,
-    EquatableArray<RuleChain> ItemRuleChains) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    RuleChainConfig Config,
+    EquatableArray<RuleChain> ItemRuleChains) : RuleChain(Config)
 {
     public override bool NeedsGotoLabels()
     {
@@ -24,7 +17,7 @@ public record CollectionRuleChain(
     protected override string GetTargetPath(RuleChainContext context)
     {
         var indexer = $"index{context.Counter}";
-        return $"{context.TargetPath}{Target!.TargetPath.Value}[{{{indexer}}}].";
+        return $"{context.TargetPath}{Config.Target!.TargetPath.Value}[{{{indexer}}}].";
     }
 
     protected override string HandleCodeGeneration(RuleChainContext context)

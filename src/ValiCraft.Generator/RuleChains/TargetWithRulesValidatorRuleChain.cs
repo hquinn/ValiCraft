@@ -6,18 +6,12 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.RuleChains;
 
 public record TargetWithRulesValidatorRuleChain(
-    bool IsAsync,
-    ValidationTarget Object,
-    ValidationTarget Target,
-    int Depth,
-    IndentModel Indent,
-    int NumberOfRules,
-    OnFailureMode? FailureMode,
+    RuleChainConfig Config,
     EquatableArray<Rule> Rules,
     string ValidatorCallTarget,
     bool IsAsyncValidatorCall,
     CollectionConfig? Collection = null,
-    bool HoistValidator = false) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    bool HoistValidator = false) : RuleChain(Config)
 {
     public override bool NeedsGotoLabels()
     {
@@ -27,7 +21,7 @@ public record TargetWithRulesValidatorRuleChain(
 
     protected override string GetTargetPath(RuleChainContext context)
     {
-        return BuildTargetPath(context.TargetPath, Target!.TargetPath.Value, Collection is not null, context.Counter, ".");
+        return BuildTargetPath(context.TargetPath, Config.Target!.TargetPath.Value, Collection is not null, context.Counter, ".");
     }
 
     protected override string HandleCodeGeneration(RuleChainContext context)
@@ -37,14 +31,14 @@ public record TargetWithRulesValidatorRuleChain(
             return HandleCollectionCodeGeneration(context);
         }
 
-        var ruleCodes = GenerateRulesCode(Rules, GetRequestParameterName(), Indent, Object, Target!, context, 1);
+        var ruleCodes = GenerateRulesCode(Rules, GetRequestParameterName(), Config.Indent, Config.Object, Config.Target!, context, 1);
 
         var requestName = GetRequestParameterName();
-        var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
+        var requestAccessor = string.Format(Config.Target!.AccessorExpressionFormat, requestName);
 
-        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, ValidatorCallTarget, requestAccessor, Target.TargetPath.Value);
+        var methodCall = BuildValidatorMethodCall(Config.IsAsync, IsAsyncValidatorCall, ValidatorCallTarget, requestAccessor, Config.Target.TargetPath.Value);
 
-        ruleCodes.Add(GenerateValidatorCallCode(Indent, methodCall, context));
+        ruleCodes.Add(GenerateValidatorCallCode(Config.Indent, methodCall, context));
         context.DecrementCountdown();
         context.UpdateIfElseMode();
 
@@ -55,18 +49,18 @@ public record TargetWithRulesValidatorRuleChain(
     {
         var index = $"index{context.Counter}";
         var itemRequestName = GetItemRequestParameterName();
-        var childIndent = IndentModel.CreateChild(Indent);
+        var childIndent = IndentModel.CreateChild(Config.Indent);
 
         // When hoisting, capture the validator variable name before rules decrement the counter
-        var (loopCallTarget, hoistLine) = ResolveHoistTarget(HoistValidator, ValidatorCallTarget, Indent, context);
+        var (loopCallTarget, hoistLine) = ResolveHoistTarget(HoistValidator, ValidatorCallTarget, Config.Indent, context);
 
         // Create an object-level target for the item within the loop
-        var itemTarget = CreateItemTarget(Collection!.ElementType, Target!);
+        var itemTarget = CreateItemTarget(Collection!.ElementType, Config.Target!);
 
         // Generate rule code for inside the loop
-        var ruleCodes = GenerateRulesCode(Rules, itemRequestName, childIndent, Object, itemTarget, context, 1);
+        var ruleCodes = GenerateRulesCode(Rules, itemRequestName, childIndent, Config.Object, itemTarget, context, 1);
 
-        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, loopCallTarget, itemRequestName, $"{Target!.TargetPath.Value}[{{{index}}}]");
+        var methodCall = BuildValidatorMethodCall(Config.IsAsync, IsAsyncValidatorCall, loopCallTarget, itemRequestName, $"{Config.Target!.TargetPath.Value}[{{{index}}}]");
 
         ruleCodes.Add(GenerateValidatorCallCode(childIndent, methodCall, context, IndentModel.CreateChild(childIndent)));
         context.DecrementCountdown();

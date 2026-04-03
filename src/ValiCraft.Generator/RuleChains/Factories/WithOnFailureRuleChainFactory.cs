@@ -22,13 +22,17 @@ public class WithOnFailureRuleChainFactory : IRuleChainFactory
             return null;
         }
 
-        return new WithOnFailureRuleChain(
+        var config = new RuleChainConfig(
             context.IsAsyncValidator,
             context.Object,
+            null,
             context.Depth,
             context.Indent,
-            ruleChains.Sum(x => x.NumberOfRules),
-            onFailureArgument,
+            ruleChains.Sum(x => x.Config.NumberOfRules),
+            onFailureArgument);
+
+        return new WithOnFailureRuleChain(
+            config,
             ruleChains.ToEquatableImmutableArray());
     }
 }

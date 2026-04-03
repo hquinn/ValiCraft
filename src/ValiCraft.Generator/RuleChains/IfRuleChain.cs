@@ -1,19 +1,14 @@
 using System.Linq;
 using ValiCraft.Generator.IfConditions;
-using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.RuleChains;
 
 public record IfRuleChain(
-    bool IsAsync,
-    ValidationTarget Object,
-    int Depth,
-    IndentModel Indent,
-    int NumberOfRules,
+    RuleChainConfig Config,
     IfConditionModel IfCondition,
-    EquatableArray<RuleChain> ChildRuleChains) : RuleChain(IsAsync, Object, null, Depth, Indent, NumberOfRules, null)
+    EquatableArray<RuleChain> ChildRuleChains) : RuleChain(Config)
 {
     public override bool NeedsGotoLabels()
     {
@@ -33,10 +28,10 @@ public record IfRuleChain(
         }
 
         var code = $$"""
-                   {{IfCondition.GenerateIfBlock(Object, GetRequestParameterName(), Indent, context)}}
-                   {{Indent}}{
+                   {{IfCondition.GenerateIfBlock(Config.Object, GetRequestParameterName(), Config.Indent, context)}}
+                   {{Config.Indent}}{
                    {{string.Join("\r\n", ChildRuleChains.Select(x => x.GenerateCode(context)))}}
-                   {{Indent}}}
+                   {{Config.Indent}}}
                    """;
 
         context.ResetIfElseMode();

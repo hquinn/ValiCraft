@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 using ValiCraft.Generator.Rules;
@@ -7,15 +6,9 @@ using ValiCraft.Generator.Types;
 namespace ValiCraft.Generator.RuleChains;
 
 public record TargetRuleChain(
-    bool IsAsync,
-    ValidationTarget Object,
-    ValidationTarget Target,
-    int Depth,
-    IndentModel Indent,
-    int NumberOfRules,
-    OnFailureMode? FailureMode,
+    RuleChainConfig Config,
     EquatableArray<Rule> Rules,
-    CollectionConfig? Collection = null) : RuleChain(IsAsync, Object, Target, Depth, Indent, NumberOfRules, FailureMode)
+    CollectionConfig? Collection = null) : RuleChain(Config)
 {
 
     public override bool NeedsGotoLabels()
@@ -28,7 +21,7 @@ public record TargetRuleChain(
 
     protected override string GetTargetPath(RuleChainContext context)
     {
-        return BuildTargetPath(context.TargetPath, Target!.TargetPath.Value, Collection is not null, context.Counter);
+        return BuildTargetPath(context.TargetPath, Config.Target!.TargetPath.Value, Collection is not null, context.Counter);
     }
 
     protected override string HandleCodeGeneration(RuleChainContext context)
@@ -38,7 +31,7 @@ public record TargetRuleChain(
             return HandleCollectionCodeGeneration(context);
         }
 
-        var ruleCodes = GenerateRulesCode(Rules, GetRequestParameterName(), Indent, Object, Target!, context);
+        var ruleCodes = GenerateRulesCode(Rules, GetRequestParameterName(), Config.Indent, Config.Object, Config.Target!, context);
 
         return string.Join("\r\n", ruleCodes);
     }
@@ -51,14 +44,14 @@ public record TargetRuleChain(
         }
 
         var index = $"index{context.Counter}";
-        var childIndent = IndentModel.CreateChild(Indent);
+        var childIndent = IndentModel.CreateChild(Config.Indent);
 
         // Create an object-level target for the item within the loop.
         // The rules operate on each item directly (e.g., element), not on a property.
         // Uses the element type (not the collection type) for correct ValidationError<T> generation.
-        var itemTarget = CreateItemTarget(Collection!.ElementType, Target!);
+        var itemTarget = CreateItemTarget(Collection!.ElementType, Config.Target!);
 
-        var ruleCodes = GenerateRulesCode(Rules, GetItemRequestParameterName(), childIndent, Object, itemTarget, context);
+        var ruleCodes = GenerateRulesCode(Rules, GetItemRequestParameterName(), childIndent, Config.Object, itemTarget, context);
 
         return GenerateForEachLoop(index, string.Join("\r\n", ruleCodes));
     }

@@ -40,14 +40,17 @@ public class TargetWithRulesValidatorRuleChainFactory(bool isCollection = false)
             return null;
         }
 
-        return new TargetWithRulesValidatorRuleChain(
+        var config = new RuleChainConfig(
             context.IsAsyncValidator,
             context.Object,
             context.Target!,
             context.Depth,
             context.Indent,
             rules.Count + 1, // +1 for the validator call
-            context.Invocation.GetOnFailureModeFromSyntax(),
+            context.Invocation.GetOnFailureModeFromSyntax());
+
+        return new TargetWithRulesValidatorRuleChain(
+            config,
             rules.ToEquatableImmutableArray(),
             resolution.ValidatorCallTarget,
             resolution.IsAsyncValidatorCall,
