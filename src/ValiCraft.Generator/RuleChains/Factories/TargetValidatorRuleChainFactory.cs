@@ -3,7 +3,7 @@ using ValiCraft.Generator.Extensions;
 
 namespace ValiCraft.Generator.RuleChains.Factories;
 
-public class TargetValidatorRuleChainFactory : IRuleChainFactory
+public class TargetValidatorRuleChainFactory(bool isCollection = false) : IRuleChainFactory
 {
     public RuleChain? Create(RuleChainFactoryContext context)
     {
@@ -23,6 +23,8 @@ public class TargetValidatorRuleChainFactory : IRuleChainFactory
             context.Indent,
             context.Invocation.GetOnFailureModeFromSyntax(),
             resolution.ValidatorCallTarget,
-            resolution.IsAsyncValidatorCall);
+            resolution.IsAsyncValidatorCall,
+            Collection: isCollection ? new CollectionConfig(default!) : null,
+            HoistValidator: resolution.HoistValidator);
     }
 }

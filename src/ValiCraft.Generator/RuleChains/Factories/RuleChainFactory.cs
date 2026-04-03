@@ -51,7 +51,7 @@ public static class RuleChainFactory
             [RuleChainKind.TargetWithRulesValidator] = new TargetWithRulesValidatorRuleChainFactory(),
             [RuleChainKind.Collection] = new CollectionRuleChainFactory(),
             [RuleChainKind.CollectionTarget] = new TargetRuleChainFactory(isCollection: true),
-            [RuleChainKind.CollectionValidator] = new CollectionValidatorRuleChainFactory(),
+            [RuleChainKind.CollectionValidator] = new TargetValidatorRuleChainFactory(isCollection: true),
             [RuleChainKind.CollectionWithRulesValidator] = new CollectionWithRulesValidatorRuleChainFactory(),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
             [RuleChainKind.If] = new IfRuleChainFactory(),
