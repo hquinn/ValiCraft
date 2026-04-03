@@ -34,12 +34,7 @@ public record CollectionWithRulesStaticValidateRuleChain(
         var childIndent = IndentModel.CreateChild(Indent);
 
         // Create an object-level target for the item within the loop
-        var itemTarget = new ValidationTarget(
-            AccessorType: AccessorType.Object,
-            AccessorExpressionFormat: "{0}",
-            Type: ElementType,
-            DefaultTargetName: Target.DefaultTargetName,
-            TargetPath: Target.TargetPath);
+        var itemTarget = CreateItemTarget(ElementType, Target!);
 
         // Generate rule code for inside the loop
         var ruleCodes = GenerateRulesCode(Rules, itemRequestName, childIndent, Object, itemTarget, context, 1);

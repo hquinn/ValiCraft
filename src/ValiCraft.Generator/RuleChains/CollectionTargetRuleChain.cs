@@ -40,12 +40,7 @@ public record CollectionTargetRuleChain(
         // Create an object-level target for the item within the loop.
         // The rules operate on each item directly (e.g., element), not on a property.
         // Uses the element type (not the collection type) for correct ValidationError<T> generation.
-        var itemTarget = new ValidationTarget(
-            AccessorType: AccessorType.Object,
-            AccessorExpressionFormat: "{0}",
-            Type: ElementType,
-            DefaultTargetName: Target.DefaultTargetName,
-            TargetPath: Target.TargetPath);
+        var itemTarget = CreateItemTarget(ElementType, Target!);
 
         var ruleCodes = GenerateRulesCode(Rules, itemRequestName, childIndent, Object, itemTarget, context);
 

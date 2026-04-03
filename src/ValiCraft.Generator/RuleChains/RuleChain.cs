@@ -97,6 +97,18 @@ public abstract record RuleChain(
             : context.CreateContinueContext();
     }
 
+    protected static ValidationTarget CreateItemTarget(
+        Concepts.TypeInfo elementType,
+        ValidationTarget collectionTarget)
+    {
+        return new ValidationTarget(
+            AccessorType: AccessorType.Object,
+            AccessorExpressionFormat: "{0}",
+            Type: elementType,
+            DefaultTargetName: collectionTarget.DefaultTargetName,
+            TargetPath: collectionTarget.TargetPath);
+    }
+
     protected static List<string> GenerateRulesCode(
         EquatableArray<Rule> rules,
         string requestName,
