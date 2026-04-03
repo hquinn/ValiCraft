@@ -23,41 +23,10 @@ public class TargetValidatorRuleChainFactory : IRuleChainFactory
     {
         var validatorInvocation = invocationChain.Skip(1).First();
 
-        string validatorCallTarget;
-        bool isAsyncValidatorCall;
-
-        if (validatorInvocation.Expression is MemberAccessExpressionSyntax memberAccess &&
-            memberAccess.Name is GenericNameSyntax genericName &&
-            genericName.TypeArgumentList.Arguments.Count > 0)
+        var resolution = ValidatorResolutionHelper.Resolve(validatorInvocation, context);
+        if (resolution is null)
         {
-            // StaticValidate path: Validate<TValidator>() or ValidateAsync<TValidator>()
-            var validatorTypeArgument = genericName.TypeArgumentList.Arguments[0];
-            validatorCallTarget = validatorTypeArgument.ToString();
-
-            isAsyncValidatorCall = genericName.Identifier.ValueText == KnownNames.Methods.ValidateAsync;
-
-            // Get the fully qualified name if we can resolve the symbol
-            var typeInfo = context.SemanticModel.GetTypeInfo(validatorTypeArgument);
-            if (typeInfo.Type is INamedTypeSymbol namedType)
-            {
-                validatorCallTarget = namedType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-            }
-        }
-        else
-        {
-            // ValidateWith path: ValidateWith(validator)
-            var argumentExpression = validatorInvocation.ArgumentList.Arguments.FirstOrDefault()?.Expression;
-
-            if (argumentExpression is null)
-            {
-                return null;
-            }
-
-            validatorCallTarget = argumentExpression.ToString();
-
-            // Determine if the validator argument is an IAsyncValidator
-            var typeInfo = context.SemanticModel.GetTypeInfo(argumentExpression);
-            isAsyncValidatorCall = typeInfo.Type.IsAsyncValidatorType();
+            return null;
         }
 
         return new TargetValidatorRuleChain(
@@ -67,7 +36,7 @@ public class TargetValidatorRuleChainFactory : IRuleChainFactory
             depth,
             indent,
             invocation.GetOnFailureModeFromSyntax(),
-            validatorCallTarget,
-            isAsyncValidatorCall);
+            resolution.ValidatorCallTarget,
+            resolution.IsAsyncValidatorCall);
     }
 }
