@@ -32,9 +32,6 @@ public record CollectionTargetRuleChain(
         }
 
         var index = $"index{context.Counter}";
-        var requestName = GetRequestParameterName();
-        var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
-        var itemRequestName = GetItemRequestParameterName();
         var childIndent = IndentModel.CreateChild(Indent);
 
         // Create an object-level target for the item within the loop.
@@ -42,18 +39,9 @@ public record CollectionTargetRuleChain(
         // Uses the element type (not the collection type) for correct ValidationError<T> generation.
         var itemTarget = CreateItemTarget(ElementType, Target!);
 
-        var ruleCodes = GenerateRulesCode(Rules, itemRequestName, childIndent, Object, itemTarget, context);
+        var ruleCodes = GenerateRulesCode(Rules, GetItemRequestParameterName(), childIndent, Object, itemTarget, context);
 
-        var ruleChainCodes = string.Join("\r\n", ruleCodes);
-
-        return $$"""
-               {{Indent}}var {{index}} = 0;
-               {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
-               {{Indent}}{
-               {{ruleChainCodes}}
-               {{Indent}}    {{index}}++;
-               {{Indent}}}
-               """;
+        return GenerateForEachLoop(index, string.Join("\r\n", ruleCodes));
     }
 
     protected override string GetTargetPath(RuleChainContext context)

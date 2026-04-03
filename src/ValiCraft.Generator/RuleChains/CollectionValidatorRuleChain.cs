@@ -22,43 +22,32 @@ public record CollectionValidatorRuleChain(
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         var index = $"index{context.Counter}";
-        var requestName = GetRequestParameterName();
-        var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
-        var itemRequestName = GetItemRequestParameterName();
         var childIndent = IndentModel.CreateChild(Indent);
 
         // When hoisting, use a local variable for the validator to avoid repeated allocations in the loop
-        string loopCallTarget;
-        string hoistLine;
-        if (HoistValidator)
-        {
-            var validatorVar = $"validator{context.Counter}";
-            loopCallTarget = validatorVar;
-            hoistLine = $"{Indent}var {validatorVar} = {ValidatorCallTarget};\r\n";
-        }
-        else
-        {
-            loopCallTarget = ValidatorCallTarget;
-            hoistLine = string.Empty;
-        }
+        var (loopCallTarget, hoistLine) = ResolveHoistTarget(context);
 
-        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, loopCallTarget, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, loopCallTarget, GetItemRequestParameterName(), $"{Target!.TargetPath.Value}[{{{index}}}]");
 
         var validatorCallCode = GenerateValidatorCallCode(childIndent, methodCall, context);
 
-        var code = $$"""
-                     {{hoistLine}}{{Indent}}var {{index}} = 0;
-                     {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
-                     {{Indent}}{
-                     {{validatorCallCode}}
-                     {{Indent}}    {{index}}++;
-                     {{Indent}}}
-                     """;
+        var code = GenerateForEachLoop(index, validatorCallCode, hoistLine);
 
         context.DecrementCountdown();
         // Reset because the foreach block breaks any if/else chain — the next chain cannot use 'else if'
         context.ResetIfElseMode();
         return code;
+    }
+
+    private (string CallTarget, string? HoistLine) ResolveHoistTarget(RuleChainContext context)
+    {
+        if (!HoistValidator)
+        {
+            return (ValidatorCallTarget, null);
+        }
+
+        var validatorVar = $"validator{context.Counter}";
+        return (validatorVar, $"{Indent}var {validatorVar} = {ValidatorCallTarget};\r\n");
     }
 
     protected override string GetTargetPath(RuleChainContext context)

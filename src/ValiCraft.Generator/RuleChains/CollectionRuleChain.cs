@@ -36,21 +36,7 @@ public record CollectionRuleChain(
             itemRuleChainCodes.Add(itemRuleChain.GenerateCode(context));
         }
 
-        var requestName = GetRequestParameterName();
-        var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
-        
-        var itemRequestName = GetItemRequestParameterName();
-
-        var ruleChainCodes = string.Join("\r\n", itemRuleChainCodes);
-        
-        return $$"""
-               {{Indent}}var {{index}} = 0;
-               {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
-               {{Indent}}{
-               {{ruleChainCodes}}
-               {{Indent}}    {{index}}++;
-               {{Indent}}}
-               """;
+        return GenerateForEachLoop(index, string.Join("\r\n", itemRuleChainCodes));
     }
 
     protected override string GetTargetPath(RuleChainContext context)

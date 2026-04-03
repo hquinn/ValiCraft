@@ -157,6 +157,25 @@ public abstract record RuleChain(
                  """;
     }
 
+    protected string GenerateForEachLoop(
+        string index,
+        string bodyContent,
+        string? hoistLine = null)
+    {
+        var requestName = GetRequestParameterName();
+        var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
+        var itemRequestName = GetItemRequestParameterName();
+
+        return $$"""
+               {{hoistLine}}{{Indent}}var {{index}} = 0;
+               {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
+               {{Indent}}{
+               {{bodyContent}}
+               {{Indent}}    {{index}}++;
+               {{Indent}}}
+               """;
+    }
+
     protected static string GetValidatorGotoLabelIfNeeded(IndentModel indent, RuleChainContext context)
     {
         if (context is { ParentFailureMode: OnFailureMode.Halt, HaltLabel: not null })

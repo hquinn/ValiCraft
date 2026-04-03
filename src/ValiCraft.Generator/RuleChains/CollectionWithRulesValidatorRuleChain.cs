@@ -28,25 +28,11 @@ public record CollectionWithRulesValidatorRuleChain(
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         var index = $"index{context.Counter}";
-        var requestName = GetRequestParameterName();
-        var requestAccessor = string.Format(Target!.AccessorExpressionFormat, requestName);
         var itemRequestName = GetItemRequestParameterName();
         var childIndent = IndentModel.CreateChild(Indent);
 
         // When hoisting, capture the validator variable name before rules decrement the counter
-        string loopCallTarget;
-        string hoistLine;
-        if (HoistValidator)
-        {
-            var validatorVar = $"validator{context.Counter}";
-            loopCallTarget = validatorVar;
-            hoistLine = $"{Indent}var {validatorVar} = {ValidatorCallTarget};\r\n";
-        }
-        else
-        {
-            loopCallTarget = ValidatorCallTarget;
-            hoistLine = string.Empty;
-        }
+        var (loopCallTarget, hoistLine) = ResolveHoistTarget(context);
 
         // Create an object-level target for the item within the loop
         var itemTarget = CreateItemTarget(ElementType, Target!);
@@ -54,25 +40,27 @@ public record CollectionWithRulesValidatorRuleChain(
         // Generate rule code for inside the loop
         var ruleCodes = GenerateRulesCode(Rules, itemRequestName, childIndent, Object, itemTarget, context, 1);
 
-        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, loopCallTarget, itemRequestName, $"{Target.TargetPath.Value}[{{{index}}}]");
+        var methodCall = BuildValidatorMethodCall(IsAsync, IsAsyncValidatorCall, loopCallTarget, itemRequestName, $"{Target!.TargetPath.Value}[{{{index}}}]");
 
         ruleCodes.Add(GenerateValidatorCallCode(childIndent, methodCall, context, IndentModel.CreateChild(childIndent)));
         context.DecrementCountdown();
 
-        var ruleChainCodes = string.Join("\r\n", ruleCodes);
-
-        var code = $$"""
-                     {{hoistLine}}{{Indent}}var {{index}} = 0;
-                     {{Indent}}foreach (var {{itemRequestName}} in {{requestAccessor}})
-                     {{Indent}}{
-                     {{ruleChainCodes}}
-                     {{Indent}}    {{index}}++;
-                     {{Indent}}}
-                     """;
+        var code = GenerateForEachLoop(index, string.Join("\r\n", ruleCodes), hoistLine);
 
         // Reset because the foreach block breaks any if/else chain
         context.ResetIfElseMode();
         return code;
+    }
+
+    private (string CallTarget, string? HoistLine) ResolveHoistTarget(RuleChainContext context)
+    {
+        if (!HoistValidator)
+        {
+            return (ValidatorCallTarget, null);
+        }
+
+        var validatorVar = $"validator{context.Counter}";
+        return (validatorVar, $"{Indent}var {validatorVar} = {ValidatorCallTarget};\r\n");
     }
 
     protected override string GetTargetPath(RuleChainContext context)
