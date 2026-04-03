@@ -1,37 +1,23 @@
-using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Extensions;
-using ValiCraft.Generator.Models;
 
 namespace ValiCraft.Generator.RuleChains.Factories;
 
 public class CollectionWithRulesValidatorRuleChainFactory : IRuleChainFactory
 {
-    public RuleChain? Create(
-        bool isAsyncValidator,
-        ValidationTarget @object,
-        ValidationTarget? target,
-        InvocationExpressionSyntax invocation,
-        List<InvocationExpressionSyntax> invocationChain,
-        int depth,
-        IndentModel indent,
-        List<DiagnosticInfo> diagnostics,
-        GeneratorAttributeSyntaxContext context)
+    public RuleChain? Create(RuleChainFactoryContext context)
     {
         // Resolve the element type from EnsureEach
-        var elementTypeInfo = invocation.GetElementTypeInfo(context);
+        var elementTypeInfo = context.Invocation.GetElementTypeInfo(context.GeneratorContext);
         if (elementTypeInfo is null)
         {
             return null;
         }
 
         // The last invocation is the validator call — extract validator info
-        var validatorInvocation = invocationChain.Last();
+        var validatorInvocation = context.InvocationChain.Last();
 
-        var resolution = ValidatorResolutionHelper.Resolve(validatorInvocation, context);
+        var resolution = ValidatorResolutionHelper.Resolve(validatorInvocation, context.GeneratorContext);
         if (resolution is null)
         {
             return null;
@@ -39,20 +25,23 @@ public class CollectionWithRulesValidatorRuleChainFactory : IRuleChainFactory
 
         // Process rules from index 1 to N-2 (skip EnsureEach and the validator call)
         var rules = RuleChainHelper.ProcessRuleInvocations(
-            isAsyncValidator, invocationChain.Skip(1).Take(invocationChain.Count - 2), diagnostics, context);
+            context.IsAsyncValidator,
+            context.InvocationChain.Skip(1).Take(context.InvocationChain.Count - 2),
+            context.Diagnostics,
+            context.GeneratorContext);
         if (rules is null)
         {
             return null;
         }
 
         return new CollectionWithRulesValidatorRuleChain(
-            isAsyncValidator,
-            @object,
-            target!,
-            depth,
-            indent,
+            context.IsAsyncValidator,
+            context.Object,
+            context.Target!,
+            context.Depth,
+            context.Indent,
             rules.Count + 1,
-            invocation.GetOnFailureModeFromSyntax(),
+            context.Invocation.GetOnFailureModeFromSyntax(),
             elementTypeInfo,
             rules.ToEquatableImmutableArray(),
             resolution.ValidatorCallTarget,

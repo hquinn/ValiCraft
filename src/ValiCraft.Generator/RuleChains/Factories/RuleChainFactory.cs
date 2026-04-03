@@ -94,7 +94,10 @@ public static class RuleChainFactory
 
         var factory = GetRuleChainFactory(ruleChainKind.Value);
 
-        return factory.Create(isAsyncValidator, validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context);
+        var factoryContext = new RuleChainFactoryContext(
+            isAsyncValidator, validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context);
+
+        return factory.Create(factoryContext);
     }
 
     private static IRuleChainFactory GetRuleChainFactory(RuleChainKind ruleChainKind)

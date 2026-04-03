@@ -10,19 +10,13 @@ namespace ValiCraft.Generator.RuleChains.Factories;
 
 public class PolymorphicRuleChainFactory : IRuleChainFactory
 {
-    public RuleChain? Create(
-        bool isAsyncValidator,
-        ValidationTarget @object,
-        ValidationTarget? target,
-        InvocationExpressionSyntax invocation,
-        List<InvocationExpressionSyntax> invocationChain,
-        int depth,
-        IndentModel indent,
-        List<DiagnosticInfo> diagnostics,
-        GeneratorAttributeSyntaxContext context)
+    public RuleChain? Create(RuleChainFactoryContext context)
     {
+        var invocation = context.Invocation;
+        var invocationChain = context.InvocationChain;
+
         // Parse nullBehavior from Polymorphic() invocation
-        var nullBehavior = GetNullBehaviorFromInvocation(invocation, context);
+        var nullBehavior = GetNullBehaviorFromInvocation(invocation, context.GeneratorContext);
         var failureMode = invocation.GetOnFailureModeFromSyntax();
 
         var branches = new List<PolymorphicBranch>();
@@ -38,7 +32,7 @@ public class PolymorphicRuleChainFactory : IRuleChainFactory
             if (methodName == KnownNames.Methods.WhenType)
             {
                 // Get the derived type from WhenType<TDerived>()
-                var derivedType = GetDerivedTypeFromWhenType(currentInvocation, context);
+                var derivedType = GetDerivedTypeFromWhenType(currentInvocation, context.GeneratorContext);
                 if (derivedType is null)
                 {
                     return null;
@@ -54,7 +48,7 @@ public class PolymorphicRuleChainFactory : IRuleChainFactory
                 var branchInvocation = invocationChain[chainIndex];
                 var branchMethodName = GetMethodName(branchInvocation);
 
-                var branch = CreateBranch(branchMethodName, derivedType, branchInvocation, context);
+                var branch = CreateBranch(branchMethodName, derivedType, branchInvocation, context.GeneratorContext);
                 if (branch is null)
                 {
                     return null;
@@ -100,11 +94,11 @@ public class PolymorphicRuleChainFactory : IRuleChainFactory
         otherwiseBranch ??= new PolymorphicOtherwiseBranch(PolymorphicBranchBehavior.Allow, null);
 
         return new PolymorphicRuleChain(
-            isAsyncValidator,
-            @object,
-            target!,
-            depth,
-            indent,
+            context.IsAsyncValidator,
+            context.Object,
+            context.Target!,
+            context.Depth,
+            context.Indent,
             failureMode,
             nullBehavior,
             branches.ToEquatableImmutableArray(),
