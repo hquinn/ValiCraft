@@ -6,7 +6,7 @@ using ValiCraft.Generator.Types;
 
 namespace ValiCraft.Generator.Rules;
 
-public record IdentifierNameRule(
+public record ExpressionFormatRule(
     bool IsAsync,
     EquatableArray<ArgumentInfo> Arguments,
     string ExpressionFormat,
@@ -16,7 +16,7 @@ public record IdentifierNameRule(
     IfConditionModel IfCondition,
     EquatableArray<RulePlaceholder> Placeholders,
     LocationInfo Location) : Rule(
-    Arguments, 
+    Arguments,
     DefaultMessage,
     DefaultErrorCode,
     RuleOverrides,

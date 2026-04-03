@@ -60,7 +60,7 @@ public class MemberAccessRuleBuilder(
 
     public override Rule Build()
     {
-        return new MemberAccessRule(
+        return new ExpressionFormatRule(
             isAsync,
             arguments,
             expressionFormat,

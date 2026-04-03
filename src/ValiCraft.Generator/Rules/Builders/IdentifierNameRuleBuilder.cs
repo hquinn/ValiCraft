@@ -60,7 +60,7 @@ public class IdentifierNameRuleBuilder(
 
     public override Rule Build()
     {
-        return new IdentifierNameRule(
+        return new ExpressionFormatRule(
             isAsync,
             arguments,
             expressionFormat,

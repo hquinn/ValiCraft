@@ -59,7 +59,7 @@ public class InvocationLambdaRuleBuilder(
 
     public override Rule Build()
     {
-        return new InvocationLambdaRule(
+        return new ExpressionFormatRule(
             isAsync,
             arguments,
             body,
