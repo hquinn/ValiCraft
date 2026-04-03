@@ -13,8 +13,18 @@ public record IfRuleChain(
     IndentModel Indent,
     int NumberOfRules,
     IfConditionModel IfCondition,
-    EquatableArray<RuleChain> ChildRuleChains) : ContainerRuleChain(IsAsync, Object, Depth, Indent, NumberOfRules, null, ChildRuleChains)
+    EquatableArray<RuleChain> ChildRuleChains) : RuleChain(IsAsync, Object, null, Depth, Indent, NumberOfRules, null)
 {
+    public override bool NeedsGotoLabels()
+    {
+        return ChildRuleChains.Any(x => x.NeedsGotoLabels());
+    }
+
+    protected override string GetTargetPath(RuleChainContext context)
+    {
+        return context.TargetPath;
+    }
+
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
         if (ChildRuleChains.Count == 0)
