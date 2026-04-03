@@ -120,7 +120,7 @@ internal static class RuleChainHelper
                 case IdentifierNameSyntax identifierNameSyntax:
                 {
                     var identifierSymbol = context.SemanticModel.GetSymbolInfo(identifierNameSyntax).Symbol;
-                    return ExpressionFormatRuleBuilder.Create(
+                    return RuleBuilder.CreateExpressionFormat(
                         isMethodAsync,
                         usesCancellationToken,
                         invocation,
@@ -133,7 +133,7 @@ internal static class RuleChainHelper
                 case MemberAccessExpressionSyntax memberAccessExpressionSyntax:
                 {
                     var memberAccessSymbol = context.SemanticModel.GetSymbolInfo(memberAccessExpressionSyntax).Symbol;
-                    return ExpressionFormatRuleBuilder.Create(
+                    return RuleBuilder.CreateExpressionFormat(
                         isMethodAsync,
                         usesCancellationToken,
                         invocation,
@@ -144,7 +144,7 @@ internal static class RuleChainHelper
 
                 // Block lambdas (e.g. .Is(x => { return string.IsNullOrEmpty(x) }))
                 case LambdaExpressionSyntax { Body: BlockSyntax } blockLambda:
-                    return BlockLambdaRuleBuilder.Create(
+                    return RuleBuilder.CreateBlockLambda(
                         isMethodAsync,
                         usesCancellationToken,
                         invocation,
@@ -153,7 +153,7 @@ internal static class RuleChainHelper
                 // Invocations (e.g. .Is(x => NotEmpty(x), .Is(async x => await NotEmpty(x))
                 // Note: .Is(x => !NotEmpty(x)) is not an invocation lambda
                 case LambdaExpressionSyntax { Body: InvocationExpressionSyntax or AwaitExpressionSyntax } invocationLambda:
-                    return InvocationLambdaRuleBuilder.Create(
+                    return RuleBuilder.CreateInvocationLambda(
                         isMethodAsync,
                         usesCancellationToken,
                         invocation,
@@ -163,7 +163,7 @@ internal static class RuleChainHelper
                 // Everything else (Binary, Unary, Patterns, Properties, Arrays, Parentheses, etc)
                 // If it's a lambda with an expression body that isn't a method call, it goes here
                 case LambdaExpressionSyntax lambda:
-                    return LambdaRuleBuilder.Create(
+                    return RuleBuilder.CreateLambda(
                         isMethodAsync,
                         usesCancellationToken,
                         invocation,
@@ -174,7 +174,7 @@ internal static class RuleChainHelper
         // We usually get a value here if the invocation is a validation rule the extension method has been created for
         if (context.SemanticModel.GetSymbolInfo(invocation).Symbol is IMethodSymbol methodSymbol)
         {
-            return ExtensionMethodRuleBuilder.Create(methodSymbol, invocation, diagnostics, context.SemanticModel);
+            return RuleBuilder.CreateExtensionMethod(methodSymbol, invocation, diagnostics, context.SemanticModel);
         }
 
         // We don't have something valid here
