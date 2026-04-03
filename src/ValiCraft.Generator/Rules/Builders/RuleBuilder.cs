@@ -31,7 +31,7 @@ public sealed class RuleBuilder
     private MessageInfo? _defaultErrorCode;
     private EquatableArray<RulePlaceholder> _placeholders;
     private LocationInfo _location = null!;
-    private string? _expressionFormat;
+    private InlineExpression? _expressionFormat;
     private string? _body;
     private string? _parameter;
     private string? _cancellationTokenParameter;
@@ -141,7 +141,7 @@ public sealed class RuleBuilder
             _defaultMessage = MessageInfo.CreateFromAttribute(methodSymbol, KnownNames.Attributes.DefaultMessageAttribute),
             _defaultErrorCode = MessageInfo.CreateFromAttribute(methodSymbol, KnownNames.Attributes.DefaultErrorCodeAttribute) ?? new MessageInfo(fullMethodName, true),
             _placeholders = RulePlaceholder.CreateFromRulePlaceholderAttributes(methodSymbol!),
-            _expressionFormat = sb.ToString(),
+            _expressionFormat = new InlineExpression(sb.ToString()),
             _location = LocationInfo.CreateFrom(invocation)!
         };
     }
@@ -207,7 +207,7 @@ public sealed class RuleBuilder
             _defaultMessage = MessageInfo.CreateFromAttribute(innerInvocationSymbol, KnownNames.Attributes.DefaultMessageAttribute),
             _defaultErrorCode = MessageInfo.CreateFromAttribute(innerInvocationSymbol, KnownNames.Attributes.DefaultErrorCodeAttribute) ?? new MessageInfo(fullMethodName, true),
             _placeholders = RulePlaceholder.CreateFromRulePlaceholderAttributes(innerInvocationSymbol!),
-            _expressionFormat = body,
+            _expressionFormat = new InlineExpression(body),
             _location = LocationInfo.CreateFrom(invocation)!
         };
     }
@@ -247,7 +247,7 @@ public sealed class RuleBuilder
             _placeholders = EquatableArray<RulePlaceholder>.Empty,
             // Wrap the expression in parentheses so the negation applies correctly:
             // ExpressionFormatRule generates !{condition}, and we need !({condition})
-            _expressionFormat = $"({body})",
+            _expressionFormat = new InlineExpression($"({body})"),
             _location = LocationInfo.CreateFrom(invocation)!
         };
     }

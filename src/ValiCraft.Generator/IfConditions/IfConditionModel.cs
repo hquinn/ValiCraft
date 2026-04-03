@@ -1,3 +1,4 @@
+using ValiCraft.Generator.Concepts;
 using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 
@@ -13,7 +14,7 @@ public enum IfConditionKind
 public sealed record IfConditionModel(
     IfConditionKind Kind,
     bool IsRuleChainCondition,
-    string? ExpressionFormat = null,
+    InlineExpression? ExpressionFormat = null,
     string? Body = null,
     string? Parameter = null)
 {
@@ -24,7 +25,7 @@ public sealed record IfConditionModel(
 
     public static IfConditionModel CreateExpressionFormat(string expressionFormat, bool isRuleChainCondition)
     {
-        return new IfConditionModel(IfConditionKind.ExpressionFormat, isRuleChainCondition, ExpressionFormat: expressionFormat);
+        return new IfConditionModel(IfConditionKind.ExpressionFormat, isRuleChainCondition, ExpressionFormat: new InlineExpression(expressionFormat));
     }
 
     public static IfConditionModel CreateBlockLambda(string body, string parameter, bool isRuleChainCondition)
@@ -64,7 +65,7 @@ public sealed record IfConditionModel(
         RuleChainContext context)
     {
         var targetAccessor = string.Format(target.AccessorExpressionFormat, requestName);
-        var inlinedCondition = string.Format(ExpressionFormat!, targetAccessor);
+        var inlinedCondition = ExpressionFormat!.Value.Inline(targetAccessor);
 
         if (IsRuleChainCondition)
         {

@@ -23,7 +23,7 @@ public sealed record Rule(
     LocationInfo Location,
     // ExpressionFormat + BlockLambda variant data
     bool IsAsync = false,
-    string? ExpressionFormat = null,
+    InlineExpression? ExpressionFormat = null,
     // BlockLambda variant data
     string? Body = null,
     string? Parameter = null,

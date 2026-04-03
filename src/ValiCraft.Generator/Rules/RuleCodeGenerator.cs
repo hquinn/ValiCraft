@@ -36,7 +36,7 @@ internal static class RuleCodeGenerator
     {
         var targetAccessor = string.Format(target.AccessorExpressionFormat, requestName);
 
-        var inlinedCondition = string.Format(rule.ExpressionFormat!, targetAccessor);
+        var inlinedCondition = rule.ExpressionFormat!.Value.Inline(targetAccessor);
 
         var code = $$"""
                      {{rule.IfCondition.GenerateIfBlock(@object, requestName, indent, context)}}!{{inlinedCondition}})
