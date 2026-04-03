@@ -51,15 +51,16 @@ public class LambdaRuleBuilder(
     {
         // Wrap the expression in parentheses so the negation applies correctly:
         // ExpressionFormatRule generates !{condition}, and we need !({condition})
-        return new ExpressionFormatRule(
-            isAsync,
+        return new Rule(
+            RuleKind.ExpressionFormat,
             EquatableArray<ArgumentInfo>.Empty,
-            $"({expressionFormat})",
             null,
             new MessageInfo(KnownNames.Targets.Is, true),
             GetRuleOverrideData(),
             IfCondition,
             EquatableArray<RulePlaceholder>.Empty,
-            location);
+            location,
+            IsAsync: isAsync,
+            ExpressionFormat: $"({expressionFormat})");
     }
 }

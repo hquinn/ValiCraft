@@ -138,7 +138,8 @@ public abstract record RuleChain(
 
         foreach (var rule in rules)
         {
-            ruleCodes.Add(rule.GenerateCodeForRule(
+            ruleCodes.Add(RuleCodeGenerator.GenerateCodeForRule(
+                rule,
                 requestName,
                 indent,
                 @object,

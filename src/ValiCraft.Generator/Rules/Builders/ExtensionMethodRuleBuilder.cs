@@ -25,13 +25,13 @@ public class ExtensionMethodRuleBuilder(
     {
         var mapToValidationRuleAttribute = MapToValidationRuleData.CreateFromMethodAndAttribute(
             methodSymbol, KnownNames.Attributes.MapToValidationRuleAttribute);
-        
+
         if (mapToValidationRuleAttribute is null)
         {
             diagnostics.Add(DefinedDiagnostics.MissingMapToValidationRuleAttribute(invocation.GetLocation()));
             return null;
         }
-        
+
         return new ExtensionMethodRuleBuilder(
             invocation.GetGenericArguments(),
             invocation.GetArguments(methodSymbol, semanticModel).ToEquatableImmutableArray(),
@@ -45,15 +45,16 @@ public class ExtensionMethodRuleBuilder(
 
     public override Rule Build()
     {
-        return new ExtensionMethodRule(
-            genericArguments,
-            mapData,
+        return new Rule(
+            RuleKind.ExtensionMethod,
             arguments,
             defaultMessage,
             defaultErrorCode,
             GetRuleOverrideData(),
             IfCondition,
             rulePlaceholders,
-            location);
+            location,
+            GenericArguments: genericArguments,
+            ValidationRuleData: mapData);
     }
 }

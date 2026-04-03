@@ -32,16 +32,18 @@ public class BlockLambdaRuleBuilder(
 
     public override Rule Build()
     {
-        return new BlockLambdaRule(
-            isAsync,
-            body,
-            parameterName,
-            cancellationTokenParameterName,
+        return new Rule(
+            RuleKind.BlockLambda,
+            EquatableArray<ArgumentInfo>.Empty,
             null,
             new MessageInfo(KnownNames.Targets.Is, true),
             GetRuleOverrideData(),
             IfCondition,
             EquatableArray<RulePlaceholder>.Empty,
-            location);
+            location,
+            IsAsync: isAsync,
+            Body: body,
+            Parameter: parameterName,
+            CancellationTokenParameter: cancellationTokenParameterName);
     }
 }

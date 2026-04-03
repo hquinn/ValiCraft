@@ -57,15 +57,16 @@ public class ExpressionFormatRuleBuilder(
 
     public override Rule Build()
     {
-        return new ExpressionFormatRule(
-            isAsync,
+        return new Rule(
+            RuleKind.ExpressionFormat,
             arguments,
-            expressionFormat,
             defaultMessage,
             defaultErrorCode,
             GetRuleOverrideData(),
             IfCondition,
             rulePlaceholders,
-            location);
+            location,
+            IsAsync: isAsync,
+            ExpressionFormat: expressionFormat);
     }
 }

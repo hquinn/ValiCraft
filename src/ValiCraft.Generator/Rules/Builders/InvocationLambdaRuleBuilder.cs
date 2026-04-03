@@ -30,14 +30,14 @@ public class InvocationLambdaRuleBuilder(
             AwaitExpressionSyntax { Expression: InvocationExpressionSyntax i } => i,
             _ => null
         };
-        
+
         var innerInvocationSymbol = context.SemanticModel.GetSymbolInfo(innerInvocation!).Symbol;
 
         var fullMethodName = innerInvocation!.Expression.ToString();
-        
+
         var parameterName = lambda.GetParameterName();
         var cancellationTokenParameterName = usesCancellationToken ? lambda.GetSecondParameterName() : null;
-        
+
         var rewriter = new LambdaParameterRewriter(parameterName, cancellationTokenParameterName);
         var rewrittenBody = rewriter.Visit(lambda.Body);
         var body = rewrittenBody?.ToString() ?? string.Empty;
@@ -59,15 +59,16 @@ public class InvocationLambdaRuleBuilder(
 
     public override Rule Build()
     {
-        return new ExpressionFormatRule(
-            isAsync,
+        return new Rule(
+            RuleKind.ExpressionFormat,
             arguments,
-            body,
             defaultMessage,
             defaultErrorCode,
             GetRuleOverrideData(),
             IfCondition,
             rulePlaceholders,
-            location);
+            location,
+            IsAsync: isAsync,
+            ExpressionFormat: body);
     }
 }
