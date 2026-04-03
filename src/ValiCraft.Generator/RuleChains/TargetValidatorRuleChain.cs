@@ -1,4 +1,3 @@
-using ValiCraft.Generator.Models;
 using ValiCraft.Generator.RuleChains.Context;
 
 namespace ValiCraft.Generator.RuleChains;
@@ -6,9 +5,7 @@ namespace ValiCraft.Generator.RuleChains;
 public record TargetValidatorRuleChain(
     RuleChainConfig Config,
     string ValidatorCallTarget,
-    bool IsAsyncValidatorCall,
-    CollectionConfig? Collection = null,
-    bool HoistValidator = false) : RuleChain(Config)
+    bool IsAsyncValidatorCall) : RuleChain(Config)
 {
     public override bool NeedsGotoLabels()
     {
@@ -18,46 +15,21 @@ public record TargetValidatorRuleChain(
 
     protected override string GetTargetPath(RuleChainContext context)
     {
-        return BuildTargetPath(context.TargetPath, Config.Target!.TargetPath.Value, Collection is not null, context.Counter, ".");
+        return BuildTargetPath(context.TargetPath, Config.Target!.TargetPath.Value, false, context.Counter);
     }
 
     protected override string HandleCodeGeneration(RuleChainContext context)
     {
-        if (Collection is not null)
-        {
-            return HandleCollectionCodeGeneration(context);
-        }
-
         var requestName = GetRequestParameterName();
         var requestAccessor = string.Format(Config.Target!.AccessorExpressionFormat, requestName);
 
-        var methodCall = BuildValidatorMethodCall(Config.IsAsync, IsAsyncValidatorCall, ValidatorCallTarget, requestAccessor, Config.Target.TargetPath.Value);
+        var methodCall = BuildValidatorMethodCall(Config.IsAsync, IsAsyncValidatorCall, ValidatorCallTarget, requestAccessor, context.TargetPath.TrimEnd('.'));
 
         // Always use 'if' here because the var declaration above breaks any if/else chain
         var code = GenerateValidatorCallCode(Config.Indent, methodCall, context);
 
         context.DecrementCountdown();
         context.UpdateIfElseMode();
-        return code;
-    }
-
-    private string HandleCollectionCodeGeneration(RuleChainContext context)
-    {
-        var index = $"index{context.Counter}";
-        var childIndent = IndentModel.CreateChild(Config.Indent);
-
-        // When hoisting, use a local variable for the validator to avoid repeated allocations in the loop
-        var (loopCallTarget, hoistLine) = ResolveHoistTarget(HoistValidator, ValidatorCallTarget, Config.Indent, context);
-
-        var methodCall = BuildValidatorMethodCall(Config.IsAsync, IsAsyncValidatorCall, loopCallTarget, GetItemRequestParameterName(), $"{Config.Target!.TargetPath.Value}[{{{index}}}]");
-
-        var validatorCallCode = GenerateValidatorCallCode(childIndent, methodCall, context);
-
-        var code = GenerateForEachLoop(index, validatorCallCode, hoistLine);
-
-        context.DecrementCountdown();
-        // Reset because the foreach block breaks any if/else chain — the next chain cannot use 'else if'
-        context.ResetIfElseMode();
         return code;
     }
 

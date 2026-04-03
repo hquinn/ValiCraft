@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ValiCraft.Generator.Concepts;
@@ -16,9 +15,6 @@ public enum RuleChainKind
     TargetValidator,
     TargetWithRulesValidator,
     Collection,
-    CollectionTarget,
-    CollectionValidator,
-    CollectionWithRulesValidator,
     WithOnFailure,
     If,
     Polymorphic
@@ -36,15 +32,12 @@ public static class RuleChainFactory
             [RuleChainKind.TargetValidator] = new TargetValidatorRuleChainFactory(),
             [RuleChainKind.TargetWithRulesValidator] = new TargetWithRulesValidatorRuleChainFactory(),
             [RuleChainKind.Collection] = new CollectionRuleChainFactory(),
-            [RuleChainKind.CollectionTarget] = new TargetRuleChainFactory(isCollection: true),
-            [RuleChainKind.CollectionValidator] = new TargetValidatorRuleChainFactory(isCollection: true),
-            [RuleChainKind.CollectionWithRulesValidator] = new TargetWithRulesValidatorRuleChainFactory(isCollection: true),
             [RuleChainKind.WithOnFailure] = new WithOnFailureRuleChainFactory(),
             [RuleChainKind.If] = new IfRuleChainFactory(),
             [RuleChainKind.Polymorphic] = new PolymorphicRuleChainFactory(),
         };
     }
-    
+
     public static RuleChain? CreateFromStatement(
         bool isAsyncValidator,
         ExpressionStatementSyntax statement,
@@ -58,11 +51,12 @@ public static class RuleChainFactory
         {
             return null;
         }
-        
+
         var ruleChainKind = TryGetValidStartingInvocation(
             invocationChain,
-            out var startingInvocation);
-        
+            out var startingInvocation,
+            out var isCollection);
+
         if (ruleChainKind is null)
         {
             return null;
@@ -72,6 +66,7 @@ public static class RuleChainFactory
             startingInvocation!,
             context,
             ruleChainKind.Value,
+            isCollection,
             out var validationObject,
             out var validationTarget))
         {
@@ -81,7 +76,7 @@ public static class RuleChainFactory
         var factory = GetRuleChainFactory(ruleChainKind.Value);
 
         var factoryContext = new RuleChainFactoryContext(
-            isAsyncValidator, validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context);
+            isAsyncValidator, validationObject!, validationTarget, startingInvocation!, invocationChain, depth, indent, diagnostics, context, isCollection);
 
         return factory.Create(factoryContext);
     }
@@ -90,7 +85,7 @@ public static class RuleChainFactory
     {
         return RuleChainFactories[ruleChainKind];
     }
-    
+
      private static bool TryGetRuleInvocationsFromStatement(
         ExpressionStatementSyntax statement,
         string expectedBuilderArgument,
@@ -122,12 +117,12 @@ public static class RuleChainFactory
                 break;
             }
         }
-        
+
         // We expect at the very top of the chain is an identifier
         if (currentExpression is IdentifierNameSyntax identifier)
         {
             var actualBuilderArgument = identifier.Identifier.ValueText;
-            
+
             if (actualBuilderArgument != expectedBuilderArgument)
             {
                 diagnostics.Add(DefinedDiagnostics.InvalidBuilderArgumentUsedInScope(
@@ -152,18 +147,20 @@ public static class RuleChainFactory
 
     private static RuleChainKind? TryGetValidStartingInvocation(
         List<InvocationExpressionSyntax> invocationChain,
-        out InvocationExpressionSyntax? firstInvocation)
+        out InvocationExpressionSyntax? firstInvocation,
+        out bool isCollection)
     {
         firstInvocation = invocationChain.FirstOrDefault();
+        isCollection = false;
 
         if (firstInvocation is null)
         {
             return null;
         }
-        
+
         var firstMemberAccess = firstInvocation.Expression as MemberAccessExpressionSyntax;
         var firstMethodName = firstMemberAccess?.Name.Identifier.ValueText;
-        
+
         var secondInvocation = invocationChain.Skip(1).FirstOrDefault();
         var secondInvocationIsValidator = IsValidatorInvocation(secondInvocation);
 
@@ -171,29 +168,38 @@ public static class RuleChainFactory
         var lastInvocation = invocationChain.LastOrDefault();
         var lastInvocationIsValidator = IsValidatorInvocation(lastInvocation);
 
-        return firstMethodName switch
+        switch (firstMethodName)
         {
-            // We don't have a valid rule chain if we have zero or one method invocations
-            // As the first invocation should be the Ensure method.
-            KnownNames.Methods.Ensure => invocationChain.Count > 1
-                ? secondInvocationIsValidator
+            case KnownNames.Methods.Ensure when invocationChain.Count > 1:
+                return secondInvocationIsValidator
                     ? RuleChainKind.TargetValidator
                     : lastInvocationIsValidator
                         ? RuleChainKind.TargetWithRulesValidator
-                        : RuleChainKind.Target
-                : null,
-            KnownNames.Methods.EnsureEach => invocationChain.Count > 1
-                ? secondInvocationIsValidator
-                    ? RuleChainKind.CollectionValidator
+                        : RuleChainKind.Target;
+
+            case KnownNames.Methods.EnsureEach when invocationChain.Count > 1:
+                isCollection = true;
+                return secondInvocationIsValidator
+                    ? RuleChainKind.TargetValidator
                     : lastInvocationIsValidator
-                        ? RuleChainKind.CollectionWithRulesValidator
-                        : RuleChainKind.CollectionTarget
-                : RuleChainKind.Collection,
-            KnownNames.Methods.WithOnFailure => RuleChainKind.WithOnFailure,
-            KnownNames.Methods.If => RuleChainKind.If,
-            KnownNames.Methods.Polymorphic => invocationChain.Count > 1 ? RuleChainKind.Polymorphic : null,
-            _ => null
-        };
+                        ? RuleChainKind.TargetWithRulesValidator
+                        : RuleChainKind.Target;
+
+            case KnownNames.Methods.EnsureEach when invocationChain.Count <= 1:
+                return RuleChainKind.Collection;
+
+            case KnownNames.Methods.WithOnFailure:
+                return RuleChainKind.WithOnFailure;
+
+            case KnownNames.Methods.If:
+                return RuleChainKind.If;
+
+            case KnownNames.Methods.Polymorphic when invocationChain.Count > 1:
+                return RuleChainKind.Polymorphic;
+
+            default:
+                return null;
+        }
     }
 
     private static bool IsValidatorInvocation(InvocationExpressionSyntax? invocation)

@@ -28,6 +28,7 @@ internal static class ValidationTargetResolver
         InvocationExpressionSyntax startingChainInvocation,
         GeneratorAttributeSyntaxContext context,
         RuleChainKind ruleChainKind,
+        bool isCollection,
         out ValidationTarget? validationObject,
         out ValidationTarget? validationTarget)
     {
